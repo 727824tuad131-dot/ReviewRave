@@ -6,6 +6,6 @@ import jakarta.persistence.Id;
 public class CustomerReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
+    private id
     
 }
