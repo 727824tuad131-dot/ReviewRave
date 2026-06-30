@@ -1,9 +1,9 @@
-package com.example.repository;
+package com.example.demo.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.entity.ResolutionTicket;
-import com.example.entity.Status;
+import com.example.demo.entity.Status;
 
 public interface ResolutionTicketRepository extends JpaRepository<ResolutionTicket, Long> {
 
