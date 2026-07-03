@@ -1,5 +1,8 @@
 package com.example.demo.enums;
 
-public class Status {
-    
+public enum Status {
+    PENDING,
+    IN_PROGRESS,
+    RESOLVED
+
 }
