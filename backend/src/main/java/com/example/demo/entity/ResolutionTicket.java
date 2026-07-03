@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.example.demo.enums.Status;
+
 import jakarta.persistence.*;
 
 @Entity
