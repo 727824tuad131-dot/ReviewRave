@@ -1,15 +1,16 @@
 package com.example.demo.repository;
 
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import com.example.demo.entity.SentimentInsight;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface SentimentInsightRepository extends JpaRepository<SentimentInsight, Long> {
 
-    Optional<SentimentInsight> findByProductId(Long productId);
+    List<SentimentInsight> findBySentiment(String sentiment);
 
-    @Query("SELECT s FROM SentimentInsight s")
-    List<SentimentInsight> getAllInsights();
+    List<SentimentInsight> findByProductId(Long productId);
+
 }
