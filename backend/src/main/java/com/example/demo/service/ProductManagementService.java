@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.entity.TrackedProduct;
 import com.example.demo.repository.TrackedProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,32 +25,22 @@ public class ProductManagementService {
 
     // Get Product By Id
     public TrackedProduct getProductById(Long id) {
-        return trackedProductRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Product not found with id: " + id));
+        return trackedProductRepository.findById(id).orElse(null);
     }
 
     // Update Product
     public TrackedProduct updateProduct(Long id, TrackedProduct product) {
 
-        TrackedProduct existingProduct = trackedProductRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Product not found with id: " + id));
+        if (trackedProductRepository.existsById(id)) {
+            product.setId(id);   // Requires a setId(Long) method
+            return trackedProductRepository.save(product);
+        }
 
-        existingProduct.setName(product.getName());
-        existingProduct.setCategory(product.getCategory());
-        existingProduct.setBrand(product.getBrand());
-
-        return trackedProductRepository.save(existingProduct);
+        return null;
     }
 
     // Delete Product
     public void deleteProduct(Long id) {
-
-        TrackedProduct existingProduct = trackedProductRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Product not found with id: " + id));
-
-        trackedProductRepository.delete(existingProduct);
+        trackedProductRepository.deleteById(id);
     }
 }
