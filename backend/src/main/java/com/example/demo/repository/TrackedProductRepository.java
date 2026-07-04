@@ -1,15 +1,10 @@
 package com.example.demo.repository;
 
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.demo.entity.TrackedProduct;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TrackedProductRepository extends JpaRepository<TrackedProduct, Long> {
 
-    List<TrackedProduct> findByCategory(String category);
-
-    Optional<TrackedProduct> findByName(String name);
-
-    boolean existsByName(String name);
 }
