@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "tracked_products")
@@ -11,25 +11,21 @@ public class TrackedProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank
     private String name;
 
-    @Column(nullable = false)
     private String category;
 
-    private Integer totalReviews;
-
-    @Column(name = "avg_sentiment", nullable = false)
-    private Double avgSentiment;
-
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private PlatformUser owner;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<CustomerReview> reviews;
+    private String brand;
 
     public TrackedProduct() {
+    }
+
+    public TrackedProduct(Long id, String name, String category, String brand) {
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.brand = brand;
     }
 
     public Long getId() {
@@ -56,35 +52,11 @@ public class TrackedProduct {
         this.category = category;
     }
 
-    public Integer getTotalReviews() {
-        return totalReviews;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setTotalReviews(Integer totalReviews) {
-        this.totalReviews = totalReviews;
-    }
-
-    public Double getAvgSentiment() {
-        return avgSentiment;
-    }
-
-    public void setAvgSentiment(Double avgSentiment) {
-        this.avgSentiment = avgSentiment;
-    }
-
-    public PlatformUser getOwner() {
-        return owner;
-    }
-
-    public void setOwner(PlatformUser owner) {
-        this.owner = owner;
-    }
-
-    public List<CustomerReview> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<CustomerReview> reviews) {
-        this.reviews = reviews;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 }
