@@ -11,7 +11,8 @@ public interface ResolutionTicketRepository extends JpaRepository<ResolutionTick
 
     List<ResolutionTicket> findByStatus(String status);
 
+    List<ResolutionTicket> findByPriority(String priority);
+
     List<ResolutionTicket> findByAssignedTo(String assignedTo);
 
-    List<ResolutionTicket> findByPriority(String priority);
 }
