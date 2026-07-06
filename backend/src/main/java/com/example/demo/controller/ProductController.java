@@ -4,6 +4,8 @@ import com.example.demo.entity.TrackedProduct;
 import com.example.demo.service.ProductManagementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,33 +20,44 @@ public class ProductController {
 
     // Create Product
     @PostMapping
-    public TrackedProduct createProduct(@Valid @RequestBody TrackedProduct product) {
-        return productManagementService.createProduct(product);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<TrackedProduct> createProduct(
+            @Valid @RequestBody TrackedProduct product) {
+
+        return ResponseEntity.ok(productManagementService.createProduct(product));
     }
 
     // Get All Products
     @GetMapping
-    public List<TrackedProduct> getAllProducts() {
-        return productManagementService.getAllProducts();
+    public ResponseEntity<List<TrackedProduct>> getAllProducts() {
+
+        return ResponseEntity.ok(productManagementService.getAllProducts());
     }
 
     // Get Product By Id
     @GetMapping("/{id}")
-    public TrackedProduct getProductById(@PathVariable Long id) {
-        return productManagementService.getProductById(id);
+    public ResponseEntity<TrackedProduct> getProductById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(productManagementService.getProductById(id));
     }
 
     // Update Product
     @PutMapping("/{id}")
-    public TrackedProduct updateProduct(@PathVariable Long id,
-                                        @Valid @RequestBody TrackedProduct product) {
-        return productManagementService.updateProduct(id, product);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<TrackedProduct> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody TrackedProduct product) {
+
+        return ResponseEntity.ok(
+                productManagementService.updateProduct(id, product));
     }
 
     // Delete Product
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+
         productManagementService.deleteProduct(id);
-        return "Product deleted successfully";
+        return ResponseEntity.ok("Product deleted successfully");
     }
 }

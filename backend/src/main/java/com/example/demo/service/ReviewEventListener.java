@@ -8,7 +8,20 @@ import org.springframework.stereotype.Component;
 public class ReviewEventListener {
 
     @EventListener
-    public void onReviewEvent(CustomerReview review) {
-        System.out.println("Review Event Received: " + review);
+    public void handleReviewCreated(CustomerReview review) {
+        System.out.println("Review Created Successfully");
+        System.out.println("Review ID: " + review.getId());
+    }
+
+    @EventListener
+    public void handleReviewUpdated(CustomerReview review) {
+        System.out.println("Review Updated Successfully");
+        System.out.println("Review ID: " + review.getId());
+    }
+
+    @EventListener
+    public void handleReviewDeleted(CustomerReview review) {
+        System.out.println("Review Deleted Successfully");
+        System.out.println("Review ID: " + review.getId());
     }
 }
