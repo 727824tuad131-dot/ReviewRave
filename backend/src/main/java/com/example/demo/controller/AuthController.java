@@ -1,90 +1,42 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.PlatformUser;
-import com.example.demo.repository.PlatformUserRepository;
-import jakarta.validation.Valid;
+import com.example.demo.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
-public class UserController {
+public class AuthController {
 
     @Autowired
-    private PlatformUserRepository platformUserRepository;
+    private AuthService authService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // Register User
+    @PostMapping("/register")
+    public ResponseEntity<PlatformUser> register(
+            @RequestBody PlatformUser user) {
 
-    // Create User
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PlatformUser> createUser(
-            @Valid @RequestBody PlatformUser user) {
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return ResponseEntity.ok(platformUserRepository.save(user));
+        return ResponseEntity.ok(authService.register(user));
     }
 
-    // Get All Users
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<PlatformUser>> getAllUsers() {
+    // Login User
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(
+            @RequestBody PlatformUser user) {
 
-        return ResponseEntity.ok(platformUserRepository.findAll());
-    }
+        String token = authService.login(
+                user.getUsername(),
+                user.getPassword());
 
-    // Get User By Id
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PlatformUser> getUserById(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
 
-        return platformUserRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Update User
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PlatformUser> updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody PlatformUser user) {
-
-        return platformUserRepository.findById(id)
-                .map(existingUser -> {
-                    existingUser.setUsername(user.getUsername());
-                    existingUser.setEmail(user.getEmail());
-
-                    if (user.getPassword() != null && !user.getPassword().isBlank()) {
-                        existingUser.setPassword(
-                                passwordEncoder.encode(user.getPassword()));
-                    }
-
-                    existingUser.setRole(user.getRole());
-
-                    return ResponseEntity.ok(
-                            platformUserRepository.save(existingUser));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Delete User
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-
-        if (!platformUserRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        platformUserRepository.deleteById(id);
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok(response);
     }
 }

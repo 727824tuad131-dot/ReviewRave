@@ -4,7 +4,9 @@ import com.example.demo.entity.PlatformUser;
 import com.example.demo.repository.PlatformUserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,44 +19,72 @@ public class UserController {
     @Autowired
     private PlatformUserRepository platformUserRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // Create User
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public PlatformUser createUser(@Valid @RequestBody PlatformUser user) {
-        return platformUserRepository.save(user);
+    public ResponseEntity<PlatformUser> createUser(
+            @Valid @RequestBody PlatformUser user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return ResponseEntity.ok(platformUserRepository.save(user));
     }
 
     // Get All Users
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<PlatformUser> getAllUsers() {
-        return platformUserRepository.findAll();
+    public ResponseEntity<List<PlatformUser>> getAllUsers() {
+
+        return ResponseEntity.ok(platformUserRepository.findAll());
     }
 
     // Get User By Id
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public PlatformUser getUserById(@PathVariable Long id) {
-        return platformUserRepository.findById(id).orElse(null);
+    public ResponseEntity<PlatformUser> getUserById(@PathVariable Long id) {
+
+        return platformUserRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // Update User
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public PlatformUser updateUser(@PathVariable Long id,
-                                   @Valid @RequestBody PlatformUser user) {
-        if (platformUserRepository.existsById(id)) {
-            user.setId(id); // Requires setId(Long) in PlatformUser
-            return platformUserRepository.save(user);
-        }
-        return null;
+    public ResponseEntity<PlatformUser> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody PlatformUser user) {
+
+        return platformUserRepository.findById(id)
+                .map(existingUser -> {
+                    existingUser.setUsername(user.getUsername());
+                    existingUser.setEmail(user.getEmail());
+
+                    if (user.getPassword() != null && !user.getPassword().isBlank()) {
+                        existingUser.setPassword(
+                                passwordEncoder.encode(user.getPassword()));
+                    }
+
+                    existingUser.setRole(user.getRole());
+
+                    return ResponseEntity.ok(
+                            platformUserRepository.save(existingUser));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // Delete User
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deleteUser(@PathVariable Long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+
+        if (!platformUserRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
         platformUserRepository.deleteById(id);
-        return "User deleted successfully";
+        return ResponseEntity.ok("User deleted successfully");
     }
 }
