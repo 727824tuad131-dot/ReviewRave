@@ -34,12 +34,16 @@ public class SentimentAnalysisService {
     // Update Insight
     public SentimentInsight updateInsight(Long id, SentimentInsight insight) {
 
-        if (!sentimentInsightRepository.existsById(id)) {
-            throw new EntityNotFoundException("Insight not found with id: " + id);
-        }
+        SentimentInsight existingInsight = sentimentInsightRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Insight not found with id: " + id));
 
-        insight.setId(id); // Requires setId(Long) in SentimentInsight
-        return sentimentInsightRepository.save(insight);
+        existingInsight.setSentiment(insight.getSentiment());
+        existingInsight.setAnalysis(insight.getAnalysis());
+        existingInsight.setConfidenceScore(insight.getConfidenceScore());
+        existingInsight.setProductId(insight.getProductId());
+
+        return sentimentInsightRepository.save(existingInsight);
     }
 
     // Delete Insight
