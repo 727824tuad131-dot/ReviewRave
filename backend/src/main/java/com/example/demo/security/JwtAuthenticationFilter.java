@@ -7,22 +7,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtService jwtService;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -37,28 +34,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt);
+        String token = authHeader.substring(7);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            String username = jwtService.extractUsername(token);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.validateToken(jwt, username)) {
+            if (username != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails,
+                                username,
                                 null,
-                                userDetails.getAuthorities()
+                                Collections.singletonList(
+                                        new SimpleGrantedAuthority("ROLE_USER")
+                                )
                         );
 
                 authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
                 );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
+
+        } catch (Exception e) {
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
