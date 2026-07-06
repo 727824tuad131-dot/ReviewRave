@@ -26,7 +26,13 @@ public class AuthService {
 
     // Register User
     public PlatformUser register(PlatformUser user) {
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("ROLE_USER");
+        }
+
         return platformUserRepository.save(user);
     }
 

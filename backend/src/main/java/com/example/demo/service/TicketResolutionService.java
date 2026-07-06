@@ -34,12 +34,17 @@ public class TicketResolutionService {
     // Update Ticket
     public ResolutionTicket updateTicket(Long id, ResolutionTicket ticket) {
 
-        if (!resolutionTicketRepository.existsById(id)) {
-            throw new EntityNotFoundException("Ticket not found with id: " + id);
-        }
+        ResolutionTicket existingTicket = resolutionTicketRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Ticket not found with id: " + id));
 
-        ticket.setId(id);   // Requires setId(Long) in ResolutionTicket
-        return resolutionTicketRepository.save(ticket);
+        existingTicket.setTitle(ticket.getTitle());
+        existingTicket.setDescription(ticket.getDescription());
+        existingTicket.setStatus(ticket.getStatus());
+        existingTicket.setPriority(ticket.getPriority());
+        existingTicket.setAssignedTo(ticket.getAssignedTo());
+
+        return resolutionTicketRepository.save(existingTicket);
     }
 
     // Delete Ticket
