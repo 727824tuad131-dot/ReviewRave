@@ -1,8 +1,7 @@
 package com.example.demo.entity;
 
-import com.example.demo.enums.Status;
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "resolution_tickets")
@@ -12,22 +11,29 @@ public class ResolutionTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "review_id")
-    private CustomerReview review;
+    @NotBlank
+    private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "agent_id")
-    private PlatformUser agent;
+    @Column(length = 1000)
+    private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+    private String status;
 
-    @Column(columnDefinition = "TEXT")
-    private String resolutionNotes;
+    private String priority;
+
+    private String assignedTo;
 
     public ResolutionTicket() {
+    }
+
+    public ResolutionTicket(Long id, String title, String description,
+                            String status, String priority, String assignedTo) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+        this.assignedTo = assignedTo;
     }
 
     public Long getId() {
@@ -38,35 +44,43 @@ public class ResolutionTicket {
         this.id = id;
     }
 
-    public CustomerReview getReview() {
-        return review;
+    public String getTitle() {
+        return title;
     }
 
-    public void setReview(CustomerReview review) {
-        this.review = review;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public PlatformUser getAgent() {
-        return agent;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAgent(PlatformUser agent) {
-        this.agent = agent;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getResolutionNotes() {
-        return resolutionNotes;
+    public String getPriority() {
+        return priority;
     }
 
-    public void setResolutionNotes(String resolutionNotes) {
-        this.resolutionNotes = resolutionNotes;
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
     }
 }

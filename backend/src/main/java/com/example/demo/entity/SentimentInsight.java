@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "sentiment_insights")
@@ -10,17 +11,26 @@ public class SentimentInsight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "product_id")
-    private TrackedProduct product;
+    @NotBlank
+    private String sentiment;
 
-    @Column(columnDefinition = "TEXT")
-    private String topKeywords;
+    @Column(length = 1000)
+    private String analysis;
 
-    @Column(nullable = false)
-    private String overallSentiment;
+    private Double confidenceScore;
+
+    private Long productId;
 
     public SentimentInsight() {
+    }
+
+    public SentimentInsight(Long id, String sentiment, String analysis,
+                            Double confidenceScore, Long productId) {
+        this.id = id;
+        this.sentiment = sentiment;
+        this.analysis = analysis;
+        this.confidenceScore = confidenceScore;
+        this.productId = productId;
     }
 
     public Long getId() {
@@ -31,27 +41,35 @@ public class SentimentInsight {
         this.id = id;
     }
 
-    public TrackedProduct getProduct() {
-        return product;
+    public String getSentiment() {
+        return sentiment;
     }
 
-    public void setProduct(TrackedProduct product) {
-        this.product = product;
+    public void setSentiment(String sentiment) {
+        this.sentiment = sentiment;
     }
 
-    public String getTopKeywords() {
-        return topKeywords;
+    public String getAnalysis() {
+        return analysis;
     }
 
-    public void setTopKeywords(String topKeywords) {
-        this.topKeywords = topKeywords;
+    public void setAnalysis(String analysis) {
+        this.analysis = analysis;
     }
 
-    public String getOverallSentiment() {
-        return overallSentiment;
+    public Double getConfidenceScore() {
+        return confidenceScore;
     }
 
-    public void setOverallSentiment(String overallSentiment) {
-        this.overallSentiment = overallSentiment;
+    public void setConfidenceScore(Double confidenceScore) {
+        this.confidenceScore = confidenceScore;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }
