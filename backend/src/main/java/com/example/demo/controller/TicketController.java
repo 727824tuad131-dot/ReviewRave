@@ -4,6 +4,8 @@ import com.example.demo.entity.ResolutionTicket;
 import com.example.demo.service.TicketResolutionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,33 +20,44 @@ public class TicketController {
 
     // Create Ticket
     @PostMapping
-    public ResolutionTicket createTicket(@Valid @RequestBody ResolutionTicket ticket) {
-        return ticketResolutionService.createTicket(ticket);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResolutionTicket> createTicket(
+            @Valid @RequestBody ResolutionTicket ticket) {
+
+        return ResponseEntity.ok(ticketResolutionService.createTicket(ticket));
     }
 
     // Get All Tickets
     @GetMapping
-    public List<ResolutionTicket> getAllTickets() {
-        return ticketResolutionService.getAllTickets();
+    public ResponseEntity<List<ResolutionTicket>> getAllTickets() {
+
+        return ResponseEntity.ok(ticketResolutionService.getAllTickets());
     }
 
     // Get Ticket By Id
     @GetMapping("/{id}")
-    public ResolutionTicket getTicketById(@PathVariable Long id) {
-        return ticketResolutionService.getTicketById(id);
+    public ResponseEntity<ResolutionTicket> getTicketById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(ticketResolutionService.getTicketById(id));
     }
 
     // Update Ticket
     @PutMapping("/{id}")
-    public ResolutionTicket updateTicket(@PathVariable Long id,
-                                         @Valid @RequestBody ResolutionTicket ticket) {
-        return ticketResolutionService.updateTicket(id, ticket);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResolutionTicket> updateTicket(
+            @PathVariable Long id,
+            @Valid @RequestBody ResolutionTicket ticket) {
+
+        return ResponseEntity.ok(
+                ticketResolutionService.updateTicket(id, ticket));
     }
 
     // Delete Ticket
     @DeleteMapping("/{id}")
-    public String deleteTicket(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteTicket(@PathVariable Long id) {
+
         ticketResolutionService.deleteTicket(id);
-        return "Ticket deleted successfully";
+        return ResponseEntity.ok("Ticket deleted successfully");
     }
 }

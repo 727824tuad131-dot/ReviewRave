@@ -1,51 +1,90 @@
 package com.example.demo.controller;
 
-import com.example.demo.security.JwtService;
+import com.example.demo.entity.PlatformUser;
+import com.example.demo.repository.PlatformUserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
-public class AuthController {
+public class UserController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private PlatformUserRepository platformUserRepository;
 
     @Autowired
-    private JwtService jwtService;
+    private PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String username,
-                                   @RequestParam String password) {
+    // Create User
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlatformUser> createUser(
+            @Valid @RequestBody PlatformUser user) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        String token = jwtService.generateToken(username);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-
-        return ResponseEntity.ok(response);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return ResponseEntity.ok(platformUserRepository.save(user));
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<String> validateToken(@RequestParam String token) {
+    // Get All Users
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PlatformUser>> getAllUsers() {
 
-        String username = jwtService.extractUsername(token);
+        return ResponseEntity.ok(platformUserRepository.findAll());
+    }
 
-        if (jwtService.validateToken(token, username)) {
-            return ResponseEntity.ok("Token is valid");
+    // Get User By Id
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlatformUser> getUserById(@PathVariable Long id) {
+
+        return platformUserRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Update User
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlatformUser> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody PlatformUser user) {
+
+        return platformUserRepository.findById(id)
+                .map(existingUser -> {
+                    existingUser.setUsername(user.getUsername());
+                    existingUser.setEmail(user.getEmail());
+
+                    if (user.getPassword() != null && !user.getPassword().isBlank()) {
+                        existingUser.setPassword(
+                                passwordEncoder.encode(user.getPassword()));
+                    }
+
+                    existingUser.setRole(user.getRole());
+
+                    return ResponseEntity.ok(
+                            platformUserRepository.save(existingUser));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Delete User
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+
+        if (!platformUserRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.badRequest().body("Invalid token");
+        platformUserRepository.deleteById(id);
+        return ResponseEntity.ok("User deleted successfully");
     }
 }
