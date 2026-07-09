@@ -1,63 +1,94 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ResolutionDto;
+import com.example.demo.dto.TicketResponseDto;
+import com.example.demo.entity.PlatformUser;
 import com.example.demo.entity.ResolutionTicket;
+import com.example.demo.repository.PlatformUserRepository;
+import com.example.demo.repository.ResolutionTicketRepository;
+import com.example.demo.repository.TrackedProductRepository;
 import com.example.demo.service.TicketResolutionService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tickets")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class TicketController {
 
-    @Autowired
-    private TicketResolutionService ticketResolutionService;
+    private final TicketResolutionService ticketService;
+    private final PlatformUserRepository userRepository;
+    private final TrackedProductRepository productRepository;
+    private final ResolutionTicketRepository ticketRepository;
 
-    // Create Ticket
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResolutionTicket> createTicket(
-            @Valid @RequestBody ResolutionTicket ticket) {
-
-        return ResponseEntity.ok(ticketResolutionService.createTicket(ticket));
+    @PostMapping("/insight/{insightId}")
+    @PreAuthorize("hasRole('BRAND_MANAGER') or hasRole('PLATFORM_ADMIN')")
+    public ResponseEntity<Void> createManualTicket(@PathVariable Long insightId) {
+        ticketService.createManualTicket(insightId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // Get All Tickets
     @GetMapping
-    public ResponseEntity<List<ResolutionTicket>> getAllTickets() {
-
-        return ResponseEntity.ok(ticketResolutionService.getAllTickets());
+    @PreAuthorize("hasRole('RESOLUTION_AGENT')")
+    public ResponseEntity<List<TicketResponseDto>> getAgentTickets(@AuthenticationPrincipal PlatformUser agent) {
+        List<TicketResponseDto> tickets = ticketService.getAgentTickets(agent.getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(tickets);
     }
 
-    // Get Ticket By Id
-    @GetMapping("/{id}")
-    public ResponseEntity<ResolutionTicket> getTicketById(@PathVariable Long id) {
-
-        return ResponseEntity.ok(ticketResolutionService.getTicketById(id));
+    @GetMapping("/open")
+    @PreAuthorize("hasRole('PLATFORM_ADMIN') or hasRole('RESOLUTION_AGENT')")
+    public ResponseEntity<List<TicketResponseDto>> getAllOpenTickets() {
+        List<TicketResponseDto> tickets = ticketService.getAllOpenTickets().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(tickets);
     }
 
-    // Update Ticket
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResolutionTicket> updateTicket(
-            @PathVariable Long id,
-            @Valid @RequestBody ResolutionTicket ticket) {
-
-        return ResponseEntity.ok(
-                ticketResolutionService.updateTicket(id, ticket));
+    @GetMapping("/stats")
+    @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+    public ResponseEntity<Map<String, Object>> getTicketStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalUsers", userRepository.count());
+        stats.put("totalProducts", productRepository.count());
+        stats.put("openTickets", ticketRepository.findByTicketStatus(ResolutionTicket.TicketStatus.OPEN).size());
+        return ResponseEntity.ok(stats);
     }
 
-    // Delete Ticket
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteTicket(@PathVariable Long id) {
+    @PutMapping("/{id}/assign")
+    @PreAuthorize("hasRole('RESOLUTION_AGENT')")
+    public ResponseEntity<Void> assignTicket(@PathVariable Long id, @AuthenticationPrincipal PlatformUser agent) {
+        ticketService.assignTicket(id, agent.getId());
+        return ResponseEntity.ok().build();
+    }
 
-        ticketResolutionService.deleteTicket(id);
-        return ResponseEntity.ok("Ticket deleted successfully");
+    @PutMapping("/{id}/resolve")
+    @PreAuthorize("hasRole('RESOLUTION_AGENT')")
+    public ResponseEntity<Void> resolveTicket(
+            @PathVariable Long id, 
+            @AuthenticationPrincipal PlatformUser agent, 
+            @Valid @RequestBody ResolutionDto dto) {
+        ticketService.resolveTicket(id, agent.getId(), dto);
+        return ResponseEntity.ok().build();
+    }
+
+    private TicketResponseDto convertToDto(ResolutionTicket ticket) {
+        return TicketResponseDto.builder()
+                .id(ticket.getId())
+                .priority(ticket.getPriority().name())
+                .ticketStatus(ticket.getTicketStatus().name())
+                .reviewContent(ticket.getInsight().getReview().getContent())
+                .build();
     }
 }

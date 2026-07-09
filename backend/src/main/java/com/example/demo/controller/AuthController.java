@@ -1,42 +1,28 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.PlatformUser;
+import com.example.demo.dto.AuthRequestDto;
+import com.example.demo.dto.AuthResponseDto;
+import com.example.demo.dto.RegisterDto;
 import com.example.demo.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    // Register User
     @PostMapping("/register")
-    public ResponseEntity<PlatformUser> register(
-            @RequestBody PlatformUser user) {
-
-        return ResponseEntity.ok(authService.register(user));
+    public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterDto request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 
-    // Login User
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(
-            @RequestBody PlatformUser user) {
-
-        String token = authService.login(
-                user.getUsername(),
-                user.getPassword());
-
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
