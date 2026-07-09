@@ -1,57 +1,105 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.PlatformUser;
+import com.example.demo.entity.ResolutionTicket;
 import com.example.demo.entity.TrackedProduct;
+import com.example.demo.repository.PlatformUserRepository;
+import com.example.demo.repository.ResolutionTicketRepository;
+import com.example.demo.repository.SentimentInsightRepository;
 import com.example.demo.repository.TrackedProductRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.demo.dto.ProductCreationDto;
+import com.example.demo.dto.ProductSummaryDto;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.BusinessValidationException;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductManagementService {
 
-    @Autowired
-    private TrackedProductRepository trackedProductRepository;
+    private final TrackedProductRepository productRepository;
+    private final PlatformUserRepository userRepository;
+    private final ResolutionTicketRepository ticketRepository;
+    private final SentimentInsightRepository insightRepository;
 
-    // Create Product
-    public TrackedProduct createProduct(TrackedProduct product) {
-        return trackedProductRepository.save(product);
+    @Transactional
+    public TrackedProduct createProduct(Long ownerId, ProductCreationDto dto) {
+        PlatformUser owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with ID: " + ownerId));
+
+        TrackedProduct product = TrackedProduct.builder()
+                .name(dto.getName())
+                .category(dto.getCategory())
+                .totalReviews(0)
+                .averageSentiment(0.0)
+                .owner(owner)
+                .build();
+
+        return productRepository.save(product);
     }
 
-    // Get All Products
+    @Transactional(readOnly = true)
+    public List<TrackedProduct> getProductsByOwner(Long ownerId) {
+        return productRepository.findByOwnerId(ownerId);
+    }
+
+    @Transactional(readOnly = true)
     public List<TrackedProduct> getAllProducts() {
-        return trackedProductRepository.findAll();
+        return productRepository.findAll();
     }
 
-    // Get Product By Id
-    public TrackedProduct getProductById(Long id) {
-        return trackedProductRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Product not found with id: " + id));
+    @Transactional(readOnly = true)
+    public TrackedProduct getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
     }
 
-    // Update Product
-    public TrackedProduct updateProduct(Long id, TrackedProduct product) {
+    @Transactional(readOnly = true)
+    public ProductSummaryDto getProductSummary(Long productId) {
+        TrackedProduct product = getProductById(productId);
+        
+        // Count open tickets linked to this product's reviews
+        List<ResolutionTicket> openTickets = ticketRepository
+                .findByInsightReviewProductIdAndTicketStatus(productId, ResolutionTicket.TicketStatus.OPEN);
 
-        TrackedProduct existingProduct = trackedProductRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Product not found with id: " + id));
-
-        existingProduct.setName(product.getName());
-        existingProduct.setCategory(product.getCategory());
-        existingProduct.setBrand(product.getBrand());
-
-        return trackedProductRepository.save(existingProduct);
+        return ProductSummaryDto.builder()
+                .productId(product.getId())
+                .name(product.getName())
+                .category(product.getCategory())
+                .totalReviews(product.getTotalReviews())
+                .averageSentiment(product.getAverageSentiment())
+                .openTicketsCount(openTickets.size())
+                .build();
     }
 
-    // Delete Product
-    public void deleteProduct(Long id) {
+    @Transactional
+    public TrackedProduct updateProduct(Long productId, ProductCreationDto dto, PlatformUser user) {
+        TrackedProduct product = getProductById(productId);
 
-        if (!trackedProductRepository.existsById(id)) {
-            throw new EntityNotFoundException("Product not found with id: " + id);
+        // Security check: must be owner or platform admin
+        if (!product.getOwner().getId().equals(user.getId()) && !user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN)) {
+            throw new BusinessValidationException("You do not have permission to update this product.");
         }
 
-        trackedProductRepository.deleteById(id);
+        product.setName(dto.getName());
+        product.setCategory(dto.getCategory());
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId, PlatformUser user) {
+        TrackedProduct product = getProductById(productId);
+
+        // Admin bypasses ownership checks
+        if (!user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN) && !product.getOwner().getId().equals(user.getId())) {
+            throw new BusinessValidationException("You do not have permission to delete this product.");
+        }
+
+        productRepository.delete(product);
     }
 }

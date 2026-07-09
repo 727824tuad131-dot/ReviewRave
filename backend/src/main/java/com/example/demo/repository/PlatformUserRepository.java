@@ -8,12 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface PlatformUserRepository extends JpaRepository<PlatformUser, Long> {
-
-    Optional<PlatformUser> findByUsername(String username);
-
+    
+    /**
+     * Fetches user details by email.
+     */
     Optional<PlatformUser> findByEmail(String email);
-
-    boolean existsByUsername(String username);
-
-    boolean existsByEmail(String email);
 }

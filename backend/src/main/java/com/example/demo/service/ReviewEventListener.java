@@ -1,27 +1,27 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.CustomerReview;
+import com.example.demo.event.ReviewIngestedEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class ReviewEventListener {
 
-    @EventListener
-    public void handleReviewCreated(CustomerReview review) {
-        System.out.println("Review Created Successfully");
-        System.out.println("Review ID: " + review.getId());
-    }
+    private final SentimentAnalysisService sentimentAnalysisService;
 
+    @Async
     @EventListener
-    public void handleReviewUpdated(CustomerReview review) {
-        System.out.println("Review Updated Successfully");
-        System.out.println("Review ID: " + review.getId());
-    }
-
-    @EventListener
-    public void handleReviewDeleted(CustomerReview review) {
-        System.out.println("Review Deleted Successfully");
-        System.out.println("Review ID: " + review.getId());
+    public void handleReviewIngested(ReviewIngestedEvent event) {
+        log.info("Asynchronously captured ReviewIngestedEvent event for Review ID: {}", event.getReviewId());
+        try {
+            sentimentAnalysisService.processReview(event.getReviewId());
+        } catch (Exception e) {
+            log.error("Asynchronous pipeline failure executing processing workflow context on target layout", e);
+        }
     }
 }

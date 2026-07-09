@@ -1,28 +1,39 @@
 package com.example.demo.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.example.demo.entity.CustomerReview;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+/**
+ * Built using explicit custom constructors, getters, and setters.
+ */
 public class ReviewIngestDto {
 
     @NotNull(message = "Product ID is required")
     private Long productId;
 
+    @NotNull(message = "Source platform is required")
+    private CustomerReview.SourcePlatform sourcePlatform;
+
     @NotBlank(message = "Review content is required")
-    @Size(min = 10, max = 1000, message = "Review must be between 10 and 1000 characters")
     private String content;
 
-    @NotNull(message = "Rating is required")
-    @Min(value = 1, message = "Rating must be at least 1")
-    @Max(value = 5, message = "Rating must not exceed 5")
-    private Integer rating;
+    // Constructors
+    public ReviewIngestDto() {}
+
+    public ReviewIngestDto(Long productId, CustomerReview.SourcePlatform sourcePlatform, String content) {
+        this.productId = productId;
+        this.sourcePlatform = sourcePlatform;
+        this.content = content;
+    }
+
+    // Getters and Setters
+    public Long getProductId() { return productId; }
+    public void setProductId(Long productId) { this.productId = productId; }
+
+    public CustomerReview.SourcePlatform getSourcePlatform() { return sourcePlatform; }
+    public void setSourcePlatform(CustomerReview.SourcePlatform sourcePlatform) { this.sourcePlatform = sourcePlatform; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 }
