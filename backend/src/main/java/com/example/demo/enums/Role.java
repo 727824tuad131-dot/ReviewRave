@@ -1,7 +1,6 @@
-package com.example.demo.entity;
+package com.example.demo.enums;
 
 public enum Role {
-    PLATFORM_ADMIN,
     BRAND_MANAGER,
-    RESOLUTION_AGENT;
+    ASSOCIATE
 }
