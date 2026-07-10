@@ -33,12 +33,10 @@ public class AuthService {
             parsedRole = PlatformUser.Role.BRAND_MANAGER; // Default fallback safety assignment
         }
 
+        // Ensured all standard profile payload properties match your PlatformUser entity structural fields
         PlatformUser newUser = PlatformUser.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .companyName(request.getCompanyName())
                 .role(parsedRole)
                 .isActive(true)
                 .build();
