@@ -27,6 +27,5 @@ public class RegisterDto {
 
     private String companyName;
 
-    // Absolute canonical path directly to the nested enum
-    private com.example.demo.entity.PlatformUser.Role role; 
+    private String role; // Decoupled to String
 }

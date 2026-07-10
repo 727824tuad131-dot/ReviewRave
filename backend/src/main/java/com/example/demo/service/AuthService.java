@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.PlatformUser;
 import com.example.demo.repository.PlatformUserRepository;
-import com.example.demo.security.JwtService; // Add this exact missing import
+import com.example.demo.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,13 +26,20 @@ public class AuthService {
             throw new BusinessValidationException("Username/Email is already taken.");
         }
 
+        PlatformUser.Role parsedRole;
+        try {
+            parsedRole = PlatformUser.Role.valueOf(request.getRole().toUpperCase());
+        } catch (Exception e) {
+            parsedRole = PlatformUser.Role.BRAND_MANAGER; // Default fallback safety assignment
+        }
+
         PlatformUser newUser = PlatformUser.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .companyName(request.getCompanyName())
-                .role(request.getRole())
+                .role(parsedRole)
                 .isActive(true)
                 .build();
 

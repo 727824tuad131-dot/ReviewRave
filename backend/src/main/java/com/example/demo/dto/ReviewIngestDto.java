@@ -8,15 +8,15 @@ public class ReviewIngestDto {
     @NotNull(message = "Product ID is required")
     private Long productId;
 
-    @NotNull(message = "Source platform is required")
-    private com.example.demo.entity.CustomerReview.SourcePlatform sourcePlatform;
+    @NotBlank(message = "Source platform is required")
+    private String sourcePlatform; // Decoupled to String
 
     @NotBlank(message = "Review content is required")
     private String content;
 
     public ReviewIngestDto() {}
 
-    public ReviewIngestDto(Long productId, com.example.demo.entity.CustomerReview.SourcePlatform sourcePlatform, String content) {
+    public ReviewIngestDto(Long productId, String sourcePlatform, String content) {
         this.productId = productId;
         this.sourcePlatform = sourcePlatform;
         this.content = content;
@@ -25,8 +25,8 @@ public class ReviewIngestDto {
     public Long getProductId() { return productId; }
     public void setProductId(Long productId) { this.productId = productId; }
 
-    public com.example.demo.entity.CustomerReview.SourcePlatform getSourcePlatform() { return sourcePlatform; }
-    public void setSourcePlatform(com.example.demo.entity.CustomerReview.SourcePlatform sourcePlatform) { this.sourcePlatform = sourcePlatform; }
+    public String getSourcePlatform() { return sourcePlatform; }
+    public void setSourcePlatform(String sourcePlatform) { this.sourcePlatform = sourcePlatform; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
