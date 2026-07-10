@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.PlatformUser.Role; // Direct inner enum import
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -28,5 +27,6 @@ public class RegisterDto {
 
     private String companyName;
 
-    private Role role; 
+    // Absolute canonical path directly to the nested enum
+    private com.example.demo.entity.PlatformUser.Role role; 
 }
