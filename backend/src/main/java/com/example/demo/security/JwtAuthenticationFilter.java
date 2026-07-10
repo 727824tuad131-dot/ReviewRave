@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.entity.PlatformUser;
 import com.example.demo.repository.PlatformUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,9 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUsername(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Lazy load the full user object context directly from repository mapping
-            UserDetails userDetails = this.userRepository.findByEmail(userEmail)
+            // Explicitly pull the platform user entity typing
+            PlatformUser platformUser = this.userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UsernameNotFoundException("Security context execution revoked. Profile identity missing."));
+
+            // Treat it safely as UserDetails interface type
+            UserDetails userDetails = platformUser;
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
