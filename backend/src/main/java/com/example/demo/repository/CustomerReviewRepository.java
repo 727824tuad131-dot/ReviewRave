@@ -8,7 +8,6 @@ import java.util.List;
 @Repository
 public interface CustomerReviewRepository extends JpaRepository<CustomerReview, Long> {
     
-    // Explicitly reference CustomerReview.ProcessingStatus
     List<CustomerReview> findByProductIdAndProcessingStatus(Long productId, com.example.demo.entity.CustomerReview.ProcessingStatus status);
     
     boolean existsByProductIdAndContent(Long productId, String content);
