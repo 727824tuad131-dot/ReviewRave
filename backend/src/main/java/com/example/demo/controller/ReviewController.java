@@ -19,23 +19,36 @@ public class ReviewController {
 
     private final ReviewIngestionService reviewService;
 
+
     @PostMapping("/ingest")
-    @PreAuthorize("hasRole('PLATFORM_ADMIN') or hasRole('BRAND_MANAGER')")
-    public ResponseEntity<Void> ingestReview(@Valid @RequestBody ReviewIngestDto dto) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('BRAND_MANAGER')")
+    public ResponseEntity<Void> ingestReview(
+            @Valid @RequestBody ReviewIngestDto dto) {
+
         reviewService.ingestReview(dto);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+
     @GetMapping("/product/{productId}")
-    @PreAuthorize("hasRole('BRAND_MANAGER') or hasRole('PLATFORM_ADMIN')")
-    public ResponseEntity<List<CustomerReview>> getProductReviews(@PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getReviewsForProduct(productId));
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('BRAND_MANAGER')")
+    public ResponseEntity<List<CustomerReview>> getProductReviews(
+            @PathVariable Long productId) {
+
+        return ResponseEntity.ok(
+                reviewService.getReviewsForProduct(productId)
+        );
     }
 
+
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('BRAND_MANAGER') or hasRole('PLATFORM_ADMIN')")
-    public ResponseEntity<String> deleteReview(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteReview(
+            @PathVariable Long id) {
+
         reviewService.deleteReview(id);
-        return ResponseEntity.ok("Review removed successfully.");
+
+        return ResponseEntity.ok("Review deleted successfully.");
     }
 }
