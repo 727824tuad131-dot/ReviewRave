@@ -1,14 +1,20 @@
 package com.example.demo.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductSummaryDto {
-    private Long productId; // Fixes: productId() builder method target
+
+    private Long productId;
     private String name;
+    private String category;
     private Integer totalReviews;
     private Double averageSentiment;
+    private Integer openTicketsCount;
 }
