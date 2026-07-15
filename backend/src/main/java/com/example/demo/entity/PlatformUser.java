@@ -15,6 +15,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "platform_users")
 public class PlatformUser implements UserDetails {
 
+    public enum Role {
+        USER,
+        BRAND_MANAGER,
+        PLATFORM_ADMIN
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,17 +36,21 @@ public class PlatformUser implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
+    private Boolean isActive = true;
 
     public PlatformUser() {
     }
 
-    public PlatformUser(Long id, String username, String password, String email, String role) {
+    public PlatformUser(Long id, String username, String password, String email, Role role, Boolean isActive) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.isActive = isActive;
     }
 
     public Long getId() {
@@ -77,17 +87,25 @@ public class PlatformUser implements UserDetails {
         this.email = email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -107,11 +125,6 @@ public class PlatformUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
-    }
-
-    // Optional helper for compatibility with your project
-    public Boolean getIsActive() {
-        return true;
+        return Boolean.TRUE.equals(isActive);
     }
 }

@@ -44,21 +44,29 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        if (request.getRole() == null || request.getRole().isBlank()) {
-            user.setRole("USER");
-        } else {
-            user.setRole(request.getRole().toUpperCase());
+        PlatformUser.Role role = PlatformUser.Role.USER;
+
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            try {
+                role = PlatformUser.Role.valueOf(request.getRole().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                role = PlatformUser.Role.USER;
+            }
         }
+
+        user.setRole(role);
+        user.setIsActive(true);
 
         PlatformUser savedUser = repository.save(user);
 
         String token = jwtService.generateToken(savedUser);
 
-        return new AuthResponseDto(
-                token,
-                savedUser.getRole(),
-                savedUser.getId()
-        );
+        AuthResponseDto response = new AuthResponseDto();
+        response.setToken(token);
+        response.setRole(savedUser.getRole().name());
+        response.setUserId(savedUser.getId());
+
+        return response;
     }
 
     public AuthResponseDto login(AuthRequestDto request) {
@@ -66,19 +74,25 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword())
+                        request.getPassword()
+                )
         );
 
         PlatformUser user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found"));
 
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new BusinessValidationException("User account is disabled.");
+        }
+
         String token = jwtService.generateToken(user);
 
-        return new AuthResponseDto(
-                token,
-                user.getRole(),
-                user.getId()
-        );
+        AuthResponseDto response = new AuthResponseDto();
+        response.setToken(token);
+        response.setRole(user.getRole().name());
+        response.setUserId(user.getId());
+
+        return response;
     }
 }
