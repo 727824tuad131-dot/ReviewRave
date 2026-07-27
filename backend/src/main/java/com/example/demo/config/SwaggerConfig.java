@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -12,25 +12,20 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI openAPI() {
 
-        final String securitySchemeName = "bearerAuth";
+        final String scheme = "Bearer Authentication";
 
         return new OpenAPI()
                 .info(new Info()
                         .title("Customer Review Analysis API")
-                        .version("1.0")
-                        .description("Backend API Documentation"))
-                .addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemeName))
+                        .version("1.0"))
+                .addSecurityItem(new SecurityRequirement().addList(scheme))
                 .components(new Components()
-                        .addSecuritySchemes(
-                                securitySchemeName,
+                        .addSecuritySchemes(scheme,
                                 new SecurityScheme()
-                                        .name(securitySchemeName)
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT")
-                        ));
+                                        .bearerFormat("JWT")));
     }
 }
