@@ -15,35 +15,46 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
+
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", ex.getMessage());
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMap);
     }
 
     @ExceptionHandler(BusinessValidationException.class)
     public ResponseEntity<Map<String, String>> handleValidation(BusinessValidationException ex) {
+
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", ex.getMessage());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+
         Map<String, String> errors = new HashMap<>();
-        
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
+
+        // Print complete exception in console
+        ex.printStackTrace();
+
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("message", "An unexpected error occurred on the server. Please try again later.");
+        errorMap.put("exception", ex.getClass().getName());
+        errorMap.put("message", ex.getMessage());
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMap);
     }
 }
