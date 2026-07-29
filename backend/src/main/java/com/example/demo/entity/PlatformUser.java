@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class PlatformUser implements UserDetails {
 
     public enum Role {
-        USER,
+        USER, 
         BRAND_MANAGER,
         PLATFORM_ADMIN
     }
