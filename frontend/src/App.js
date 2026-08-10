@@ -31,7 +31,7 @@ const App = () => {
   return (
     <div>
       <h1>App</h1>
-      <App />
+      <App1 />
     </div>
   );
 };
