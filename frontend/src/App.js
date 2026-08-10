@@ -28,8 +28,11 @@ import React from 'react'
 
 const App = () => {
   return (
-    <div>App</div>
-  )
-}
+    <div>
+      <h1>App</h1>
+      <App />
+    </div>
+  );
+};
 
 export default App
