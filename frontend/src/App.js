@@ -24,7 +24,8 @@
 
 // export default App;
 
-import React from 'react'
+import React from 'react';
+import App1 from './App1';
 
 const App = () => {
   return (
@@ -35,4 +36,4 @@ const App = () => {
   );
 };
 
-export default App
+export default App;
