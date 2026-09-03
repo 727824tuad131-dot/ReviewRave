@@ -66,69 +66,181 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
 
-        <div className="auth-logo">
+      {/* Left Branding Section */}
+      <div className="auth-brand-section">
+        <div className="brand-content">
+
+          <div className="brand-icon">
+            RR
+          </div>
+
           <h1>ReviewRave</h1>
-          <p>Social Sentiment Analysis Tool</p>
+
+          <p className="brand-tagline">
+            Social Sentiment Analysis Tool
+          </p>
+
+          <div className="brand-description">
+            <p>
+              Understand what your customers are saying,
+              track sentiment, and turn feedback into action.
+            </p>
+          </div>
+
+          <div className="brand-features">
+            <div className="feature-item">
+              <span className="feature-icon">📊</span>
+              <div>
+                <strong>Smart Analytics</strong>
+                <small>Track customer sentiment</small>
+              </div>
+            </div>
+
+            <div className="feature-item">
+              <span className="feature-icon">💬</span>
+              <div>
+                <strong>Review Monitoring</strong>
+                <small>Monitor customer feedback</small>
+              </div>
+            </div>
+
+            <div className="feature-item">
+              <span className="feature-icon">⚡</span>
+              <div>
+                <strong>Quick Resolution</strong>
+                <small>Resolve issues efficiently</small>
+              </div>
+            </div>
+          </div>
+
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit}>
+      {/* Right Login Section */}
+      <div className="auth-form-section">
 
-          <div className="form-group">
-            <label htmlFor="email">
-              Email
-            </label>
+        <div className="auth-card">
 
-            <input
-              id="email"
-              type="email"
-              placeholder="agent@reviewrave.com"
-              value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-              required
-            />
+          <div className="auth-header">
+
+            <div className="mobile-logo">
+              <div className="brand-icon">
+                RR
+              </div>
+            </div>
+
+            <h2>Welcome Back</h2>
+
+            <p>
+              Sign in to continue to your ReviewRave account
+            </p>
+
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">
-              Password
-            </label>
+          <form onSubmit={handleSubmit}>
 
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              required
-            />
+            {/* Email */}
+            <div className="form-group">
+
+              <label htmlFor="email">
+                Email Address
+              </label>
+
+              <div className="input-wrapper">
+
+                <span className="input-icon">
+                  ✉
+                </span>
+
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="agent@reviewrave.com"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                  required
+                />
+
+              </div>
+
+            </div>
+
+            {/* Password */}
+            <div className="form-group">
+
+              <label htmlFor="password">
+                Password
+              </label>
+
+              <div className="input-wrapper">
+
+                <span className="input-icon">
+                  🔒
+                </span>
+
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  required
+                />
+
+              </div>
+
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              className="primary-btn full-width login-btn"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Authenticating...
+                </>
+              ) : (
+                <>
+                  Login
+                  <span className="btn-arrow">→</span>
+                </>
+              )}
+            </button>
+
+          </form>
+
+          {/* Register */}
+          <div className="auth-footer">
+
+            <span>
+              Don't have an account?
+            </span>{" "}
+
+            <Link to="/register">
+              Register
+            </Link>
+
           </div>
 
-          <button
-            type="submit"
-            className="primary-btn full-width"
-            disabled={loading}
-          >
-            {loading
-              ? "Authenticating..."
-              : "Login"}
-          </button>
+          <div className="auth-security">
+            <span>🔐</span>
+            <span>
+              Your information is securely protected
+            </span>
+          </div>
 
-        </form>
-
-        <div className="auth-footer">
-          Don't have an account?{" "}
-          <Link to="/register">
-            Register
-          </Link>
         </div>
 
       </div>
+
     </div>
   );
 };
