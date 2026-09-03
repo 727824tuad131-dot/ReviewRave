@@ -10,8 +10,6 @@ import ProductForm from "./ProductForm";
 
 import { addNotification } from "../store/slices/notificationSlice";
 
-import "./ProductList.css";
-
 const ProductList = () => {
   const dispatch = useDispatch();
 
@@ -98,6 +96,7 @@ const ProductList = () => {
       {error && (
         <div className="products-error">
           <span className="error-icon">!</span>
+
           <div>
             <strong>Unable to load products</strong>
             <p>{error}</p>
@@ -111,6 +110,7 @@ const ProductList = () => {
         {/* Empty State */}
         {!loading && items.length === 0 && (
           <div className="products-empty-state">
+
             <div className="empty-product-icon">
               ▣
             </div>
@@ -133,6 +133,7 @@ const ProductList = () => {
                 + Add Your First Product
               </button>
             )}
+
           </div>
         )}
 
@@ -154,6 +155,7 @@ const ProductList = () => {
               <div className="product-card-header">
 
                 <div className="product-name-wrapper">
+
                   <div className="product-icon">
                     {product.name
                       ? product.name.charAt(0).toUpperCase()
@@ -167,6 +169,7 @@ const ProductList = () => {
                       Product #{product.id}
                     </span>
                   </div>
+
                 </div>
 
                 <span className="category-badge">
@@ -202,6 +205,7 @@ const ProductList = () => {
               <div className="product-stats">
 
                 <div className="product-stat-box">
+
                   <span className="stat-symbol">
                     ◉
                   </span>
@@ -213,9 +217,11 @@ const ProductList = () => {
                       {product.totalReviews ?? 0}
                     </strong>
                   </div>
+
                 </div>
 
                 <div className="product-stat-box">
+
                   <span className="stat-symbol">
                     ★
                   </span>
@@ -231,6 +237,7 @@ const ProductList = () => {
                         : "Negative"}
                     </strong>
                   </div>
+
                 </div>
 
               </div>
