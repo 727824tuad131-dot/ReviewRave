@@ -1,23 +1,17 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  useDispatch,
-  useSelector
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   fetchAgentTickets,
   assignTicket,
-  resolveTicket
+  resolveTicket,
 } from "../store/slices/ticketSlice";
 
 import EmptyState from "./EmptyState";
 
 import {
-  addNotification
+  addNotification,
 } from "../store/slices/notificationSlice";
 
 const TicketList = () => {
@@ -26,24 +20,22 @@ const TicketList = () => {
   const {
     items,
     loading,
-    error
-  } = useSelector(
-    (state) => state.tickets
-  );
+    error,
+  } = useSelector((state) => state.tickets);
 
   const [
     isResolveModalOpen,
-    setIsResolveModalOpen
+    setIsResolveModalOpen,
   ] = useState(false);
 
   const [
     selectedTicket,
-    setSelectedTicket
+    setSelectedTicket,
   ] = useState(null);
 
   const [
     resolutionNotes,
-    setResolutionNotes
+    setResolutionNotes,
   ] = useState("");
 
   useEffect(() => {
@@ -51,20 +43,15 @@ const TicketList = () => {
   }, [dispatch]);
 
   const handleAssign = async (id) => {
-    const result = await dispatch(
-      assignTicket(id)
-    );
+    const result = await dispatch(assignTicket(id));
 
-    if (
-      result.meta.requestStatus === "fulfilled"
-    ) {
+    if (result.meta.requestStatus === "fulfilled") {
       dispatch(fetchAgentTickets());
 
       dispatch(
         addNotification({
-          message:
-            "Ticket assigned successfully",
-          type: "success"
+          message: "Ticket assigned successfully",
+          type: "success",
         })
       );
     }
@@ -82,9 +69,8 @@ const TicketList = () => {
     if (!resolutionNotes.trim()) {
       dispatch(
         addNotification({
-          message:
-            "Resolution notes are required",
-          type: "warning"
+          message: "Resolution notes are required",
+          type: "warning",
         })
       );
 
@@ -95,15 +81,12 @@ const TicketList = () => {
       resolveTicket({
         id: selectedTicket.id,
         data: {
-          resolutionNotes:
-            resolutionNotes.trim()
-        }
+          resolutionNotes: resolutionNotes.trim(),
+        },
       })
     );
 
-    if (
-      result.meta.requestStatus === "fulfilled"
-    ) {
+    if (result.meta.requestStatus === "fulfilled") {
       setIsResolveModalOpen(false);
       setSelectedTicket(null);
       setResolutionNotes("");
@@ -112,55 +95,57 @@ const TicketList = () => {
 
       dispatch(
         addNotification({
-          message:
-            "Ticket resolved successfully",
-          type: "success"
+          message: "Ticket resolved successfully",
+          type: "success",
         })
       );
     }
   };
 
   return (
-    <section className="page-container">
+    <section className="ticket-page">
 
-      <div className="page-header">
-
+      {/* Page Header */}
+      <div className="ticket-page-header">
         <div>
-          <h1>
-            Resolution Center
-          </h1>
+          <span className="page-eyebrow">
+            SUPPORT MANAGEMENT
+          </span>
+
+          <h1>Resolution Center</h1>
 
           <p>
-            Manage support tickets
+            Manage support tickets and resolve customer issues.
           </p>
         </div>
 
+        <div className="ticket-header-icon">
+          🎫
+        </div>
       </div>
 
+      {/* Loading */}
       {loading && (
-        <div className="loading">
-          Loading tickets...
+        <div className="ticket-loading">
+          <div className="loading-spinner"></div>
+          <span>Loading tickets...</span>
         </div>
       )}
 
+      {/* Error */}
       {error && (
-        <div className="error-message">
+        <div className="error-message ticket-error">
           {error}
         </div>
       )}
 
+      {/* Tickets */}
       {!loading && items.length === 0 ? (
-
-        <EmptyState
-          message="No tickets found."
-        />
-
+        <EmptyState message="No tickets found." />
       ) : (
-
         <div className="ticket-list">
 
           {items.map((ticket) => {
-
             const status =
               ticket.ticketStatus ||
               ticket.status;
@@ -178,71 +163,108 @@ const TicketList = () => {
                 key={ticket.id}
               >
 
-                <div className="ticket-header">
+                {/* Ticket Top */}
+                <div className="ticket-card-top">
 
-                  <div>
-                    <h3>
-                      Ticket #{ticket.id}
-                    </h3>
+                  <div className="ticket-id-wrapper">
 
-                    <p>
-                      {ticket.insight?.product
-                        ?.name ||
-                        ticket.productName ||
-                        "Product"}
-                    </p>
+                    <div className="ticket-icon">
+                      #
+                    </div>
+
+                    <div>
+                      <span className="ticket-label">
+                        SUPPORT TICKET
+                      </span>
+
+                      <h3>
+                        Ticket #{ticket.id}
+                      </h3>
+                    </div>
+
                   </div>
 
-                  <span className="status-badge">
+                  <span
+                    className={`status-badge status-${status?.toLowerCase()}`}
+                  >
+                    <span className="status-dot"></span>
                     {status}
                   </span>
 
                 </div>
 
+                {/* Product */}
+                <div className="ticket-product">
+                  <span className="ticket-product-icon">
+                    📦
+                  </span>
+
+                  <div>
+                    <span>Product</span>
+
+                    <strong>
+                      {ticket.insight?.product?.name ||
+                        ticket.productName ||
+                        "Product"}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Details */}
                 <div className="ticket-details">
 
-                  <p>
-                    <strong>
-                      Priority:
-                    </strong>{" "}
-                    {ticket.priority || "NORMAL"}
-                  </p>
+                  <div className="ticket-detail-item">
+                    <span className="detail-label">
+                      Priority
+                    </span>
 
-                  <p>
-                    <strong>
-                      Summary:
-                    </strong>{" "}
-                    {ticket.summary ||
-                      ticket.description ||
-                      "No description"}
-                  </p>
+                    <span
+                      className={`priority-badge priority-${(
+                        ticket.priority || "NORMAL"
+                      ).toLowerCase()}`}
+                    >
+                      {ticket.priority || "NORMAL"}
+                    </span>
+                  </div>
+
+                  <div className="ticket-summary">
+                    <span className="detail-label">
+                      Summary
+                    </span>
+
+                    <p>
+                      {ticket.summary ||
+                        ticket.description ||
+                        "No description"}
+                    </p>
+                  </div>
 
                 </div>
 
+                {/* Actions */}
                 <div className="ticket-actions">
 
                   {isOpen && (
                     <button
+                      className="ticket-assign-btn"
                       onClick={() =>
-                        handleAssign(
-                          ticket.id
-                        )
+                        handleAssign(ticket.id)
                       }
                     >
+                      <span>✓</span>
                       Assign
                     </button>
                   )}
 
                   {isActive && (
                     <button
-                      className="primary-btn"
+                      className="primary-btn ticket-resolve-btn"
                       onClick={() =>
-                        openResolveModal(
-                          ticket
-                        )
+                        openResolveModal(ticket)
                       }
                     >
                       Resolve
+                      <span>→</span>
                     </button>
                   )}
 
@@ -253,43 +275,60 @@ const TicketList = () => {
           })}
 
         </div>
-
       )}
 
+      {/* Resolve Modal */}
       {isResolveModalOpen && (
         <div className="modal-overlay">
 
-          <div className="modal">
+          <div className="modal ticket-resolve-modal">
 
-            <button
-              type="button"
-              className="close-btn"
-              onClick={() =>
-                setIsResolveModalOpen(false)
-              }
-            >
-              ×
-            </button>
+            <div className="resolve-modal-header">
 
-            <h2>
-              Resolve Ticket #
-              {selectedTicket?.id}
-            </h2>
+              <div>
+                <span className="page-eyebrow">
+                  TICKET RESOLUTION
+                </span>
+
+                <h2>
+                  Resolve Ticket #{selectedTicket?.id}
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                className="close-btn"
+                onClick={() =>
+                  setIsResolveModalOpen(false)
+                }
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div className="resolve-modal-info">
+              <span>🎫</span>
+
+              <p>
+                Add resolution notes describing how this
+                customer issue was handled.
+              </p>
+            </div>
 
             <form onSubmit={handleResolve}>
 
               <div className="form-group">
 
-                <label>
+                <label htmlFor="resolution-notes">
                   Resolution Notes
                 </label>
 
                 <textarea
+                  id="resolution-notes"
                   value={resolutionNotes}
                   onChange={(e) =>
-                    setResolutionNotes(
-                      e.target.value
-                    )
+                    setResolutionNotes(e.target.value)
                   }
                   rows="6"
                   placeholder="Enter resolution notes..."
@@ -298,12 +337,26 @@ const TicketList = () => {
 
               </div>
 
-              <button
-                type="submit"
-                className="primary-btn"
-              >
-                Resolve Ticket
-              </button>
+              <div className="resolve-modal-actions">
+
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  onClick={() =>
+                    setIsResolveModalOpen(false)
+                  }
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="primary-btn"
+                >
+                  Resolve Ticket
+                </button>
+
+              </div>
 
             </form>
 

@@ -7,8 +7,10 @@ const EmptyState = ({
     <div className="empty-state">
 
       <div className="empty-icon">
-        ∅
+        <span>∅</span>
       </div>
+
+      <h3>No Results</h3>
 
       <p>
         {message}
