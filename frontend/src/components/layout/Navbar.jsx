@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
 import { logout } from "../../store/slices/authSlice";
 
 const Navbar = () => {
@@ -33,7 +32,9 @@ const Navbar = () => {
   const getInitial = () => {
     if (!email) return "U";
 
-    return email.charAt(0).toUpperCase();
+    return email
+      .charAt(0)
+      .toUpperCase();
   };
 
   const handleLogout = () => {
@@ -61,35 +62,38 @@ const Navbar = () => {
 
   return (
     <header className="navbar">
-
-      {/* ================= LOGO ================= */}
-
+      {/* BRAND */}
       <Link
         to="/"
         className="navbar-brand"
         onClick={closeMobileMenu}
       >
         <div className="brand-logo">
-          <span className="brand-logo-mark">R</span>
+          <span className="brand-logo-mark">
+            R
+          </span>
         </div>
 
         <div className="brand-text">
-          <span className="brand-name">ReviewRave</span>
+          <span className="brand-name">
+            ReviewRave
+          </span>
+
           <span className="brand-tagline">
             Customer Intelligence
           </span>
         </div>
       </Link>
 
-
-      {/* ================= MOBILE BUTTON ================= */}
-
+      {/* MOBILE MENU */}
       <button
         type="button"
         className={`mobile-menu-button ${
           mobileOpen ? "active" : ""
         }`}
-        onClick={() => setMobileOpen(!mobileOpen)}
+        onClick={() =>
+          setMobileOpen(!mobileOpen)
+        }
         aria-label="Toggle navigation"
       >
         <span></span>
@@ -97,147 +101,196 @@ const Navbar = () => {
         <span></span>
       </button>
 
-
-      {/* ================= NAVIGATION ================= */}
-
+      {/* NAVIGATION */}
       <nav
         className={`navbar-content ${
           mobileOpen ? "mobile-open" : ""
         }`}
       >
-
         <div className="navbar-links">
-
-          {/* -------- BRAND MANAGER -------- */}
-
+          {/* BRAND MANAGER */}
           {role === "BRAND_MANAGER" && (
             <>
               <Link
                 to="/products"
                 className={`nav-link ${
-                  isActive("/products") ? "active" : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">▦</span>
-                <span>My Products</span>
-              </Link>
-
-              <Link
-                to="/insights"
-                className={`nav-link ${
-                  isActive("/insights") ? "active" : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">◔</span>
-                <span>Insights</span>
-              </Link>
-
-              <Link
-                to="/reviews"
-                className={`nav-link ${
-                  isActive("/reviews") ? "active" : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">✦</span>
-                <span>Submit Review</span>
-              </Link>
-            </>
-          )}
-
-
-          {/* -------- RESOLUTION AGENT -------- */}
-
-          {role === "RESOLUTION_AGENT" && (
-            <>
-              <Link
-                to="/resolution-center"
-                className={`nav-link ${
-                  isActive("/resolution-center")
+                  isActive("/products")
                     ? "active"
                     : ""
                 }`}
                 onClick={closeMobileMenu}
               >
-                <span className="nav-icon">◎</span>
-                <span>Resolution Center</span>
-              </Link>
+                <span className="nav-icon">
+                  ▦
+                </span>
 
-              <Link
-                to="/tasks"
-                className={`nav-link ${
-                  isActive("/tasks") ? "active" : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">✓</span>
-                <span>My Tasks</span>
-              </Link>
-            </>
-          )}
-
-
-          {/* -------- PLATFORM ADMIN -------- */}
-
-          {role === "PLATFORM_ADMIN" && (
-            <>
-              <Link
-                to="/products"
-                className={`nav-link ${
-                  isActive("/products") ? "active" : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">▦</span>
-                <span>Products</span>
+                <span>
+                  My Products
+                </span>
               </Link>
 
               <Link
                 to="/insights"
                 className={`nav-link ${
-                  isActive("/insights") ? "active" : ""
+                  isActive("/insights")
+                    ? "active"
+                    : ""
                 }`}
                 onClick={closeMobileMenu}
               >
-                <span className="nav-icon">◔</span>
-                <span>Insights</span>
+                <span className="nav-icon">
+                  ◔
+                </span>
+
+                <span>
+                  Insights
+                </span>
+              </Link>
+
+              <Link
+                to="/reviews"
+                className={`nav-link ${
+                  isActive("/reviews")
+                    ? "active"
+                    : ""
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">
+                  ✦
+                </span>
+
+                <span>
+                  Submit Review
+                </span>
+              </Link>
+            </>
+          )}
+
+          {/* RESOLUTION AGENT */}
+          {role === "RESOLUTION_AGENT" && (
+            <>
+              <Link
+                to="/resolution-center"
+                className={`nav-link ${
+                  isActive(
+                    "/resolution-center"
+                  )
+                    ? "active"
+                    : ""
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">
+                  ◎
+                </span>
+
+                <span>
+                  Resolution Center
+                </span>
+              </Link>
+
+              <Link
+                to="/tasks"
+                className={`nav-link ${
+                  isActive("/tasks")
+                    ? "active"
+                    : ""
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">
+                  ✓
+                </span>
+
+                <span>
+                  My Tasks
+                </span>
+              </Link>
+            </>
+          )}
+
+          {/* PLATFORM ADMIN */}
+          {role === "PLATFORM_ADMIN" && (
+            <>
+              <Link
+                to="/products"
+                className={`nav-link ${
+                  isActive("/products")
+                    ? "active"
+                    : ""
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">
+                  ▦
+                </span>
+
+                <span>
+                  Products
+                </span>
+              </Link>
+
+              <Link
+                to="/insights"
+                className={`nav-link ${
+                  isActive("/insights")
+                    ? "active"
+                    : ""
+                }`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">
+                  ◔
+                </span>
+
+                <span>
+                  Insights
+                </span>
               </Link>
 
               <Link
                 to="/tickets"
                 className={`nav-link ${
-                  isActive("/tickets") ? "active" : ""
+                  isActive("/tickets")
+                    ? "active"
+                    : ""
                 }`}
                 onClick={closeMobileMenu}
               >
-                <span className="nav-icon">◇</span>
-                <span>Tickets</span>
+                <span className="nav-icon">
+                  ◇
+                </span>
+
+                <span>
+                  Tickets
+                </span>
               </Link>
 
               <Link
                 to="/admin"
                 className={`nav-link ${
-                  isActive("/admin") ? "active" : ""
+                  isActive("/admin")
+                    ? "active"
+                    : ""
                 }`}
                 onClick={closeMobileMenu}
               >
-                <span className="nav-icon">⚙</span>
-                <span>Admin</span>
+                <span className="nav-icon">
+                  ⚙
+                </span>
+
+                <span>
+                  Admin
+                </span>
               </Link>
             </>
           )}
-
         </div>
 
-
-        {/* ================= USER AREA ================= */}
-
+        {/* USER AREA */}
         <div className="navbar-user">
-
           <div className="user-info">
-
             <div className="user-avatar">
               {getInitial()}
             </div>
@@ -248,27 +301,29 @@ const Navbar = () => {
               </span>
 
               <span className="user-email">
-                {email || "reviewrave user"}
+                {email ||
+                  "reviewrave user"}
               </span>
             </div>
-
           </div>
 
-
+          {/* LOGOUT */}
           <button
             type="button"
             className="logout-button"
             onClick={handleLogout}
             title="Logout"
           >
-            <span className="logout-icon">↪</span>
-            <span>Logout</span>
+            <span className="logout-icon">
+              ↪
+            </span>
+
+            <span>
+              Logout
+            </span>
           </button>
-
         </div>
-
       </nav>
-
     </header>
   );
 };
