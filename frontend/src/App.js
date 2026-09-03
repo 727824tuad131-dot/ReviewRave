@@ -24,16 +24,3 @@
 
 // export default App;
 
-import React from 'react';
-import App1 from './App1';
-
-const App = () => {
-  return (
-    <div>
-      <h1>App</h1>
-      <App1 />
-    </div>
-  );
-};
-
-export default App;
