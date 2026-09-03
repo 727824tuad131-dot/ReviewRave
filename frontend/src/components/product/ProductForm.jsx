@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
-
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -11,26 +7,18 @@ import {
   fetchProducts
 } from "../store/slices/productSlice";
 
-import {
-  addNotification
-} from "../store/slices/notificationSlice";
+import { addNotification } from "../store/slices/notificationSlice";
 
-const ProductForm = ({
-  product,
-  onClose
-}) => {
+const ProductForm = ({ product, onClose }) => {
   const dispatch = useDispatch();
 
   const [name, setName] = useState("");
-  const [category, setCategory] =
-    useState("ELECTRONICS");
+  const [category, setCategory] = useState("ELECTRONICS");
 
   useEffect(() => {
     if (product) {
       setName(product.name || "");
-      setCategory(
-        product.category || "ELECTRONICS"
-      );
+      setCategory(product.category || "ELECTRONICS");
     } else {
       setName("");
       setCategory("ELECTRONICS");
@@ -72,9 +60,7 @@ const ProductForm = ({
       );
     }
 
-    if (
-      result.meta.requestStatus === "fulfilled"
-    ) {
+    if (result.meta.requestStatus === "fulfilled") {
       dispatch(fetchProducts());
 
       dispatch(
@@ -93,80 +79,155 @@ const ProductForm = ({
   return (
     <div className="modal-overlay">
 
-      <div className="modal">
+      <div className="product-modal">
 
-        <button
-          type="button"
-          className="close-btn"
-          onClick={onClose}
+        {/* Modal Header */}
+        <div className="product-modal-header">
+
+          <div className="product-modal-title">
+
+            <div className="modal-product-icon">
+              {product ? "✎" : "+"}
+            </div>
+
+            <div>
+              <span className="modal-eyebrow">
+                PRODUCT MANAGEMENT
+              </span>
+
+              <h2>
+                {product
+                  ? "Edit Product"
+                  : "Create Product"}
+              </h2>
+
+              <p>
+                {product
+                  ? "Update the details of your tracked product."
+                  : "Add a new product to start tracking customer sentiment."}
+              </p>
+            </div>
+
+          </div>
+
+          <button
+            type="button"
+            className="close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+        {/* Form */}
+        <form
+          className="product-form"
+          onSubmit={handleSubmit}
         >
-          ×
-        </button>
-
-        <h2>
-          {product
-            ? "Edit Product"
-            : "Create Product"}
-        </h2>
-
-        <form onSubmit={handleSubmit}>
 
           <div className="form-group">
 
             <label htmlFor="name">
               Product Name
+              <span>*</span>
             </label>
 
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
-            />
+            <div className="input-container">
+
+              <span className="input-icon">
+                ▣
+              </span>
+
+              <input
+                id="name"
+                type="text"
+                placeholder="Enter product name"
+                value={name}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
+              />
+
+            </div>
+
+            <small>
+              Enter the name of the product you want to track.
+            </small>
 
           </div>
 
           <div className="form-group">
 
-            <label>
+            <label htmlFor="category">
               Category
+              <span>*</span>
             </label>
 
-            <select
-              value={category}
-              onChange={(e) =>
-                setCategory(e.target.value)
-              }
-            >
-              <option value="ELECTRONICS">
-                ELECTRONICS
-              </option>
+            <div className="select-container">
 
-              <option value="SOFTWARE">
-                SOFTWARE
-              </option>
+              <span className="input-icon">
+                ◈
+              </span>
 
-              <option value="HOSPITALITY">
-                HOSPITALITY
-              </option>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) =>
+                  setCategory(e.target.value)
+                }
+              >
+                <option value="ELECTRONICS">
+                  ELECTRONICS
+                </option>
 
-              <option value="RETAIL">
-                RETAIL
-              </option>
-            </select>
+                <option value="SOFTWARE">
+                  SOFTWARE
+                </option>
+
+                <option value="HOSPITALITY">
+                  HOSPITALITY
+                </option>
+
+                <option value="RETAIL">
+                  RETAIL
+                </option>
+              </select>
+
+            </div>
+
+            <small>
+              Select the category that best describes your product.
+            </small>
 
           </div>
 
-          <button
-            type="submit"
-            className="primary-btn"
-          >
-            {product
-              ? "Update Product"
-              : "Create Product"}
-          </button>
+          {/* Actions */}
+          <div className="product-form-actions">
+
+            <button
+              type="button"
+              className="cancel-product-btn"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="primary-btn product-submit-btn"
+            >
+              <span>
+                {product ? "✓" : "+"}
+              </span>
+
+              {product
+                ? "Update Product"
+                : "Create Product"}
+            </button>
+
+          </div>
 
         </form>
 
