@@ -6,8 +6,8 @@ import {
   Navigate
 } from "react-router-dom";
 
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./Login";
+import Register from "./Register";
 import App1 from "./App1";
 
 const App = () => {
@@ -15,13 +15,13 @@ const App = () => {
     <BrowserRouter>
       <Routes>
 
-        {/* Login */}
+        {/* Login Page */}
         <Route
           path="/login"
           element={<Login />}
         />
 
-        {/* Register */}
+        {/* Register Page */}
         <Route
           path="/register"
           element={<Register />}
@@ -33,7 +33,7 @@ const App = () => {
           element={<App1 />}
         />
 
-        {/* Invalid Route */}
+        {/* Unknown Routes */}
         <Route
           path="*"
           element={
