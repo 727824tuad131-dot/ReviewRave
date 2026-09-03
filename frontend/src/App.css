@@ -375,3 +375,257 @@
     width: 100%;
   }
 }
+/* ================================
+   REVIEW INGEST PAGE
+================================ */
+
+.review-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.page-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  opacity: 0.65;
+}
+
+.review-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.review-header p {
+  margin: 8px 0 0;
+  opacity: 0.65;
+  font-size: 15px;
+}
+
+.review-header-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+/* Main card */
+
+.review-form-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06);
+}
+
+.review-form-intro {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.review-intro-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.review-form-intro h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.review-form-intro p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* Form */
+
+.review-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.review-form-card .form-group {
+  margin-bottom: 22px;
+}
+
+.review-form-card label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 9px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon > span {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input-with-icon select {
+  width: 100%;
+  padding: 13px 14px 13px 44px;
+  border: 1px solid #dfe3ea;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.input-with-icon select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Review textarea */
+
+.review-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-label-row span {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.review-form-card textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 15px;
+  border: 1px solid #dfe3ea;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.review-form-card textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.review-form-card textarea::placeholder {
+  opacity: 0.5;
+}
+
+.review-helper {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+/* Submit */
+
+.review-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.review-submit-btn {
+  min-width: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.review-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.button-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: reviewSpin 0.7s linear infinite;
+}
+
+@keyframes reviewSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+  .review-page {
+    padding: 20px;
+  }
+
+  .review-header {
+    align-items: flex-start;
+  }
+
+  .review-header h1 {
+    font-size: 25px;
+  }
+
+  .review-header-icon {
+    display: none;
+  }
+
+  .review-form-card {
+    padding: 22px;
+  }
+
+  .review-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .review-form-actions {
+    justify-content: stretch;
+  }
+
+  .review-submit-btn {
+    width: 100%;
+  }
+}

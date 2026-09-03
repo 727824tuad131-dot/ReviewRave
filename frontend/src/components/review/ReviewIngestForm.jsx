@@ -1,48 +1,27 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  useDispatch,
-  useSelector
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  fetchProducts
-} from "../store/slices/productSlice";
+import { fetchProducts } from "../store/slices/productSlice";
 
-import {
-  ingestReview
-} from "../store/slices/reviewSlice";
+import { ingestReview } from "../store/slices/reviewSlice";
 
-import {
-  addNotification
-} from "../store/slices/notificationSlice";
+import { addNotification } from "../store/slices/notificationSlice";
 
 const ReviewIngestForm = () => {
   const dispatch = useDispatch();
 
-  const {
-    items: products
-  } = useSelector(
+  const { items: products } = useSelector(
     (state) => state.products
   );
 
-  const {
-    loading
-  } = useSelector(
+  const { loading } = useSelector(
     (state) => state.reviews
   );
 
-  const [productId, setProductId] =
-    useState("");
-
-  const [sourcePlatform, setSourcePlatform] =
-    useState("GOOGLE");
-
-  const [content, setContent] =
-    useState("");
+  const [productId, setProductId] = useState("");
+  const [sourcePlatform, setSourcePlatform] = useState("GOOGLE");
+  const [content, setContent] = useState("");
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -55,7 +34,7 @@ const ReviewIngestForm = () => {
       dispatch(
         addNotification({
           message: "Please select a product",
-          type: "warning"
+          type: "warning",
         })
       );
 
@@ -66,7 +45,7 @@ const ReviewIngestForm = () => {
       dispatch(
         addNotification({
           message: "Review content is required",
-          type: "warning"
+          type: "warning",
         })
       );
 
@@ -77,123 +56,190 @@ const ReviewIngestForm = () => {
       ingestReview({
         productId: Number(productId),
         sourcePlatform,
-        content: content.trim()
+        content: content.trim(),
       })
     );
 
-    if (
-      result.meta.requestStatus === "fulfilled"
-    ) {
+    if (result.meta.requestStatus === "fulfilled") {
       setProductId("");
       setSourcePlatform("GOOGLE");
       setContent("");
 
       dispatch(
         addNotification({
-          message:
-            "Review submitted successfully",
-          type: "success"
+          message: "Review submitted successfully",
+          type: "success",
         })
       );
     }
   };
 
   return (
-    <div className="form-card">
+    <section className="review-page">
 
-      <h2>
-        Submit Customer Review
-      </h2>
+      <div className="review-header">
+        <div>
+          <span className="page-eyebrow">
+            CUSTOMER FEEDBACK
+          </span>
 
-      <form onSubmit={handleSubmit}>
+          <h1>Submit Customer Review</h1>
 
-        <div className="form-group">
-
-          <label>
-            Product
-          </label>
-
-          <select
-            value={productId}
-            onChange={(e) =>
-              setProductId(e.target.value)
-            }
-            required
-          >
-            <option value="">
-              Select Product
-            </option>
-
-            {products.map((product) => (
-              <option
-                key={product.id}
-                value={product.id}
-              >
-                {product.name}
-              </option>
-            ))}
-          </select>
-
+          <p>
+            Add customer feedback from different platforms
+            for sentiment analysis.
+          </p>
         </div>
 
-        <div className="form-group">
+        <div className="review-header-icon">
+          💬
+        </div>
+      </div>
 
-          <label>
-            Source Platform
-          </label>
+      <div className="review-form-card">
 
-          <select
-            value={sourcePlatform}
-            onChange={(e) =>
-              setSourcePlatform(
-                e.target.value
-              )
-            }
-          >
-            <option value="GOOGLE">
-              GOOGLE
-            </option>
+        <div className="review-form-intro">
+          <div className="review-intro-icon">
+            ✦
+          </div>
 
-            <option value="YELP">
-              YELP
-            </option>
-
-            <option value="TWITTER">
-              TWITTER
-            </option>
-          </select>
-
+          <div>
+            <h2>Customer Review</h2>
+            <p>
+              Select a product and tell us what the customer
+              thinks about it.
+            </p>
+          </div>
         </div>
 
-        <div className="form-group">
+        <form onSubmit={handleSubmit}>
 
-          <label>
-            Review
-          </label>
+          <div className="review-form-grid">
 
-          <textarea
-            placeholder="Tell us what you think..."
-            value={content}
-            onChange={(e) =>
-              setContent(e.target.value)
-            }
-            rows="6"
-            required
-          />
+            {/* Product */}
+            <div className="form-group">
+              <label htmlFor="review-product">
+                Product
+              </label>
 
-        </div>
+              <div className="input-with-icon">
+                <span>📦</span>
 
-        <button
-          type="submit"
-          className="primary-btn"
-          disabled={loading}
-        >
-          Submit Review
-        </button>
+                <select
+                  id="review-product"
+                  value={productId}
+                  onChange={(e) =>
+                    setProductId(e.target.value)
+                  }
+                  required
+                >
+                  <option value="">
+                    Select Product
+                  </option>
 
-      </form>
+                  {products.map((product) => (
+                    <option
+                      key={product.id}
+                      value={product.id}
+                    >
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-    </div>
+            {/* Source Platform */}
+            <div className="form-group">
+              <label htmlFor="review-platform">
+                Source Platform
+              </label>
+
+              <div className="input-with-icon">
+                <span>🌐</span>
+
+                <select
+                  id="review-platform"
+                  value={sourcePlatform}
+                  onChange={(e) =>
+                    setSourcePlatform(e.target.value)
+                  }
+                >
+                  <option value="GOOGLE">
+                    GOOGLE
+                  </option>
+
+                  <option value="YELP">
+                    YELP
+                  </option>
+
+                  <option value="TWITTER">
+                    TWITTER
+                  </option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Review */}
+          <div className="form-group review-content-group">
+
+            <div className="review-label-row">
+              <label htmlFor="review-content">
+                Review
+              </label>
+
+              <span>
+                Customer feedback
+              </span>
+            </div>
+
+            <textarea
+              id="review-content"
+              placeholder="Tell us what you think..."
+              value={content}
+              onChange={(e) =>
+                setContent(e.target.value)
+              }
+              rows="6"
+              required
+            />
+
+            <div className="review-helper">
+              Your review will be processed for sentiment
+              analysis.
+            </div>
+
+          </div>
+
+          {/* Submit */}
+          <div className="review-form-actions">
+
+            <button
+              type="submit"
+              className="primary-btn review-submit-btn"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="button-spinner"></span>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  Submit Review
+                  <span>→</span>
+                </>
+              )}
+            </button>
+
+          </div>
+
+        </form>
+      </div>
+
+    </section>
   );
 };
 
