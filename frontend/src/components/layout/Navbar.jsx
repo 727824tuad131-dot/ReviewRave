@@ -1,5 +1,4 @@
 import React from "react";
-import "./Navbar.css";
 
 import {
   Link,
@@ -34,10 +33,8 @@ const Navbar = () => {
     <nav className="navbar">
 
       {/* Brand */}
-      <Link
-        to="/"
-        className="logo"
-      >
+      <Link to="/" className="logo">
+
         <span className="logo-mark">
           RR
         </span>
@@ -45,6 +42,7 @@ const Navbar = () => {
         <span className="logo-text">
           ReviewRave
         </span>
+
       </Link>
 
       {/* Navigation */}
@@ -137,16 +135,19 @@ const Navbar = () => {
           </>
         )}
 
-        {/* User Section */}
+        {/* User */}
         <div className="nav-user">
 
           <div className="user-avatar">
             {user?.firstName
-              ? user.firstName.charAt(0).toUpperCase()
+              ? user.firstName
+                  .charAt(0)
+                  .toUpperCase()
               : "U"}
           </div>
 
           <div className="user-info">
+
             <span className="user-name">
               {user?.firstName || "User"}
             </span>
@@ -156,6 +157,7 @@ const Navbar = () => {
                 ? role.replace(/_/g, " ")
                 : ""}
             </span>
+
           </div>
 
         </div>
