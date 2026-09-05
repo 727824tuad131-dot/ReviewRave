@@ -9,6 +9,8 @@ import {
 
 import { addNotification } from "./store/slices/notificationSlice";
 
+import "./Login.css";
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
