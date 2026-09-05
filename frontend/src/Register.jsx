@@ -1,24 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-import "./Login.css";
-
-import {
-  registerUser,
-  clearError,
-} from "./store/slices/authSlice";
-
-import { addNotification } from "./store/slices/notificationSlice";
-
 
 const Register = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { user, loading, error } = useSelector(
-    (state) => state.auth
-  );
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -30,28 +14,7 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
-
-  useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
-
-
-  useEffect(() => {
-    if (error) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message: error,
-        })
-      );
-
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
-
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,32 +25,124 @@ const Register = () => {
     }));
   };
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(registerUser(formData));
-  };
 
+    setLoading(true);
+
+    /* =========================================
+       GET EXISTING USERS
+    ========================================= */
+
+    const users = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+
+    /* =========================================
+       CHECK EMAIL
+    ========================================= */
+
+    const existingUser = users.find(
+      (user) =>
+        user.email.toLowerCase() ===
+        formData.email.toLowerCase()
+    );
+
+    if (existingUser) {
+      alert(
+        "This email is already registered. Please login."
+      );
+
+      setLoading(false);
+      return;
+    }
+
+    /* =========================================
+       CREATE NEW USER
+    ========================================= */
+
+    const newUser = {
+      userId: Date.now(),
+
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      companyName: formData.companyName,
+
+      email: formData.email,
+      password: formData.password,
+
+      role: formData.role,
+
+      token: "frontend-token-" + Date.now(),
+    };
+
+    /* =========================================
+       SAVE USER
+    ========================================= */
+
+    users.push(newUser);
+
+    localStorage.setItem(
+      "users",
+      JSON.stringify(users)
+    );
+
+    /* =========================================
+       SAVE CURRENT LOGIN
+    ========================================= */
+
+    localStorage.setItem(
+      "token",
+      newUser.token
+    );
+
+    localStorage.setItem(
+      "role",
+      newUser.role
+    );
+
+    localStorage.setItem(
+      "userId",
+      String(newUser.userId)
+    );
+
+    localStorage.setItem(
+      "email",
+      newUser.email
+    );
+
+    /* =========================================
+       GO TO DASHBOARD
+    ========================================= */
+
+    navigate("/");
+  };
 
   return (
     <div className="simple-register-page">
 
       <div className="simple-register-card">
 
+        {/* HEADER */}
+
         <div className="simple-register-header">
-         <h1>Register Account</h1>
+          <h1>Register Account</h1>
         </div>
 
+
+        {/* FORM */}
 
         <form
           className="simple-register-form"
           onSubmit={handleSubmit}
         >
 
-          {/* FIRST NAME + LAST NAME */}
+          {/* FIRST + LAST NAME */}
+
           <div className="simple-name-row">
 
             <div className="simple-form-group">
+
               <label htmlFor="firstName">
                 First Name
               </label>
@@ -102,10 +157,12 @@ const Register = () => {
                 required
                 disabled={loading}
               />
+
             </div>
 
 
             <div className="simple-form-group">
+
               <label htmlFor="lastName">
                 Last Name
               </label>
@@ -120,12 +177,14 @@ const Register = () => {
                 required
                 disabled={loading}
               />
+
             </div>
 
           </div>
 
 
           {/* COMPANY */}
+
           <div className="simple-form-group">
 
             <label htmlFor="companyName">
@@ -147,6 +206,7 @@ const Register = () => {
 
 
           {/* EMAIL */}
+
           <div className="simple-form-group">
 
             <label htmlFor="email">
@@ -162,13 +222,13 @@ const Register = () => {
               placeholder="Enter email address"
               required
               disabled={loading}
-              autoComplete="email"
             />
 
           </div>
 
 
           {/* PASSWORD */}
+
           <div className="simple-form-group">
 
             <label htmlFor="password">
@@ -181,14 +241,17 @@ const Register = () => {
               <input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"}
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter password"
                 minLength={8}
                 required
                 disabled={loading}
-                autoComplete="new-password"
               />
 
 
@@ -199,7 +262,9 @@ const Register = () => {
                   setShowPassword(!showPassword)
                 }
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword
+                  ? "Hide"
+                  : "Show"}
               </button>
 
             </div>
@@ -208,6 +273,7 @@ const Register = () => {
 
 
           {/* ROLE */}
+
           <div className="simple-form-group">
 
             <label htmlFor="role">
@@ -219,7 +285,6 @@ const Register = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              required
               disabled={loading}
             >
 
@@ -241,6 +306,7 @@ const Register = () => {
 
 
           {/* BUTTON */}
+
           <button
             type="submit"
             className="simple-create-button"
@@ -254,7 +320,8 @@ const Register = () => {
         </form>
 
 
-        {/* LOGIN LINK */}
+        {/* LOGIN */}
+
         <div className="simple-login-text">
 
           Already have an account?
@@ -270,6 +337,5 @@ const Register = () => {
     </div>
   );
 };
-
 
 export default Register;
