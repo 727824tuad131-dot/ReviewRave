@@ -1,89 +1,160 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import authService from "../../services/authService";
 
 /* =========================================================
-   LOGIN
-   ========================================================= */
-
-export const login = createAsyncThunk(
-  "auth/login",
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await authService.login(credentials);
-
-      const data = response?.data || response;
-
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      if (data?.role) {
-        localStorage.setItem("role", data.role);
-      }
-
-      if (data?.userId !== undefined && data?.userId !== null) {
-        localStorage.setItem("userId", String(data.userId));
-      }
-
-      if (data?.email) {
-        localStorage.setItem("email", data.email);
-      }
-
-      return data;
-    } catch (error) {
-      return rejectWithValue(
-        error?.response?.data?.message ||
-          error?.response?.data ||
-          error?.message ||
-          "Login failed"
-      );
-    }
-  }
-);
-
-/* =========================================================
-   REGISTER
-   ========================================================= */
+   REGISTER - FRONTEND ONLY
+========================================================= */
 
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await authService.register(userData);
+      // Get existing users
+      const existingUsers = JSON.parse(
+        localStorage.getItem("users") || "[]"
+      );
 
-      const data = response?.data || response;
+      // Check whether email already exists
+      const userExists = existingUsers.find(
+        (user) =>
+          user.email.toLowerCase() ===
+          userData.email.toLowerCase()
+      );
 
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
+      if (userExists) {
+        return rejectWithValue(
+          "This email is already registered. Please login."
+        );
       }
 
-      if (data?.role) {
-        localStorage.setItem("role", data.role);
-      }
+      // Create new user
+      const newUser = {
+        userId: Date.now(),
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        companyName: userData.companyName,
+        email: userData.email,
+        password: userData.password,
+        role: userData.role,
 
-      if (data?.userId !== undefined && data?.userId !== null) {
-        localStorage.setItem("userId", String(data.userId));
-      }
+        // Fake token for frontend-only mode
+        token: "frontend-demo-token-" + Date.now(),
+      };
 
-      if (data?.email) {
-        localStorage.setItem("email", data.email);
-      }
+      // Add user to users list
+      const updatedUsers = [
+        ...existingUsers,
+        newUser,
+      ];
 
-      return data;
+      // Save all users
+      localStorage.setItem(
+        "users",
+        JSON.stringify(updatedUsers)
+      );
+
+      // Save current logged-in user
+      localStorage.setItem(
+        "token",
+        newUser.token
+      );
+
+      localStorage.setItem(
+        "role",
+        newUser.role
+      );
+
+      localStorage.setItem(
+        "userId",
+        String(newUser.userId)
+      );
+
+      localStorage.setItem(
+        "email",
+        newUser.email
+      );
+
+      return newUser;
+
     } catch (error) {
       return rejectWithValue(
-        error?.response?.data?.message ||
-          error?.response?.data ||
-          error?.message ||
-          "Registration failed"
+        "Registration failed"
       );
     }
   }
 );
 
+
+/* =========================================================
+   LOGIN - FRONTEND ONLY
+========================================================= */
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (credentials, { rejectWithValue }) => {
+    try {
+      // Get registered users
+      const users = JSON.parse(
+        localStorage.getItem("users") || "[]"
+      );
+
+      // Find matching user
+      const user = users.find(
+        (item) =>
+          item.email.toLowerCase() ===
+            credentials.email.toLowerCase() &&
+          item.password === credentials.password
+      );
+
+      // If user not found
+      if (!user) {
+        return rejectWithValue(
+          "Invalid email or password"
+        );
+      }
+
+      // Create token if needed
+      const token =
+        user.token ||
+        "frontend-demo-token-" + Date.now();
+
+      // Save login details
+      localStorage.setItem(
+        "token",
+        token
+      );
+
+      localStorage.setItem(
+        "role",
+        user.role
+      );
+
+      localStorage.setItem(
+        "userId",
+        String(user.userId)
+      );
+
+      localStorage.setItem(
+        "email",
+        user.email
+      );
+
+      return {
+        ...user,
+        token,
+      };
+
+    } catch (error) {
+      return rejectWithValue(
+        "Login failed"
+      );
+    }
+  }
+);
+
+
 /* =========================================================
    INITIAL STATE
-   ========================================================= */
+========================================================= */
 
 const initialState = {
   user: null,
@@ -91,15 +162,18 @@ const initialState = {
   error: null,
 };
 
+
 /* =========================================================
-   SLICE
-   ========================================================= */
+   AUTH SLICE
+========================================================= */
 
 const authSlice = createSlice({
   name: "auth",
+
   initialState,
 
   reducers: {
+
     logout: (state) => {
       state.user = null;
       state.loading = false;
@@ -111,13 +185,17 @@ const authSlice = createSlice({
       localStorage.removeItem("email");
     },
 
+
     clearError: (state) => {
       state.error = null;
     },
+
   },
 
+
   extraReducers: (builder) => {
-    /* ---------------- LOGIN ---------------- */
+
+    /* LOGIN */
 
     builder
       .addCase(login.pending, (state) => {
@@ -133,10 +211,12 @@ const authSlice = createSlice({
 
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Login failed";
+        state.error =
+          action.payload || "Login failed";
       });
 
-    /* ---------------- REGISTER ---------------- */
+
+    /* REGISTER */
 
     builder
       .addCase(registerUser.pending, (state) => {
@@ -152,11 +232,19 @@ const authSlice = createSlice({
 
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Registration failed";
+        state.error =
+          action.payload || "Registration failed";
       });
+
   },
+
 });
 
-export const { logout, clearError } = authSlice.actions;
+
+export const {
+  logout,
+  clearError,
+} = authSlice.actions;
+
 
 export default authSlice.reducer;
