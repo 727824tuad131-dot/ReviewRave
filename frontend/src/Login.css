@@ -1,1567 +1,212 @@
-/* =========================================================
-   REVIEWRAVE AUTHENTICATION STYLES
-   Login + Registration
-   ========================================================= */
+/* =========================================
+   LOGIN PAGE
+========================================= */
 
-/* =========================================================
-   GLOBAL
-   ========================================================= */
+.simple-login-page {
+  min-height: 100vh;
 
-* {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f1f3f6;
+
+  padding: 20px;
+
   box-sizing: border-box;
 }
 
-.auth-page {
-  min-height: 100vh;
+
+/* =========================================
+   LOGIN CARD
+========================================= */
+
+.simple-login-card {
   width: 100%;
-
-  display: flex;
-
-  background: #f5f7fb;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-}
-
-
-/* =========================================================
-   REGISTRATION - LEFT BRAND PANEL
-   ========================================================= */
-
-.auth-brand-panel {
-  width: 45%;
-  min-height: 100vh;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-
-  padding: 60px;
-
-  color: #ffffff;
-
-  background:
-    linear-gradient(
-      145deg,
-      #4f46e5 0%,
-      #5b4ee8 45%,
-      #4338ca 100%
-    );
-}
-
-.auth-brand-content {
-  width: 100%;
-  max-width: 520px;
-}
-
-
-/* =========================================================
-   REGISTRATION LOGO
-   ========================================================= */
-
-.auth-logo {
-  display: flex;
-  align-items: center;
-
-  gap: 12px;
-
-  color: #ffffff;
-
-  text-decoration: none;
-
-  margin-bottom: 80px;
-}
-
-.auth-logo-mark {
-  width: 48px;
-  height: 48px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  border-radius: 12px;
-
-  background: #ffffff;
-
-  color: #4f46e5;
-
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.auth-logo-name {
-  display: block;
-
-  font-size: 26px;
-
-  line-height: 1.1;
-
-  font-weight: 800;
-}
-
-.auth-logo-subtitle {
-  display: block;
-
-  margin-top: 3px;
-
-  color: rgba(255, 255, 255, 0.75);
-
-  font-size: 11px;
-
-  letter-spacing: 0.8px;
-}
-
-
-/* =========================================================
-   REGISTRATION HERO
-   ========================================================= */
-
-.auth-hero {
-  margin-bottom: 45px;
-}
-
-.auth-eyebrow {
-  display: inline-block;
-
-  margin-bottom: 17px;
-
-  color: rgba(255, 255, 255, 0.72);
-
-  font-size: 11px;
-
-  font-weight: 800;
-
-  letter-spacing: 1.5px;
-}
-
-.auth-hero h1 {
-  margin: 0 0 20px;
-
-  color: #ffffff;
-
-  font-size: 45px;
-
-  line-height: 1.1;
-
-  font-weight: 800;
-}
-
-.auth-hero h1 span {
-  color: #dfe1ff;
-}
-
-.auth-hero p {
   max-width: 480px;
 
+  background: white;
+
+  padding: 38px 42px;
+
+  border: 1px solid #d9dee5;
+
+  border-radius: 4px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.simple-login-header {
+  text-align: center;
+
+  margin-bottom: 32px;
+}
+
+.simple-login-header h1 {
   margin: 0;
 
-  color: rgba(255, 255, 255, 0.82);
-
-  font-size: 15px;
-
-  line-height: 1.7;
-}
-
-
-/* =========================================================
-   REGISTRATION FEATURES
-   ========================================================= */
-
-.auth-features {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 22px;
-}
-
-.auth-feature {
-  display: flex;
-
-  align-items: center;
-
-  gap: 14px;
-}
-
-.auth-feature .feature-icon {
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-
-  border-radius: 9px;
-
-  background: rgba(255, 255, 255, 0.14);
-
-  color: #ffffff;
-
-  font-size: 15px;
+  font-size: 24px;
 
   font-weight: 700;
+
+  color: #374151;
 }
 
-.auth-feature strong {
+
+/* =========================================
+   FORM
+========================================= */
+
+.simple-login-form {
+  width: 100%;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.simple-login-form-group {
+  margin-bottom: 20px;
+}
+
+.simple-login-form-group label {
   display: block;
 
-  margin-bottom: 3px;
-
-  color: #ffffff;
+  margin-bottom: 8px;
 
   font-size: 14px;
 
-  font-weight: 700;
-}
+  font-weight: 600;
 
-.auth-feature span {
-  display: block;
-
-  color: rgba(255, 255, 255, 0.65);
-
-  font-size: 12px;
+  color: #374151;
 }
 
 
-/* =========================================================
-   REGISTRATION FOOTER
-   ========================================================= */
-
-.auth-brand-footer {
-  position: absolute;
-
-  left: 60px;
-  right: 60px;
-  bottom: 28px;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  color: rgba(255, 255, 255, 0.48);
-
-  font-size: 10px;
-}
-
-
-/* =========================================================
-   RIGHT FORM PANEL
-   ========================================================= */
-
-.auth-form-panel {
-  width: 55%;
-  min-height: 100vh;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 50px;
-}
-
-
-/* =========================================================
-   REGISTER CARD
-   ========================================================= */
-
-.register-card {
-  width: 100%;
-
-  max-width: 590px;
-
-  padding: 40px 45px;
-
-  background: #ffffff;
-
-  border: 1px solid #e7eaf0;
-
-  border-radius: 16px;
-
-  box-shadow:
-    0 15px 40px rgba(15, 23, 42, 0.07),
-    0 2px 8px rgba(15, 23, 42, 0.03);
-}
-
-
-/* =========================================================
-   LOGIN CARD
-   ========================================================= */
-
-.login-card {
-  width: 100%;
-
-  max-width: 440px;
-
-  padding: 40px 42px;
-
-  background: #ffffff;
-
-  border: 1px solid #e7eaf0;
-
-  border-radius: 15px;
-
-  box-shadow:
-    0 15px 40px rgba(15, 23, 42, 0.08),
-    0 2px 8px rgba(15, 23, 42, 0.04);
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-.login-header {
-  text-align: center;
-
-  margin-bottom: 28px;
-}
-
-.mobile-auth-logo {
-  display: none;
-}
-
-.login-welcome {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: #4f46e5;
-
-  font-size: 11px;
-
-  font-weight: 800;
-
-  letter-spacing: 1px;
-
-  text-transform: uppercase;
-}
-
-.login-header h2 {
-  margin: 0 0 9px;
-
-  color: #172033;
-
-  font-size: 28px;
-
-  line-height: 1.2;
-
-  font-weight: 800;
-}
-
-.login-header p {
-  margin: 0;
-
-  color: #7b8497;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   FORM
-   ========================================================= */
-
-.auth-form {
-  width: 100%;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 18px;
-}
-
-.register-form {
-  gap: 17px;
-}
-
-
-/* =========================================================
-   TWO COLUMN FORM ROW
-   ========================================================= */
-
-.form-row {
-  width: 100%;
-
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 17px;
-}
-
-
-/* =========================================================
-   FORM GROUP
-   ========================================================= */
-
-.form-group {
-  width: 100%;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-.form-group label {
-  color: #30394b;
-
-  font-size: 13px;
-
-  font-weight: 700;
-}
-
-.form-group label span {
-  color: #8b93a3;
-
-  font-weight: 500;
-}
-
-
-/* =========================================================
-   INPUT WRAPPER
-   ========================================================= */
-
-.input-wrapper {
-  width: 100%;
-
-  position: relative;
-}
-
-
-/* =========================================================
+/* =========================================
    INPUTS
-   ========================================================= */
+========================================= */
 
-.input-wrapper input {
+.simple-login-form-group input {
   width: 100%;
 
-  height: 47px;
+  height: 44px;
 
   padding: 0 14px;
 
-  border: 1px solid #dce1ea;
+  font-size: 14px;
 
-  border-radius: 8px;
+  color: #374151;
 
-  outline: none;
+  background: white;
 
-  background: #ffffff;
+  border: 1px solid #cfd6df;
 
-  color: #242b38;
-
-  font-size: 13px;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.input-wrapper input::placeholder {
-  color: #a4acb9;
-}
-
-.input-wrapper input:hover {
-  border-color: #c7ceda;
-}
-
-.input-wrapper input:focus {
-  border-color: #5b50e8;
-
-  box-shadow:
-    0 0 0 3px rgba(91, 80, 232, 0.10);
-}
-
-.input-wrapper input:disabled {
-  background: #f8fafc;
-
-  cursor: not-allowed;
-}
-
-
-/* =========================================================
-   INPUT ICONS
-   ========================================================= */
-
-.input-wrapper .input-icon {
-  position: absolute;
-
-  left: 13px;
-
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  z-index: 2;
-
-  color: #8b95a7;
-
-  font-size: 13px;
-
-  pointer-events: none;
-}
-
-
-/* Inputs that contain icons */
-
-.auth-form .input-wrapper:has(.input-icon) input {
-  padding-left: 39px;
-}
-
-
-/* =========================================================
-   SELECT
-   ========================================================= */
-
-.select-wrapper {
-  width: 100%;
-
-  position: relative;
-}
-
-.select-wrapper select {
-  width: 100%;
-
-  height: 47px;
-
-  padding: 0 38px 0 40px;
-
-  border: 1px solid #dce1ea;
-
-  border-radius: 8px;
+  border-radius: 3px;
 
   outline: none;
 
-  background: #ffffff;
+  box-sizing: border-box;
 
-  color: #242b38;
-
-  font-size: 13px;
-
-  cursor: pointer;
-
-  appearance: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s;
 }
 
-.select-wrapper select:focus {
-  border-color: #5b50e8;
-
-  box-shadow:
-    0 0 0 3px rgba(91, 80, 232, 0.10);
+.simple-login-form-group input:focus {
+  border-color: #4f83b3;
 }
 
-.select-arrow {
-  position: absolute;
-
-  right: 14px;
-
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  color: #7b8497;
-
-  font-size: 13px;
-
-  pointer-events: none;
+.simple-login-form-group input::placeholder {
+  color: #9ca3af;
 }
 
 
-/* =========================================================
-   PASSWORD
-   ========================================================= */
+/* =========================================
+   LOGIN BUTTON
+========================================= */
 
-.password-toggle {
-  position: absolute;
+.simple-login-button {
+  width: 100%;
 
-  right: 10px;
+  height: 46px;
 
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  width: 30px;
-  height: 30px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 0;
+  margin-top: 6px;
 
   border: none;
 
-  background: transparent;
+  border-radius: 3px;
 
-  color: #7b8497;
+  background: #4f83b3;
+
+  color: white;
 
   font-size: 15px;
 
-  cursor: pointer;
-}
-
-.password-toggle:hover {
-  color: #4f46e5;
-}
-
-.input-hint {
-  color: #9aa2b1;
-
-  font-size: 10px;
-}
-
-
-/* =========================================================
-   ERROR
-   ========================================================= */
-
-.auth-error {
-  width: 100%;
-
-  padding: 11px 13px;
-
-  border: 1px solid #fecdd3;
-
-  border-radius: 8px;
-
-  background: #fff1f2;
-
-  color: #be123c;
-
-  font-size: 12px;
-
-  line-height: 1.5;
-}
-
-
-/* =========================================================
-   SUBMIT BUTTON
-   ========================================================= */
-
-.auth-submit-button {
-  width: 100%;
-
-  min-height: 48px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 8px;
-
-  margin-top: 3px;
-
-  padding: 0 18px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #5146e5,
-      #675ce9
-    );
-
-  color: #ffffff;
-
-  font-size: 13px;
-
-  font-weight: 750;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.auth-submit-button:hover {
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 8px 18px rgba(79, 70, 229, 0.22);
-}
-
-.auth-submit-button:active {
-  transform: translateY(0);
-}
-
-.auth-submit-button:disabled {
-  opacity: 0.65;
-
-  cursor: not-allowed;
-
-  transform: none;
-
-  box-shadow: none;
-}
-
-.button-arrow {
-  font-size: 17px;
-
-  line-height: 1;
-}
-
-
-/* =========================================================
-   BUTTON SPINNER
-   ========================================================= */
-
-.button-spinner {
-  width: 15px;
-  height: 15px;
-
-  border: 2px solid rgba(255, 255, 255, 0.4);
-
-  border-top-color: #ffffff;
-
-  border-radius: 50%;
-
-  animation: auth-spin 0.7s linear infinite;
-}
-
-@keyframes auth-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-/* =========================================================
-   LOGIN / REGISTER LINK
-   ========================================================= */
-
-.auth-divider {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  margin-top: 23px;
-
-  color: #8a93a3;
-
-  font-size: 12px;
-}
-
-.register-link-button {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 7px;
-
-  margin-top: 7px;
-
-  padding: 8px;
-
-  color: #4f46e5;
-
-  text-decoration: none;
-
-  font-size: 13px;
-
-  font-weight: 700;
-}
-
-.register-link-button:hover {
-  text-decoration: underline;
-}
-
-
-/* =========================================================
-   SECURITY NOTE
-   ========================================================= */
-
-.security-note {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 7px;
-
-  margin-top: 19px;
-
-  padding-top: 16px;
-
-  border-top: 1px solid #edf0f5;
-
-  color: #8b95a7;
-
-  font-size: 10px;
-
-  text-align: center;
-}
-
-.security-icon {
-  color: #4f46e5;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   LOGIN PAGE
-   ========================================================= */
-
-.login-page {
-  width: 100%;
-
-  min-height: 100vh;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 35px 20px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #f8f9fd 0%,
-      #eef1f7 100%
-    );
-}
-
-
-/* Hide registration branding on Login */
-
-.login-page .auth-brand-panel {
-  display: none;
-}
-
-
-/* Full width form area */
-
-.login-page .auth-form-panel {
-  width: 100%;
-
-  min-height: auto;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 0;
-}
-
-
-/* Login card */
-
-.login-page .login-card {
-  max-width: 440px;
-}
-
-
-/* =========================================================
-   LOGIN RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 1000px) {
-
-  .auth-brand-panel {
-    width: 40%;
-
-    padding: 35px;
-  }
-
-  .auth-form-panel {
-    width: 60%;
-
-    padding: 30px;
-  }
-
-  .auth-hero h1 {
-    font-size: 38px;
-  }
-
-  .auth-brand-footer {
-    left: 35px;
-    right: 35px;
-  }
-}
-
-
-@media (max-width: 768px) {
-
-  /* Registration */
-
-  .register-page {
-    display: block;
-  }
-
-  .register-page .auth-brand-panel {
-    width: 100%;
-
-    min-height: auto;
-
-    padding: 35px 25px;
-  }
-
-  .register-page .auth-brand-content {
-    max-width: 650px;
-  }
-
-  .register-page .auth-logo {
-    margin-bottom: 35px;
-  }
-
-  .register-page .auth-hero h1 {
-    font-size: 38px;
-  }
-
-  .register-page .auth-features {
-    display: none;
-  }
-
-  .register-page .auth-brand-footer {
-    display: none;
-  }
-
-  .register-page .auth-form-panel {
-    width: 100%;
-
-    min-height: auto;
-
-    padding: 35px 20px;
-  }
-
-
-  /* Login */
-
-  .login-page {
-    padding: 25px 15px;
-  }
-
-  .login-page .login-card {
-    max-width: 440px;
-  }
-}
-
-
-@media (max-width: 520px) {
-
-  /* Registration */
-
-  .form-row {
-    grid-template-columns: 1fr;
-
-    gap: 17px;
-  }
-
-  .register-card {
-    padding: 30px 22px;
-
-    border-radius: 13px;
-  }
-
-  .auth-brand-panel {
-    padding: 28px 20px;
-  }
-
-  .auth-hero h1 {
-    font-size: 32px;
-  }
-
-  .auth-logo-name {
-    font-size: 23px;
-  }
-
-
-  /* Login */
-
-  .login-page {
-    padding: 15px;
-  }
-
-  .login-page .login-card {
-    padding: 32px 23px;
-
-    border-radius: 13px;
-  }
-
-  .login-page .login-header h2 {
-    font-size: 24px;
-  }
-
-}
-
-/* =========================================
-   SIMPLE REGISTER PAGE
-   ========================================= */
-
-.simple-register-page {
-  min-height: 100vh;
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 40px 20px;
-
-  background: #f4f6f8;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-}
-
-
-/* =========================================
-   REGISTER CARD
-   ========================================= */
-
-.simple-register-card {
-  width: 100%;
-  max-width: 500px;
-
-  padding: 32px 38px;
-
-  background: #ffffff;
-
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-
-/* =========================================
-   HEADER
-   ========================================= */
-
-.simple-register-header {
-  text-align: center;
-
-  margin-bottom: 28px;
-}
-
-.simple-register-header h1 {
-  margin: 0;
-
-  color: #374151;
-
-  font-size: 24px;
-  font-weight: 700;
-}
-
-
-/* =========================================
-   FORM
-   ========================================= */
-
-.simple-register-form {
-  display: flex;
-  flex-direction: column;
-
-  gap: 16px;
-}
-
-
-/* =========================================
-   FIRST + LAST NAME
-   ========================================= */
-
-.simple-name-row {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 12px;
-}
-
-
-/* =========================================
-   FORM GROUP
-   ========================================= */
-
-.simple-form-group {
-  display: flex;
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-.simple-form-group label {
-  color: #4b5563;
-
-  font-size: 12px;
   font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s;
 }
 
-
-/* =========================================
-   INPUTS
-   ========================================= */
-
-.simple-form-group input,
-.simple-form-group select {
-  width: 100%;
-  height: 38px;
-
-  padding: 0 11px;
-
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-
-  background: #ffffff;
-
-  color: #374151;
-
-  font-size: 12px;
-
-  outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+.simple-login-button:hover {
+  background: #3d6f9e;
 }
 
-
-/* Placeholder */
-
-.simple-form-group input::placeholder {
-  color: #9ca3af;
-}
-
-
-/* Focus */
-
-.simple-form-group input:focus,
-.simple-form-group select:focus {
-  border-color: #2563eb;
-
-  box-shadow:
-    0 0 0 2px
-    rgba(37, 99, 235, 0.12);
-}
-
-
-/* Disabled */
-
-.simple-form-group input:disabled,
-.simple-form-group select:disabled {
-  background: #f3f4f6;
+.simple-login-button:disabled {
+  opacity: 0.7;
 
   cursor: not-allowed;
 }
 
 
 /* =========================================
-   PASSWORD
-   ========================================= */
+   REGISTER LINK
+========================================= */
 
-.simple-password-wrapper {
-  position: relative;
-}
+.simple-register-text {
+  margin-top: 28px;
 
-.simple-password-wrapper input {
-  padding-right: 55px;
-}
+  text-align: center;
 
-.simple-password-toggle {
-  position: absolute;
-
-  right: 8px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  border: none;
-
-  background: transparent;
+  font-size: 14px;
 
   color: #6b7280;
-
-  font-size: 11px;
-
-  cursor: pointer;
 }
 
-.simple-password-toggle:hover {
-  color: #2563eb;
-}
+.simple-register-text a {
+  margin-left: 5px;
 
+  color: #3d6f9e;
 
-/* =========================================
-   SELECT
-   ========================================= */
-
-.simple-form-group select {
-  cursor: pointer;
-}
-
-
-/* =========================================
-   CREATE BUTTON
-   ========================================= */
-
-.simple-create-button {
-  width: 100%;
-  height: 40px;
-
-  margin-top: 4px;
-
-  border: none;
-  border-radius: 4px;
-
-  background: #3b82c4;
-
-  color: #ffffff;
-
-  font-size: 12px;
   font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.simple-create-button:hover {
-  background: #2563a8;
-
-  transform: translateY(-1px);
-}
-
-.simple-create-button:disabled {
-  opacity: 0.65;
-
-  cursor: not-allowed;
-
-  transform: none;
-}
-
-
-/* =========================================
-   LOGIN TEXT
-   ========================================= */
-
-.simple-login-text {
-  margin-top: 22px;
-
-  text-align: center;
-
-  color: #9ca3af;
-
-  font-size: 11px;
-}
-
-.simple-login-text a {
-  margin-left: 4px;
-
-  color: #2563eb;
 
   text-decoration: none;
-
-  font-weight: 600;
 }
 
-.simple-login-text a:hover {
+.simple-register-text a:hover {
   text-decoration: underline;
 }
 
 
 /* =========================================
    MOBILE
-   ========================================= */
-
-@media (max-width: 550px) {
-
-  .simple-register-page {
-    padding: 20px 15px;
-  }
-
-  .simple-register-card {
-    padding: 28px 22px;
-  }
-
-  .simple-name-row {
-    grid-template-columns: 1fr;
-  }
-
-}
-/* =========================================
-   REGISTER PAGE
 ========================================= */
 
-.simple-register-page {
-  min-height: 100vh;
-  width: 100%;
+@media (max-width: 600px) {
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 30px 20px;
-  box-sizing: border-box;
-
-  background: #f5f6f8;
-}
-
-
-.simple-register-card {
-  width: 100%;
-  max-width: 480px;
-
-  background: #ffffff;
-
-  padding: 32px 38px;
-
-  border: 1px solid #d9dde2;
-  border-radius: 6px;
-
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-
-  box-sizing: border-box;
-}
-
-
-.simple-register-header {
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-
-.simple-register-header h1 {
-  margin: 0;
-
-  color: #333333;
-
-  font-size: 24px;
-  font-weight: 600;
-}
-
-
-/* FORM */
-
-.simple-register-form {
-  display: flex;
-  flex-direction: column;
-
-  gap: 16px;
-}
-
-
-/* FIRST NAME + LAST NAME */
-
-.simple-name-row {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 14px;
-}
-
-
-/* FORM GROUP */
-
-.simple-form-group {
-  display: flex;
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-
-.simple-form-group label {
-  color: #444444;
-
-  font-size: 12px;
-  font-weight: 600;
-}
-
-
-/* INPUTS */
-
-.simple-form-group input,
-.simple-form-group select {
-  width: 100%;
-  height: 40px;
-
-  padding: 0 12px;
-
-  border: 1px solid #cfd4da;
-  border-radius: 4px;
-
-  background: #ffffff;
-
-  color: #333333;
-
-  font-size: 13px;
-
-  box-sizing: border-box;
-
-  outline: none;
-}
-
-
-.simple-form-group input::placeholder {
-  color: #9ca3af;
-}
-
-
-.simple-form-group input:focus,
-.simple-form-group select:focus {
-  border-color: #4a90c2;
-
-  box-shadow:
-    0 0 0 2px
-    rgba(74, 144, 194, 0.12);
-}
-
-
-/* PASSWORD */
-
-.simple-password-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-
-.simple-password-wrapper input {
-  padding-right: 60px;
-}
-
-
-.simple-password-toggle {
-  position: absolute;
-
-  top: 50%;
-  right: 10px;
-
-  transform: translateY(-50%);
-
-  border: none;
-  background: transparent;
-
-  color: #777777;
-
-  font-size: 12px;
-
-  cursor: pointer;
-}
-
-
-/* CREATE ACCOUNT BUTTON */
-
-.simple-create-button {
-  width: 100%;
-  height: 42px;
-
-  margin-top: 4px;
-
-  border: none;
-  border-radius: 4px;
-
-  background: #4a90c2;
-
-  color: white;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.simple-create-button:hover {
-  background: #357eaf;
-}
-
-
-.simple-create-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-
-/* LOGIN TEXT */
-
-.simple-login-text {
-  margin-top: 22px;
-
-  text-align: center;
-
-  color: #888888;
-
-  font-size: 12px;
-}
-
-
-.simple-login-text a {
-  margin-left: 5px;
-
-  color: #3b82c4;
-
-  font-weight: 600;
-
-  text-decoration: none;
-}
-
-
-.simple-login-text a:hover {
-  text-decoration: underline;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 550px) {
-
-  .simple-register-page {
-    padding: 20px 15px;
+  .simple-login-page {
+    padding: 16px;
   }
 
-  .simple-register-card {
-    padding: 28px 22px;
-  }
-
-  .simple-name-row {
-    grid-template-columns: 1fr;
+  .simple-login-card {
+    padding: 30px 24px;
   }
 
 }

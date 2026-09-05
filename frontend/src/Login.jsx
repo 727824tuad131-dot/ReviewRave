@@ -11,6 +11,7 @@ import { addNotification } from "./store/slices/notificationSlice";
 
 import "./Login.css";
 
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,22 +23,12 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  /* =====================================================
-     LOGIN SUCCESS
-  ===================================================== */
-
   useEffect(() => {
     if (user) {
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);
 
-
-  /* =====================================================
-     LOGIN ERROR
-  ===================================================== */
 
   useEffect(() => {
     if (error) {
@@ -55,10 +46,6 @@ const Login = () => {
     }
   }, [error, dispatch]);
 
-
-  /* =====================================================
-     SUBMIT
-  ===================================================== */
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -84,365 +71,102 @@ const Login = () => {
 
 
   return (
-    <div className="auth-page login-page">
+    <div className="simple-login-page">
 
-      {/* ==================================================
-          LEFT BRAND PANEL
-      ================================================== */}
+      <div className="simple-login-card">
 
-      <section className="auth-brand-panel">
+        {/* HEADING */}
 
-        <div className="auth-brand-content">
-
-          <Link to="/login" className="auth-logo">
-
-            <div className="auth-logo-mark">
-              R
-            </div>
-
-            <div>
-              <span className="auth-logo-name">
-                ReviewRave
-              </span>
-
-              <span className="auth-logo-subtitle">
-                Customer Intelligence
-              </span>
-            </div>
-
-          </Link>
-
-
-          <div className="auth-hero">
-
-            <span className="auth-eyebrow">
-              CUSTOMER INTELLIGENCE PLATFORM
-            </span>
-
-            <h1>
-              Turn customer
-              <span> feedback </span>
-              into action.
-            </h1>
-
-            <p>
-              Monitor reviews, understand customer sentiment,
-              and resolve complaints before they become bigger
-              problems.
-            </p>
-
-          </div>
-
-
-          <div className="auth-features">
-
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ◔
-              </div>
-
-              <div>
-                <strong>
-                  Sentiment insights
-                </strong>
-
-                <span>
-                  Understand how customers really feel.
-                </span>
-              </div>
-
-            </div>
-
-
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ◇
-              </div>
-
-              <div>
-                <strong>
-                  Smart ticket routing
-                </strong>
-
-                <span>
-                  Move actionable complaints to resolution.
-                </span>
-              </div>
-
-            </div>
-
-
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ✓
-              </div>
-
-              <div>
-                <strong>
-                  Track what matters
-                </strong>
-
-                <span>
-                  Keep your customer experience on track.
-                </span>
-              </div>
-
-            </div>
-
-          </div>
-
+        <div className="simple-login-header">
+          <h1>Login to ReviewRave</h1>
         </div>
 
 
-        <div className="auth-brand-footer">
+        {/* LOGIN FORM */}
 
-          <span>
-            © {new Date().getFullYear()} ReviewRave
-          </span>
+        <form
+          className="simple-login-form"
+          onSubmit={handleSubmit}
+        >
 
-          <span>
-            Social Sentiment Analysis
-          </span>
+          {/* EMAIL */}
 
-        </div>
+          <div className="simple-login-form-group">
 
-      </section>
+            <label htmlFor="email">
+              Email Address
+            </label>
 
-
-      {/* ==================================================
-          RIGHT LOGIN PANEL
-      ================================================== */}
-
-      <section className="auth-form-panel">
-
-        <div className="login-card">
-
-          {/* ================= MOBILE LOGO ================= */}
-
-          <div className="login-header">
-
-            <div className="mobile-auth-logo">
-
-              <div className="auth-logo-mark">
-                R
-              </div>
-
-              <div>
-                <span className="auth-logo-name">
-                  ReviewRave
-                </span>
-
-                <span className="auth-logo-subtitle">
-                  Customer Intelligence
-                </span>
-              </div>
-
-            </div>
-
-
-            {/* ================= HEADING ================= */}
-
-            <span className="login-welcome">
-              Welcome back
-            </span>
-
-            <h2>
-              Sign in to your account
-            </h2>
-
-            <p>
-              Enter your credentials to continue to ReviewRave.
-            </p>
-
-          </div>
-
-
-          {/* ==================================================
-              LOGIN FORM
-          ================================================== */}
-
-          <form
-            className="auth-form"
-            onSubmit={handleSubmit}
-          >
-
-            {/* ================= EMAIL ================= */}
-
-            <div className="form-group">
-
-              <label htmlFor="email">
-                Email address
-              </label>
-
-              <div className="input-wrapper">
-
-                <span className="input-icon">
-                  @
-                </span>
-
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                  placeholder="agent@reviewrave.com"
-                  autoComplete="email"
-                  disabled={loading}
-                />
-
-              </div>
-
-            </div>
-
-
-            {/* ================= PASSWORD ================= */}
-
-            <div className="form-group">
-
-              <div className="label-row">
-
-                <label htmlFor="password">
-                  Password
-                </label>
-
-              </div>
-
-
-              <div className="input-wrapper">
-
-                <span className="input-icon">
-                  •
-                </span>
-
-                <input
-                  id="password"
-                  name="password"
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  disabled={loading}
-                />
-
-
-                {/* ================= SHOW PASSWORD ================= */}
-
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
-                  aria-label={
-                    showPassword
-                      ? "Hide password"
-                      : "Show password"
-                  }
-                >
-                  {showPassword ? "◉" : "◌"}
-                </button>
-
-              </div>
-
-            </div>
-
-
-            {/* ==================================================
-                LOGIN BUTTON
-            ================================================== */}
-
-            <button
-              type="submit"
-              className="auth-submit-button"
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="manager@gmail.com"
+              autoComplete="email"
               disabled={loading}
-            >
+              required
+            />
 
-              {loading ? (
-                <>
-                  <span className="button-spinner"></span>
-
-                  <span>
-                    Authenticating...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span>
-                    Login
-                  </span>
-
-                  <span className="button-arrow">
-                    →
-                  </span>
-                </>
-              )}
-
-            </button>
-
-          </form>
-
-
-          {/* ==================================================
-              REGISTER
-          ================================================== */}
-
-          <div className="auth-divider">
-            <span>
-              New to ReviewRave?
-            </span>
           </div>
 
 
-          <Link
-            to="/register"
-            className="register-link-button"
+          {/* PASSWORD */}
+
+          <div className="simple-login-form-group">
+
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              disabled={loading}
+              required
+            />
+
+          </div>
+
+
+          {/* LOGIN BUTTON */}
+
+          <button
+            type="submit"
+            className="simple-login-button"
+            disabled={loading}
           >
-            <span>
-              Create an account
-            </span>
+            {loading ? "Logging in..." : "Login"}
+          </button>
 
-            <span>
-              →
-            </span>
+        </form>
+
+
+        {/* REGISTER LINK */}
+
+        <div className="simple-register-text">
+
+          <span>
+            Don't have an account?
+          </span>
+
+          <Link to="/register">
+            Register here
           </Link>
-
-
-          {/* ==================================================
-              SECURITY NOTE
-          ================================================== */}
-
-          <div className="security-note">
-
-            <span className="security-icon">
-              ◈
-            </span>
-
-            <span>
-              Your connection is secured with
-              enterprise-grade authentication.
-            </span>
-
-          </div>
 
         </div>
 
-      </section>
+      </div>
 
     </div>
   );
 };
+
 
 export default Login;
