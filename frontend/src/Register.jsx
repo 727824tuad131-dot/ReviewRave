@@ -75,9 +75,7 @@ const Register = () => {
       <div className="simple-register-card">
 
         <div className="simple-register-header">
-          <h1 style={{ color: "red", fontSize: "50px" }}>
-  THIS IS THE NEW REGISTER PAGE
-</h1>
+         <h1>Register Account</h1>
         </div>
 
 
