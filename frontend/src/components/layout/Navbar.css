@@ -1,0 +1,157 @@
+/* =========================================
+   REVIEWRAVE PORTAL NAVBAR
+   UI ONLY - DOES NOT CHANGE FUNCTIONALITY
+========================================= */
+
+.navbar {
+  width: 100%;
+  height: 48px;
+
+  background: #26313d;
+
+  border: none;
+
+  position: relative;
+
+  box-shadow: none;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 25px;
+}
+
+
+/* =========================================
+   BRAND
+========================================= */
+
+.navbar-brand {
+  display: none;
+}
+
+
+/* =========================================
+   MAIN NAVIGATION
+========================================= */
+
+.navbar-content {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+
+/* Navigation links */
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0;
+
+  margin: 0;
+}
+
+
+/* Individual links */
+
+.nav-link {
+  display: flex;
+  align-items: center;
+
+  padding: 15px 14px;
+
+  color: #d6d9dd;
+
+  background: transparent;
+
+  border-radius: 0;
+
+  text-decoration: none;
+
+  font-size: 9px;
+
+  font-weight: 500;
+}
+
+
+/* Remove icons */
+
+.nav-icon {
+  display: none;
+}
+
+
+/* Hover */
+
+.nav-link:hover {
+  background: transparent;
+
+  color: white;
+}
+
+
+/* Active link */
+
+.nav-link.active {
+  background: transparent;
+
+  color: white;
+}
+
+
+/* =========================================
+   USER AREA
+========================================= */
+
+.navbar-user {
+  display: none;
+}
+
+
+/* =========================================
+   MOBILE BUTTON
+========================================= */
+
+.mobile-menu-button {
+  display: none;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .navbar {
+    height: auto;
+
+    min-height: 48px;
+
+    padding: 0 10px;
+  }
+
+  .navbar-content {
+    justify-content: center;
+  }
+
+  .navbar-links {
+    flex-wrap: wrap;
+
+    justify-content: center;
+  }
+
+  .nav-link {
+    padding: 12px 8px;
+
+    font-size: 9px;
+  }
+
+}

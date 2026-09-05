@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+
 import { logout } from "../../store/slices/authSlice";
 
 const Navbar = () => {
@@ -8,34 +9,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   const role = localStorage.getItem("role");
-  const email = localStorage.getItem("email");
-
-  const getRoleName = () => {
-    switch (role) {
-      case "BRAND_MANAGER":
-        return "Brand Manager";
-
-      case "RESOLUTION_AGENT":
-        return "Resolution Agent";
-
-      case "PLATFORM_ADMIN":
-        return "Platform Admin";
-
-      default:
-        return "User";
-    }
-  };
-
-  const getInitial = () => {
-    if (!email) return "U";
-
-    return email
-      .charAt(0)
-      .toUpperCase();
-  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -48,282 +22,162 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const closeMobileMenu = () => {
-    setMobileOpen(false);
-  };
-
   const isActive = (path) => {
-    if (path === "/") {
-      return location.pathname === "/";
-    }
-
-    return location.pathname.startsWith(path);
+    return location.pathname === path;
   };
 
   return (
     <header className="navbar">
-      {/* BRAND */}
-      <Link
-        to="/"
-        className="navbar-brand"
-        onClick={closeMobileMenu}
-      >
-        <div className="brand-logo">
-          <span className="brand-logo-mark">
-            R
-          </span>
-        </div>
 
-        <div className="brand-text">
-          <span className="brand-name">
-            ReviewRave
-          </span>
+      <div className="portal-navbar">
 
-          <span className="brand-tagline">
-            Customer Intelligence
-          </span>
-        </div>
-      </Link>
+        {/* BRAND */}
 
-      {/* MOBILE MENU */}
-      <button
-        type="button"
-        className={`mobile-menu-button ${
-          mobileOpen ? "active" : ""
-        }`}
-        onClick={() =>
-          setMobileOpen(!mobileOpen)
-        }
-        aria-label="Toggle navigation"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+        <Link
+          to="/dashboard"
+          className="portal-brand"
+        >
+          ReviewRave
+        </Link>
 
-      {/* NAVIGATION */}
-      <nav
-        className={`navbar-content ${
-          mobileOpen ? "mobile-open" : ""
-        }`}
-      >
-        <div className="navbar-links">
+
+        {/* NAVIGATION */}
+
+        <nav className="portal-nav-links">
+
           {/* BRAND MANAGER */}
+
           {role === "BRAND_MANAGER" && (
             <>
               <Link
                 to="/products"
-                className={`nav-link ${
+                className={
                   isActive("/products")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
               >
-                <span className="nav-icon">
-                  ▦
-                </span>
-
-                <span>
-                  My Products
-                </span>
-              </Link>
-
-              <Link
-                to="/insights"
-                className={`nav-link ${
-                  isActive("/insights")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">
-                  ◔
-                </span>
-
-                <span>
-                  Insights
-                </span>
+                Products
               </Link>
 
               <Link
                 to="/reviews"
-                className={`nav-link ${
+                className={
                   isActive("/reviews")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
               >
-                <span className="nav-icon">
-                  ✦
-                </span>
-
-                <span>
-                  Submit Review
-                </span>
-              </Link>
-            </>
-          )}
-
-          {/* RESOLUTION AGENT */}
-          {role === "RESOLUTION_AGENT" && (
-            <>
-              <Link
-                to="/resolution-center"
-                className={`nav-link ${
-                  isActive(
-                    "/resolution-center"
-                  )
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">
-                  ◎
-                </span>
-
-                <span>
-                  Resolution Center
-                </span>
-              </Link>
-
-              <Link
-                to="/tasks"
-                className={`nav-link ${
-                  isActive("/tasks")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">
-                  ✓
-                </span>
-
-                <span>
-                  My Tasks
-                </span>
-              </Link>
-            </>
-          )}
-
-          {/* PLATFORM ADMIN */}
-          {role === "PLATFORM_ADMIN" && (
-            <>
-              <Link
-                to="/products"
-                className={`nav-link ${
-                  isActive("/products")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">
-                  ▦
-                </span>
-
-                <span>
-                  Products
-                </span>
+                Reviews
               </Link>
 
               <Link
                 to="/insights"
-                className={`nav-link ${
+                className={
                   isActive("/insights")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
               >
-                <span className="nav-icon">
-                  ◔
-                </span>
+                Insights
+              </Link>
+            </>
+          )}
 
-                <span>
-                  Insights
-                </span>
+
+          {/* RESOLUTION AGENT */}
+
+          {role === "RESOLUTION_AGENT" && (
+            <>
+              <Link
+                to="/resolution-center"
+                className={
+                  isActive("/resolution-center")
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
+              >
+                Resolution Center
+              </Link>
+
+              <Link
+                to="/tasks"
+                className={
+                  isActive("/tasks")
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
+              >
+                Tasks
+              </Link>
+            </>
+          )}
+
+
+          {/* PLATFORM ADMIN */}
+
+          {role === "PLATFORM_ADMIN" && (
+            <>
+              <Link
+                to="/admin"
+                className={
+                  isActive("/admin")
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
+              >
+                Overview
+              </Link>
+
+              <Link
+                to="/products"
+                className={
+                  isActive("/products")
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
+              >
+                Products
               </Link>
 
               <Link
                 to="/tickets"
-                className={`nav-link ${
+                className={
                   isActive("/tickets")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
               >
-                <span className="nav-icon">
-                  ◇
-                </span>
-
-                <span>
-                  Tickets
-                </span>
+                Tickets
               </Link>
 
               <Link
-                to="/admin"
-                className={`nav-link ${
-                  isActive("/admin")
-                    ? "active"
-                    : ""
-                }`}
-                onClick={closeMobileMenu}
+                to="/insights"
+                className={
+                  isActive("/insights")
+                    ? "portal-nav-link active"
+                    : "portal-nav-link"
+                }
               >
-                <span className="nav-icon">
-                  ⚙
-                </span>
-
-                <span>
-                  Admin
-                </span>
+                Insights
               </Link>
             </>
           )}
-        </div>
 
-        {/* USER AREA */}
-        <div className="navbar-user">
-          <div className="user-info">
-            <div className="user-avatar">
-              {getInitial()}
-            </div>
+        </nav>
 
-            <div className="user-details">
-              <span className="user-role">
-                {getRoleName()}
-              </span>
 
-              <span className="user-email">
-                {email ||
-                  "reviewrave user"}
-              </span>
-            </div>
-          </div>
+        {/* LOGOUT */}
 
-          {/* LOGOUT */}
-          <button
-            type="button"
-            className="logout-button"
-            onClick={handleLogout}
-            title="Logout"
-          >
-            <span className="logout-icon">
-              ↪
-            </span>
+        <button
+          className="portal-logout"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
 
-            <span>
-              Logout
-            </span>
-          </button>
-        </div>
-      </nav>
+      </div>
+
     </header>
   );
 };
