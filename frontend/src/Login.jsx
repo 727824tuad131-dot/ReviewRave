@@ -22,9 +22,9 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  /* -------------------------------------------------------
-     Login Success
-  ------------------------------------------------------- */
+  /* =====================================================
+     LOGIN SUCCESS
+  ===================================================== */
 
   useEffect(() => {
     if (user) {
@@ -33,16 +33,19 @@ const Login = () => {
   }, [user, navigate]);
 
 
-  /* -------------------------------------------------------
-     Login Error
-  ------------------------------------------------------- */
+  /* =====================================================
+     LOGIN ERROR
+  ===================================================== */
 
   useEffect(() => {
     if (error) {
       dispatch(
         addNotification({
           type: "error",
-          message: error,
+          message:
+            typeof error === "string"
+              ? error
+              : error?.message || "Login failed. Please try again.",
         })
       );
 
@@ -51,9 +54,9 @@ const Login = () => {
   }, [error, dispatch]);
 
 
-  /* -------------------------------------------------------
-     Submit
-  ------------------------------------------------------- */
+  /* =====================================================
+     SUBMIT
+  ===================================================== */
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,7 +82,7 @@ const Login = () => {
 
 
   return (
-    <div className="auth-page">
+    <div className="auth-page login-page">
 
       {/* ==================================================
           LEFT BRAND PANEL
@@ -132,6 +135,7 @@ const Login = () => {
           <div className="auth-features">
 
             <div className="auth-feature">
+
               <div className="feature-icon">
                 ◔
               </div>
@@ -145,10 +149,12 @@ const Login = () => {
                   Understand how customers really feel.
                 </span>
               </div>
+
             </div>
 
 
             <div className="auth-feature">
+
               <div className="feature-icon">
                 ◇
               </div>
@@ -162,10 +168,12 @@ const Login = () => {
                   Move actionable complaints to resolution.
                 </span>
               </div>
+
             </div>
 
 
             <div className="auth-feature">
+
               <div className="feature-icon">
                 ✓
               </div>
@@ -179,6 +187,7 @@ const Login = () => {
                   Keep your customer experience on track.
                 </span>
               </div>
+
             </div>
 
           </div>
@@ -187,6 +196,7 @@ const Login = () => {
 
 
         <div className="auth-brand-footer">
+
           <span>
             © {new Date().getFullYear()} ReviewRave
           </span>
@@ -194,6 +204,7 @@ const Login = () => {
           <span>
             Social Sentiment Analysis
           </span>
+
         </div>
 
       </section>
@@ -207,18 +218,30 @@ const Login = () => {
 
         <div className="login-card">
 
+          {/* ================= MOBILE LOGO ================= */}
+
           <div className="login-header">
 
             <div className="mobile-auth-logo">
+
               <div className="auth-logo-mark">
                 R
               </div>
 
-              <span>
-                ReviewRave
-              </span>
+              <div>
+                <span className="auth-logo-name">
+                  ReviewRave
+                </span>
+
+                <span className="auth-logo-subtitle">
+                  Customer Intelligence
+                </span>
+              </div>
+
             </div>
 
+
+            {/* ================= HEADING ================= */}
 
             <span className="login-welcome">
               Welcome back
@@ -234,6 +257,10 @@ const Login = () => {
 
           </div>
 
+
+          {/* ==================================================
+              LOGIN FORM
+          ================================================== */}
 
           <form
             className="auth-form"
@@ -308,6 +335,9 @@ const Login = () => {
                   disabled={loading}
                 />
 
+
+                {/* ================= SHOW PASSWORD ================= */}
+
                 <button
                   type="button"
                   className="password-toggle"
@@ -328,7 +358,9 @@ const Login = () => {
             </div>
 
 
-            {/* ================= SUBMIT ================= */}
+            {/* ==================================================
+                LOGIN BUTTON
+            ================================================== */}
 
             <button
               type="submit"
@@ -339,11 +371,17 @@ const Login = () => {
               {loading ? (
                 <>
                   <span className="button-spinner"></span>
-                  <span>Authenticating...</span>
+
+                  <span>
+                    Authenticating...
+                  </span>
                 </>
               ) : (
                 <>
-                  <span>Login</span>
+                  <span>
+                    Login
+                  </span>
+
                   <span className="button-arrow">
                     →
                   </span>
@@ -355,10 +393,14 @@ const Login = () => {
           </form>
 
 
-          {/* ================= REGISTER ================= */}
+          {/* ==================================================
+              REGISTER
+          ================================================== */}
 
           <div className="auth-divider">
-            <span>New to ReviewRave?</span>
+            <span>
+              New to ReviewRave?
+            </span>
           </div>
 
 
@@ -366,12 +408,19 @@ const Login = () => {
             to="/register"
             className="register-link-button"
           >
-            Create an account
-            <span>→</span>
+            <span>
+              Create an account
+            </span>
+
+            <span>
+              →
+            </span>
           </Link>
 
 
-          {/* ================= SECURITY NOTE ================= */}
+          {/* ==================================================
+              SECURITY NOTE
+          ================================================== */}
 
           <div className="security-note">
 
