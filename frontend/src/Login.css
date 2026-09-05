@@ -1322,3 +1322,246 @@
   }
 
 }
+/* =========================================
+   REGISTER PAGE
+========================================= */
+
+.simple-register-page {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+  box-sizing: border-box;
+
+  background: #f5f6f8;
+}
+
+
+.simple-register-card {
+  width: 100%;
+  max-width: 480px;
+
+  background: #ffffff;
+
+  padding: 32px 38px;
+
+  border: 1px solid #d9dde2;
+  border-radius: 6px;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+  box-sizing: border-box;
+}
+
+
+.simple-register-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+
+.simple-register-header h1 {
+  margin: 0;
+
+  color: #333333;
+
+  font-size: 24px;
+  font-weight: 600;
+}
+
+
+/* FORM */
+
+.simple-register-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+/* FIRST NAME + LAST NAME */
+
+.simple-name-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+}
+
+
+/* FORM GROUP */
+
+.simple-form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.simple-form-group label {
+  color: #444444;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* INPUTS */
+
+.simple-form-group input,
+.simple-form-group select {
+  width: 100%;
+  height: 40px;
+
+  padding: 0 12px;
+
+  border: 1px solid #cfd4da;
+  border-radius: 4px;
+
+  background: #ffffff;
+
+  color: #333333;
+
+  font-size: 13px;
+
+  box-sizing: border-box;
+
+  outline: none;
+}
+
+
+.simple-form-group input::placeholder {
+  color: #9ca3af;
+}
+
+
+.simple-form-group input:focus,
+.simple-form-group select:focus {
+  border-color: #4a90c2;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(74, 144, 194, 0.12);
+}
+
+
+/* PASSWORD */
+
+.simple-password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+
+.simple-password-wrapper input {
+  padding-right: 60px;
+}
+
+
+.simple-password-toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 10px;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  color: #777777;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+/* CREATE ACCOUNT BUTTON */
+
+.simple-create-button {
+  width: 100%;
+  height: 42px;
+
+  margin-top: 4px;
+
+  border: none;
+  border-radius: 4px;
+
+  background: #4a90c2;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.simple-create-button:hover {
+  background: #357eaf;
+}
+
+
+.simple-create-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+
+/* LOGIN TEXT */
+
+.simple-login-text {
+  margin-top: 22px;
+
+  text-align: center;
+
+  color: #888888;
+
+  font-size: 12px;
+}
+
+
+.simple-login-text a {
+  margin-left: 5px;
+
+  color: #3b82c4;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+
+.simple-login-text a:hover {
+  text-decoration: underline;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 550px) {
+
+  .simple-register-page {
+    padding: 20px 15px;
+  }
+
+  .simple-register-card {
+    padding: 28px 22px;
+  }
+
+  .simple-name-row {
+    grid-template-columns: 1fr;
+  }
+
+}

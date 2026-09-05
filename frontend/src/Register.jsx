@@ -20,7 +20,6 @@ const Register = () => {
     (state) => state.auth
   );
 
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,13 +29,8 @@ const Register = () => {
     role: "BRAND_MANAGER",
   });
 
-
   const [showPassword, setShowPassword] = useState(false);
 
-
-  /* =========================
-     REDIRECT AFTER REGISTER
-     ========================= */
 
   useEffect(() => {
     if (user) {
@@ -44,10 +38,6 @@ const Register = () => {
     }
   }, [user, navigate]);
 
-
-  /* =========================
-     ERROR HANDLING
-     ========================= */
 
   useEffect(() => {
     if (error) {
@@ -63,10 +53,6 @@ const Register = () => {
   }, [error, dispatch]);
 
 
-  /* =========================
-     HANDLE INPUT CHANGE
-     ========================= */
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -77,46 +63,31 @@ const Register = () => {
   };
 
 
-  /* =========================
-     HANDLE REGISTER
-     ========================= */
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
     dispatch(registerUser(formData));
   };
 
-
-  /* =========================
-     UI
-     ========================= */
 
   return (
     <div className="simple-register-page">
 
       <div className="simple-register-card">
 
-        {/* HEADER */}
         <div className="simple-register-header">
           <h1>Register Account</h1>
         </div>
 
 
-        {/* REGISTER FORM */}
         <form
           className="simple-register-form"
           onSubmit={handleSubmit}
         >
 
           {/* FIRST NAME + LAST NAME */}
-
           <div className="simple-name-row">
 
-            {/* FIRST NAME */}
-
             <div className="simple-form-group">
-
               <label htmlFor="firstName">
                 First Name
               </label>
@@ -127,18 +98,14 @@ const Register = () => {
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
-                placeholder="Jane"
+                placeholder="First Name"
                 required
                 disabled={loading}
               />
-
             </div>
 
 
-            {/* LAST NAME */}
-
             <div className="simple-form-group">
-
               <label htmlFor="lastName">
                 Last Name
               </label>
@@ -149,18 +116,16 @@ const Register = () => {
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
-                placeholder="Doe"
+                placeholder="Last Name"
                 required
                 disabled={loading}
               />
-
             </div>
 
           </div>
 
 
-          {/* COMPANY NAME */}
-
+          {/* COMPANY */}
           <div className="simple-form-group">
 
             <label htmlFor="companyName">
@@ -173,7 +138,7 @@ const Register = () => {
               type="text"
               value={formData.companyName}
               onChange={handleChange}
-              placeholder="Acme Corp"
+              placeholder="Enter company name"
               required
               disabled={loading}
             />
@@ -182,7 +147,6 @@ const Register = () => {
 
 
           {/* EMAIL */}
-
           <div className="simple-form-group">
 
             <label htmlFor="email">
@@ -195,7 +159,7 @@ const Register = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="manager@gmail.com"
+              placeholder="Enter email address"
               required
               disabled={loading}
               autoComplete="email"
@@ -205,11 +169,10 @@ const Register = () => {
 
 
           {/* PASSWORD */}
-
           <div className="simple-form-group">
 
             <label htmlFor="password">
-              Password (min 8 chars)
+              Password (minimum 8 characters)
             </label>
 
 
@@ -218,14 +181,10 @@ const Register = () => {
               <input
                 id="password"
                 name="password"
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder="Enter password"
                 minLength={8}
                 required
                 disabled={loading}
@@ -249,7 +208,6 @@ const Register = () => {
 
 
           {/* ROLE */}
-
           <div className="simple-form-group">
 
             <label htmlFor="role">
@@ -282,26 +240,21 @@ const Register = () => {
           </div>
 
 
-          {/* SUBMIT BUTTON */}
-
+          {/* BUTTON */}
           <button
             type="submit"
             className="simple-create-button"
             disabled={loading}
           >
-
             {loading
               ? "Creating Account..."
-              : "Create Account"
-            }
-
+              : "Create Account"}
           </button>
 
         </form>
 
 
         {/* LOGIN LINK */}
-
         <div className="simple-login-text">
 
           Already have an account?
