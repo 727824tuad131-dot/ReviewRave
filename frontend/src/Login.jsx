@@ -1,31 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import "./Login.css";
-
 const Login = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setError("");
-
-    // Check empty fields
     if (!email.trim() || !password.trim()) {
-      setError("Please enter your email and password.");
+      alert("Please enter your email and password.");
       return;
     }
 
     setLoading(true);
 
-    // Get registered users from localStorage
+    // Get registered users from browser storage
     const users = JSON.parse(
       localStorage.getItem("users") || "[]"
     );
@@ -33,43 +26,34 @@ const Login = () => {
     // Find matching user
     const user = users.find(
       (item) =>
-        item.email.toLowerCase() ===
-          email.trim().toLowerCase() &&
+        item.email.toLowerCase() === email.trim().toLowerCase() &&
         item.password === password
     );
 
-    // User not found
+    // User not found / wrong password
     if (!user) {
-      setError("Invalid email or password.");
+      alert("Invalid email or password.");
       setLoading(false);
       return;
     }
 
-    // Save current login information
+    // Create login token
     const token =
       user.token || "frontend-token-" + Date.now();
 
+    // Save current logged-in user
     localStorage.setItem("token", token);
-
-    localStorage.setItem(
-      "role",
-      user.role
-    );
-
+    localStorage.setItem("role", user.role);
     localStorage.setItem(
       "userId",
       String(user.userId)
     );
-
-    localStorage.setItem(
-      "email",
-      user.email
-    );
+    localStorage.setItem("email", user.email);
 
     setLoading(false);
 
-    // Go to dashboard
-    navigate("/");
+    // Go to dashboard/home
+    navigate("/", { replace: true });
   };
 
   return (
@@ -77,30 +61,13 @@ const Login = () => {
 
       <div className="simple-login-card">
 
-        {/* HEADING */}
+        {/* HEADER */}
 
         <div className="simple-login-header">
           <h1>Login to ReviewRave</h1>
         </div>
 
-
-        {/* ERROR MESSAGE */}
-
-        {error && (
-          <div
-            style={{
-              color: "#dc2626",
-              marginBottom: "15px",
-              textAlign: "center",
-              fontSize: "14px",
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-
-        {/* LOGIN FORM */}
+        {/* FORM */}
 
         <form
           className="simple-login-form"
@@ -120,7 +87,9 @@ const Login = () => {
               name="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
               placeholder="manager@gmail.com"
               autoComplete="email"
               disabled={loading}
@@ -128,7 +97,6 @@ const Login = () => {
             />
 
           </div>
-
 
           {/* PASSWORD */}
 
@@ -143,7 +111,9 @@ const Login = () => {
               name="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
               placeholder="••••••••"
               autoComplete="current-password"
               disabled={loading}
@@ -151,7 +121,6 @@ const Login = () => {
             />
 
           </div>
-
 
           {/* LOGIN BUTTON */}
 
@@ -166,7 +135,6 @@ const Login = () => {
           </button>
 
         </form>
-
 
         {/* REGISTER LINK */}
 
