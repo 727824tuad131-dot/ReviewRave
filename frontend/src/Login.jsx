@@ -1,74 +1,76 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-import {
-  login,
-  clearError,
-} from "./store/slices/authSlice";
-
-import { addNotification } from "./store/slices/notificationSlice";
 
 import "./Login.css";
 
-
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { user, loading, error } = useSelector(
-    (state) => state.auth
-  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [user, navigate]);
-
-
-  useEffect(() => {
-    if (error) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message:
-            typeof error === "string"
-              ? error
-              : error?.message || "Login failed. Please try again.",
-        })
-      );
-
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      dispatch(
-        addNotification({
-          type: "warning",
-          message: "Please enter your email and password.",
-        })
-      );
+    setError("");
 
+    // Check empty fields
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter your email and password.");
       return;
     }
 
-    dispatch(
-      login({
-        email: email.trim(),
-        password,
-      })
-    );
-  };
+    setLoading(true);
 
+    // Get registered users from localStorage
+    const users = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
+
+    // Find matching user
+    const user = users.find(
+      (item) =>
+        item.email.toLowerCase() ===
+          email.trim().toLowerCase() &&
+        item.password === password
+    );
+
+    // User not found
+    if (!user) {
+      setError("Invalid email or password.");
+      setLoading(false);
+      return;
+    }
+
+    // Save current login information
+    const token =
+      user.token || "frontend-token-" + Date.now();
+
+    localStorage.setItem("token", token);
+
+    localStorage.setItem(
+      "role",
+      user.role
+    );
+
+    localStorage.setItem(
+      "userId",
+      String(user.userId)
+    );
+
+    localStorage.setItem(
+      "email",
+      user.email
+    );
+
+    setLoading(false);
+
+    // Go to dashboard
+    navigate("/");
+  };
 
   return (
     <div className="simple-login-page">
@@ -80,6 +82,22 @@ const Login = () => {
         <div className="simple-login-header">
           <h1>Login to ReviewRave</h1>
         </div>
+
+
+        {/* ERROR MESSAGE */}
+
+        {error && (
+          <div
+            style={{
+              color: "#dc2626",
+              marginBottom: "15px",
+              textAlign: "center",
+              fontSize: "14px",
+            }}
+          >
+            {error}
+          </div>
+        )}
 
 
         {/* LOGIN FORM */}
@@ -142,7 +160,9 @@ const Login = () => {
             className="simple-login-button"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Logging in..."
+              : "Login"}
           </button>
 
         </form>
@@ -167,6 +187,5 @@ const Login = () => {
     </div>
   );
 };
-
 
 export default Login;
