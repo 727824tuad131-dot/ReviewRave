@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import "./Login.css";
+
 import {
   registerUser,
   clearError,
 } from "./store/slices/authSlice";
 
 import { addNotification } from "./store/slices/notificationSlice";
+
 
 const Register = () => {
   const navigate = useNavigate();
@@ -16,6 +19,7 @@ const Register = () => {
   const { user, loading, error } = useSelector(
     (state) => state.auth
   );
+
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -26,13 +30,24 @@ const Register = () => {
     role: "BRAND_MANAGER",
   });
 
+
   const [showPassword, setShowPassword] = useState(false);
+
+
+  /* =========================
+     REDIRECT AFTER REGISTER
+     ========================= */
 
   useEffect(() => {
     if (user) {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
+
+
+  /* =========================
+     ERROR HANDLING
+     ========================= */
 
   useEffect(() => {
     if (error) {
@@ -47,6 +62,11 @@ const Register = () => {
     }
   }, [error, dispatch]);
 
+
+  /* =========================
+     HANDLE INPUT CHANGE
+     ========================= */
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -56,11 +76,21 @@ const Register = () => {
     }));
   };
 
+
+  /* =========================
+     HANDLE REGISTER
+     ========================= */
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     dispatch(registerUser(formData));
   };
+
+
+  /* =========================
+     UI
+     ========================= */
 
   return (
     <div className="simple-register-page">
@@ -72,16 +102,21 @@ const Register = () => {
           <h1>Register Account</h1>
         </div>
 
-        {/* FORM */}
+
+        {/* REGISTER FORM */}
         <form
           className="simple-register-form"
           onSubmit={handleSubmit}
         >
 
-          {/* FIRST + LAST NAME */}
+          {/* FIRST NAME + LAST NAME */}
+
           <div className="simple-name-row">
 
+            {/* FIRST NAME */}
+
             <div className="simple-form-group">
+
               <label htmlFor="firstName">
                 First Name
               </label>
@@ -96,9 +131,14 @@ const Register = () => {
                 required
                 disabled={loading}
               />
+
             </div>
 
+
+            {/* LAST NAME */}
+
             <div className="simple-form-group">
+
               <label htmlFor="lastName">
                 Last Name
               </label>
@@ -113,13 +153,16 @@ const Register = () => {
                 required
                 disabled={loading}
               />
+
             </div>
 
           </div>
 
 
-          {/* COMPANY */}
+          {/* COMPANY NAME */}
+
           <div className="simple-form-group">
+
             <label htmlFor="companyName">
               Company Name
             </label>
@@ -134,11 +177,14 @@ const Register = () => {
               required
               disabled={loading}
             />
+
           </div>
 
 
           {/* EMAIL */}
+
           <div className="simple-form-group">
+
             <label htmlFor="email">
               Email Address
             </label>
@@ -154,14 +200,18 @@ const Register = () => {
               disabled={loading}
               autoComplete="email"
             />
+
           </div>
 
 
           {/* PASSWORD */}
+
           <div className="simple-form-group">
+
             <label htmlFor="password">
               Password (min 8 chars)
             </label>
+
 
             <div className="simple-password-wrapper">
 
@@ -182,6 +232,7 @@ const Register = () => {
                 autoComplete="new-password"
               />
 
+
               <button
                 type="button"
                 className="simple-password-toggle"
@@ -193,11 +244,14 @@ const Register = () => {
               </button>
 
             </div>
+
           </div>
 
 
           {/* ROLE */}
+
           <div className="simple-form-group">
+
             <label htmlFor="role">
               Select Role
             </label>
@@ -210,6 +264,7 @@ const Register = () => {
               required
               disabled={loading}
             >
+
               <option value="BRAND_MANAGER">
                 Brand Manager
               </option>
@@ -221,32 +276,40 @@ const Register = () => {
               <option value="PLATFORM_ADMIN">
                 Platform Admin
               </option>
+
             </select>
+
           </div>
 
 
-          {/* CREATE ACCOUNT */}
+          {/* SUBMIT BUTTON */}
+
           <button
             type="submit"
             className="simple-create-button"
             disabled={loading}
           >
+
             {loading
               ? "Creating Account..."
               : "Create Account"
             }
+
           </button>
 
         </form>
 
 
-        {/* LOGIN */}
+        {/* LOGIN LINK */}
+
         <div className="simple-login-text">
+
           Already have an account?
 
           <Link to="/login">
             Login here
           </Link>
+
         </div>
 
       </div>
@@ -254,5 +317,6 @@ const Register = () => {
     </div>
   );
 };
+
 
 export default Register;
