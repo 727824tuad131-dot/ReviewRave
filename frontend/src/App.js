@@ -18,6 +18,7 @@ import ReviewIngestForm from "./components/review/ReviewIngestForm";
 import TicketList from "./components/ticket/TicketList";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 
+
 /* -------------------------------------------------------
    Protected Route
 ------------------------------------------------------- */
@@ -26,19 +27,22 @@ const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/register" replace />;
   }
 
   return (
     <>
       <Navbar />
+
       <main className="app-main">
         <Outlet />
       </main>
+
       <NotificationStack />
     </>
   );
 };
+
 
 /* -------------------------------------------------------
    Role Based Route
@@ -49,7 +53,7 @@ const RoleRoute = ({ allowedRoles, children }) => {
   const role = localStorage.getItem("role");
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/register" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(role)) {
@@ -58,6 +62,7 @@ const RoleRoute = ({ allowedRoles, children }) => {
 
   return children;
 };
+
 
 /* -------------------------------------------------------
    Home Dashboard
@@ -77,6 +82,7 @@ const Home = () => {
   return <ProductList />;
 };
 
+
 /* -------------------------------------------------------
    App
 ------------------------------------------------------- */
@@ -88,9 +94,11 @@ function App() {
 
         {/* ================= PUBLIC ROUTES ================= */}
 
-        <Route path="/login" element={<Login />} />
-
+        {/* REGISTER PAGE */}
         <Route path="/register" element={<Register />} />
+
+        {/* LOGIN PAGE */}
+        <Route path="/login" element={<Login />} />
 
 
         {/* ================= PROTECTED ROUTES ================= */}
@@ -101,7 +109,7 @@ function App() {
           <Route path="/" element={<Home />} />
 
 
-          {/* ---------------- PRODUCTS ---------------- */}
+          {/* PRODUCTS */}
 
           <Route
             path="/products"
@@ -118,7 +126,7 @@ function App() {
           />
 
 
-          {/* ---------------- REVIEWS ---------------- */}
+          {/* REVIEWS */}
 
           <Route
             path="/reviews"
@@ -134,7 +142,7 @@ function App() {
           />
 
 
-          {/* ---------------- INSIGHTS ---------------- */}
+          {/* INSIGHTS */}
 
           <Route
             path="/insights"
@@ -151,7 +159,7 @@ function App() {
           />
 
 
-          {/* ---------------- TICKETS ---------------- */}
+          {/* TICKETS */}
 
           <Route
             path="/tickets"
@@ -169,7 +177,7 @@ function App() {
           />
 
 
-          {/* Agent Tasks */}
+          {/* TASKS */}
 
           <Route
             path="/tasks"
@@ -185,7 +193,7 @@ function App() {
           />
 
 
-          {/* Resolution Center */}
+          {/* RESOLUTION CENTER */}
 
           <Route
             path="/resolution-center"
@@ -201,7 +209,7 @@ function App() {
           />
 
 
-          {/* ---------------- ADMIN ---------------- */}
+          {/* ADMIN */}
 
           <Route
             path="/admin"
@@ -219,16 +227,19 @@ function App() {
         </Route>
 
 
-        {/* ================= FALLBACK ================= */}
+        {/* ================= DEFAULT PAGE ================= */}
+
+        {/* When website opens → REGISTER PAGE */}
 
         <Route
           path="*"
-          element={<Navigate to="/" replace />}
+          element={<Navigate to="/register" replace />}
         />
 
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default App;
