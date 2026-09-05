@@ -1022,3 +1022,303 @@
   }
 
 }
+
+/* =========================================
+   SIMPLE REGISTER PAGE
+   ========================================= */
+
+.simple-register-page {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 20px;
+
+  background: #f4f6f8;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* =========================================
+   REGISTER CARD
+   ========================================= */
+
+.simple-register-card {
+  width: 100%;
+  max-width: 500px;
+
+  padding: 32px 38px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.simple-register-header {
+  text-align: center;
+
+  margin-bottom: 28px;
+}
+
+.simple-register-header h1 {
+  margin: 0;
+
+  color: #374151;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   FORM
+   ========================================= */
+
+.simple-register-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+/* =========================================
+   FIRST + LAST NAME
+   ========================================= */
+
+.simple-name-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 12px;
+}
+
+
+/* =========================================
+   FORM GROUP
+   ========================================= */
+
+.simple-form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.simple-form-group label {
+  color: #4b5563;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   INPUTS
+   ========================================= */
+
+.simple-form-group input,
+.simple-form-group select {
+  width: 100%;
+  height: 38px;
+
+  padding: 0 11px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 12px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* Placeholder */
+
+.simple-form-group input::placeholder {
+  color: #9ca3af;
+}
+
+
+/* Focus */
+
+.simple-form-group input:focus,
+.simple-form-group select:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(37, 99, 235, 0.12);
+}
+
+
+/* Disabled */
+
+.simple-form-group input:disabled,
+.simple-form-group select:disabled {
+  background: #f3f4f6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   PASSWORD
+   ========================================= */
+
+.simple-password-wrapper {
+  position: relative;
+}
+
+.simple-password-wrapper input {
+  padding-right: 55px;
+}
+
+.simple-password-toggle {
+  position: absolute;
+
+  right: 8px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  background: transparent;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.simple-password-toggle:hover {
+  color: #2563eb;
+}
+
+
+/* =========================================
+   SELECT
+   ========================================= */
+
+.simple-form-group select {
+  cursor: pointer;
+}
+
+
+/* =========================================
+   CREATE BUTTON
+   ========================================= */
+
+.simple-create-button {
+  width: 100%;
+  height: 40px;
+
+  margin-top: 4px;
+
+  border: none;
+  border-radius: 4px;
+
+  background: #3b82c4;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.simple-create-button:hover {
+  background: #2563a8;
+
+  transform: translateY(-1px);
+}
+
+.simple-create-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================
+   LOGIN TEXT
+   ========================================= */
+
+.simple-login-text {
+  margin-top: 22px;
+
+  text-align: center;
+
+  color: #9ca3af;
+
+  font-size: 11px;
+}
+
+.simple-login-text a {
+  margin-left: 4px;
+
+  color: #2563eb;
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+.simple-login-text a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 550px) {
+
+  .simple-register-page {
+    padding: 20px 15px;
+  }
+
+  .simple-register-card {
+    padding: 28px 22px;
+  }
+
+  .simple-name-row {
+    grid-template-columns: 1fr;
+  }
+
+}
