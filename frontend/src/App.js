@@ -26,6 +26,7 @@ import AdminDashboard from "./components/dashboard/AdminDashboard";
 const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
 
+  // If user is not logged in → go to Register page
   if (!token) {
     return <Navigate to="/register" replace />;
   }
@@ -52,10 +53,12 @@ const RoleRoute = ({ allowedRoles, children }) => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  // If user is not logged in → go to Register page
   if (!token) {
     return <Navigate to="/register" replace />;
   }
 
+  // If user doesn't have permission → go home
   if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/" replace />;
   }
@@ -92,21 +95,40 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* ================= PUBLIC ROUTES ================= */}
+        {/* ================================================
+            PUBLIC ROUTES
+        ================================================= */}
+
+        {/* DEFAULT PAGE → REGISTER PAGE */}
+        <Route
+          path="/"
+          element={<Navigate to="/register" replace />}
+        />
 
         {/* REGISTER PAGE */}
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
         {/* LOGIN PAGE */}
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
 
-        {/* ================= PROTECTED ROUTES ================= */}
+        {/* ================================================
+            PROTECTED ROUTES
+        ================================================= */}
 
         <Route element={<ProtectedRoute />}>
 
-          {/* Home */}
-          <Route path="/" element={<Home />} />
+          {/* HOME AFTER LOGIN */}
+          <Route
+            path="/dashboard"
+            element={<Home />}
+          />
 
 
           {/* PRODUCTS */}
@@ -227,9 +249,9 @@ function App() {
         </Route>
 
 
-        {/* ================= DEFAULT PAGE ================= */}
-
-        {/* When website opens → REGISTER PAGE */}
+        {/* ================================================
+            ANY UNKNOWN PAGE → REGISTER
+        ================================================= */}
 
         <Route
           path="*"
