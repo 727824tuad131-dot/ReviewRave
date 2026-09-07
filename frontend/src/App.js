@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-// Default Seed Data
+// Initial Seed Data
 const initialUsers = [
   { id: "#1", name: "Brand Manager", email: "manager@gmail.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
   { id: "#2", name: "Support Agent", email: "agent@gmail.com", company: "PandaPure Support", role: "RESOLUTION_AGENT", status: "Inactive" },
@@ -13,10 +13,10 @@ const initialUsers = [
 ];
 
 const initialProducts = [
-  { id: 1, name: "Headset", category: "ELECTRONICS", reviews: 10, sentiment: 4.2 },
-  { id: 2, name: "mouse", category: "SOFTWARE", reviews: 5, sentiment: 3.8 },
-  { id: 3, name: "headset", category: "HOSPITALITY", reviews: 2, sentiment: 2.5 },
-  { id: 4, name: "keyboard", category: "RETAIL", reviews: 14, sentiment: 4.9 },
+  { id: 1, name: "Headset", category: "ELECTRONICS", reviews: 0, sentiment: 0.0 },
+  { id: 2, name: "mouse", category: "SOFTWARE", reviews: 0, sentiment: 0.0 },
+  { id: 3, name: "headset", category: "HOSPITALITY", reviews: 0, sentiment: 0.0 },
+  { id: 4, name: "keyboard", category: "RETAIL", reviews: 0, sentiment: 0.0 },
 ];
 
 const initialTickets = [
@@ -29,7 +29,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState("login");
   const [ticketTab, setTicketTab] = useState("my");
 
-  // --- LOCALSTORAGE INITIALIZATION ---
+  // LocalStorage Persistence Data Hooks
   const [usersList, setUsersList] = useState(() => {
     const saved = localStorage.getItem("rr_users");
     return saved ? JSON.parse(saved) : initialUsers;
@@ -45,7 +45,7 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialTickets;
   });
 
-  // --- LOCALSTORAGE PERSISTENCE EFFECTS ---
+  // LocalStorage Sync
   useEffect(() => {
     localStorage.setItem("rr_users", JSON.stringify(usersList));
   }, [usersList]);
@@ -58,7 +58,7 @@ export default function App() {
     localStorage.setItem("rr_tickets", JSON.stringify(ticketsList));
   }, [ticketsList]);
 
-  // Form & UI States
+  // Form & Product Edit States
   const [registerForm, setRegisterForm] = useState({ firstName: "Jane", lastName: "Doe", company: "Acme Corp (Optional)", email: "manager@gmail.com", password: "••••••••", role: "BRAND_MANAGER" });
   const [loginForm, setLoginForm] = useState({ email: "manager@gmail.com", password: "••••••••" });
   
@@ -67,7 +67,11 @@ export default function App() {
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [newProductData, setNewProductData] = useState({ name: "", category: "ELECTRONICS" });
 
-  // --- INTERACTIVE EVENT HANDLERS ---
+  // Inline Editing Controls
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editFormData, setEditFormData] = useState({ name: "", category: "ELECTRONICS" });
+
+  // Event Handlers
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
     const newUser = {
@@ -79,13 +83,11 @@ export default function App() {
       status: "Active"
     };
     setUsersList([...usersList, newUser]);
-    alert("Account Registered & Saved to LocalStorage!");
     setCurrentView("dashboard");
   };
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    alert(`Logged in as ${loginForm.email}`);
     setCurrentView("dashboard");
   };
 
@@ -112,6 +114,20 @@ export default function App() {
     setShowAddProductModal(false);
   };
 
+  const startEditProduct = (product) => {
+    setEditingProductId(product.id);
+    setEditFormData({ name: product.name, category: product.category });
+  };
+
+  const saveEditProduct = (id) => {
+    setProductsList(productsList.map(p => p.id === id ? { ...p, name: editFormData.name, category: editFormData.category } : p));
+    setEditingProductId(null);
+  };
+
+  const cancelEditProduct = () => {
+    setEditingProductId(null);
+  };
+
   const deleteProduct = (id) => {
     setProductsList(productsList.filter(p => p.id !== id));
   };
@@ -124,15 +140,6 @@ export default function App() {
     setTicketsList(ticketsList.map(t => t.id === id ? { ...t, status: t.status === "Open" ? "Resolved" : "Open" } : t));
   };
 
-  const handleResetStorage = () => {
-    if (window.confirm("Reset all stored data back to defaults?")) {
-      localStorage.clear();
-      setUsersList(initialUsers);
-      setProductsList(initialProducts);
-      setTicketsList(initialTickets);
-    }
-  };
-
   const renderNavbar = () => (
     <nav style={styles.navbar}>
       <div style={styles.navLinks}>
@@ -140,6 +147,7 @@ export default function App() {
         <span style={styles.navItem(currentView === "users")} onClick={() => setCurrentView("users")}>Users</span>
         <span style={styles.navItem(currentView === "products")} onClick={() => setCurrentView("products")}>Products</span>
         <span style={styles.navItem(currentView === "tickets")} onClick={() => setCurrentView("tickets")}>Reviews</span>
+        <span style={styles.navItem(false)}>Insights</span>
       </div>
       <button style={styles.logoutBtn} onClick={() => setCurrentView("login")}>Logout</button>
     </nav>
@@ -236,11 +244,12 @@ export default function App() {
                 </div>
               </div>
               <div style={styles.contentCard}>
-                <h4 style={{ marginBottom: "15px" }}>Storage Settings</h4>
-                <p style={{ fontSize: "12px", color: "#666" }}>Data persistent state is active through browser LocalStorage.</p>
-                <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c", marginTop: "10px" }} onClick={handleResetStorage}>
-                  Clear & Reset LocalStorage
-                </button>
+                <h4 style={{ marginBottom: "15px" }}>Recent Timeline</h4>
+                <ul style={styles.timelineList}>
+                  <li>🔵 New brand manager registered: Brand Corp <br /><small style={{ color: "#888" }}>1 hour ago</small></li>
+                  <li>🔵 System wide review inspection completed <br /><small style={{ color: "#888" }}>2 hours ago</small></li>
+                  <li>🔵 Critical ticket auto assigned to Agent Smith <br /><small style={{ color: "#888" }}>3 hours ago</small></li>
+                </ul>
               </div>
             </div>
           </div>
@@ -330,13 +339,46 @@ export default function App() {
                     .filter((p) => p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.category.toLowerCase().includes(productSearch.toLowerCase()))
                     .map((p) => (
                       <tr key={p.id}>
-                        <td>{p.name}</td>
-                        <td>{p.category}</td>
-                        <td>{p.reviews}</td>
-                        <td>{p.sentiment}</td>
-                        <td>
-                          <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c" }} onClick={() => deleteProduct(p.id)}>Delete</button>
-                        </td>
+                        {editingProductId === p.id ? (
+                          <>
+                            <td>
+                              <input
+                                style={{ ...styles.input, padding: "4px 8px" }}
+                                value={editFormData.name}
+                                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                              />
+                            </td>
+                            <td>
+                              <select
+                                style={{ ...styles.input, padding: "4px 8px" }}
+                                value={editFormData.category}
+                                onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
+                              >
+                                <option value="ELECTRONICS">ELECTRONICS</option>
+                                <option value="SOFTWARE">SOFTWARE</option>
+                                <option value="HOSPITALITY">HOSPITALITY</option>
+                                <option value="RETAIL">RETAIL</option>
+                              </select>
+                            </td>
+                            <td>{p.reviews}</td>
+                            <td>{p.sentiment}</td>
+                            <td>
+                              <button style={{ ...styles.smallBtn, backgroundColor: "#28a745" }} onClick={() => saveEditProduct(p.id)}>Save</button>
+                              <button style={{ ...styles.smallBtn, backgroundColor: "#6c757d", marginLeft: "4px" }} onClick={cancelEditProduct}>Cancel</button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>{p.name}</td>
+                            <td>{p.category}</td>
+                            <td>{p.reviews}</td>
+                            <td>{p.sentiment}</td>
+                            <td>
+                              <button style={{ ...styles.smallBtn, marginRight: "4px" }} onClick={() => startEditProduct(p)}>Edit</button>
+                              <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c" }} onClick={() => deleteProduct(p.id)}>Delete</button>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))}
                 </tbody>
@@ -432,6 +474,7 @@ const styles = {
   donutPlaceholder: { display: "flex", gap: "20px", alignItems: "center" },
   donutCircle: { width: "80px", height: "80px", borderRadius: "50%", border: "12px solid #4a90e2", borderTopColor: "#e74c3c" },
   legend: { fontSize: "12px", lineHeight: "1.8" },
+  timelineList: { listStyleType: "none", paddingLeft: 0, fontSize: "13px", lineHeight: "1.8" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "13px", textAlign: "left" },
   badgeRole: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold" },
   badgePriority: (p) => ({ backgroundColor: p === "CRITICAL" ? "#fee2e2" : "#fef3c7", color: p === "CRITICAL" ? "#dc2626" : "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px" }),
