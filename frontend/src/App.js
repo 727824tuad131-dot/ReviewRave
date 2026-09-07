@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// Mock Data
+// Initial Datasets
 const initialUsers = [
   { id: "#1", name: "Brand Manager", email: "manager@gmail.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
   { id: "#2", name: "Support Agent", email: "agent@gmail.com", company: "PandaPure Support", role: "RESOLUTION_AGENT", status: "Inactive" },
@@ -13,25 +13,107 @@ const initialUsers = [
 ];
 
 const initialProducts = [
-  { name: "Headset", category: "ELECTRONICS", reviews: 0, sentiment: 0.0 },
-  { name: "mouse", category: "SOFTWARE", reviews: 0, sentiment: 0.0 },
-  { name: "headset", category: "HOSPITALITY", reviews: 0, sentiment: 0.0 },
-  { name: "keyboard", category: "RETAIL", reviews: 0, sentiment: 0.0 },
+  { id: 1, name: "Headset", category: "ELECTRONICS", reviews: 10, sentiment: 4.2 },
+  { id: 2, name: "mouse", category: "SOFTWARE", reviews: 5, sentiment: 3.8 },
+  { id: 3, name: "headset", category: "HOSPITALITY", reviews: 2, sentiment: 2.5 },
+  { id: 4, name: "keyboard", category: "RETAIL", reviews: 14, sentiment: 4.9 },
 ];
 
 const initialTickets = [
-  { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello...", team: "my" },
-  { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha...", team: "my" },
-  { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req...", team: "available" },
+  { id: "#2", priority: "HIGH", status: "Open", snippet: "hello...", team: "my" },
+  { id: "#3", priority: "HIGH", status: "Open", snippet: "hahaha...", team: "my" },
+  { id: "#4", priority: "CRITICAL", status: "Open", snippet: "req...", team: "available" },
 ];
 
 export default function App() {
-  const [currentView, setCurrentView] = useState("register");
+  const [currentView, setCurrentView] = useState("login");
   const [ticketTab, setTicketTab] = useState("my");
 
-  // Form States
-  const [registerForm, setRegisterForm] = useState({ firstName: "Jane", lastName: "Doe", company: "Acme Corp (Optional)", email: "manager@gmail.com", password: "••••••••", role: "Brand Manager" });
+  // Dynamic Application Data States
+  const [usersList, setUsersList] = useState(initialUsers);
+  const [productsList, setProductsList] = useState(initialProducts);
+  const [ticketsList, setTicketsList] = useState(initialTickets);
+
+  // Active Interactive Form States
+  const [registerForm, setRegisterForm] = useState({ firstName: "Jane", lastName: "Doe", company: "Acme Corp (Optional)", email: "manager@gmail.com", password: "••••••••", role: "BRAND_MANAGER" });
   const [loginForm, setLoginForm] = useState({ email: "manager@gmail.com", password: "••••••••" });
+  
+  // Interactive UI Filters & Controls
+  const [productSearch, setProductSearch] = useState("");
+  const [ticketStatusFilter, setTicketStatusFilter] = useState("All");
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [newProductData, setNewProductData] = useState({ name: "", category: "ELECTRONICS" });
+
+  // --- INTERACTIVE EVENT HANDLERS ---
+
+  // Auth Operations
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    const newUser = {
+      id: `#${usersList.length + 1}`,
+      name: `${registerForm.firstName} ${registerForm.lastName}`,
+      email: registerForm.email,
+      company: registerForm.company || "N/A",
+      role: registerForm.role,
+      status: "Active"
+    };
+    setUsersList([...usersList, newUser]);
+    alert("Account Registered Successfully!");
+    setCurrentView("dashboard");
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    alert(`Logged in as ${loginForm.email}`);
+    setCurrentView("dashboard");
+  };
+
+  // User Action Handlers
+  const toggleUserStatus = (id) => {
+    setUsersList(usersList.map(u => u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u));
+  };
+
+  const deleteUser = (id) => {
+    setUsersList(usersList.filter(u => u.id !== id));
+  };
+
+  // Product Action Handlers
+  const handleAddProductSubmit = (e) => {
+    e.preventDefault();
+    if (!newProductData.name) return;
+    const addedProduct = {
+      id: Date.now(),
+      name: newProductData.name,
+      category: newProductData.category,
+      reviews: 0,
+      sentiment: 0.0
+    };
+    setProductsList([...productsList, addedProduct]);
+    setNewProductData({ name: "", category: "ELECTRONICS" });
+    setShowAddProductModal(false);
+  };
+
+  const deleteProduct = (id) => {
+    setProductsList(productsList.filter(p => p.id !== id));
+  };
+
+  // Ticket Action Handlers
+  const handleClaimTicket = (id) => {
+    setTicketsList(ticketsList.map(t => t.id === id ? { ...t, team: "my" } : t));
+    alert(`Ticket ${id} moved to your team workspace.`);
+  };
+
+  const toggleTicketStatus = (id) => {
+    setTicketsList(ticketsList.map(t => t.id === id ? { ...t, status: t.status === "Open" ? "Resolved" : "Open" } : t));
+  };
+
+  const handlePullAction = () => {
+    alert("Pulled latest state synchronization successfully!");
+  };
+
+  const handleCheckVerifyAction = () => {
+    alert(`Verification check passed! Total users: ${usersList.length}, Products: ${productsList.length}, Tickets: ${ticketsList.length}`);
+  };
 
   const renderNavbar = () => (
     <nav style={styles.navbar}>
@@ -40,7 +122,7 @@ export default function App() {
         <span style={styles.navItem(currentView === "users")} onClick={() => setCurrentView("users")}>Users</span>
         <span style={styles.navItem(currentView === "products")} onClick={() => setCurrentView("products")}>Products</span>
         <span style={styles.navItem(currentView === "tickets")} onClick={() => setCurrentView("tickets")}>Reviews</span>
-        <span style={styles.navItem(false)}>Insights</span>
+        <span style={styles.navItem(false)} onClick={() => alert("Insights screen active.")}>Insights</span>
       </div>
       <button style={styles.logoutBtn} onClick={() => setCurrentView("login")}>Logout</button>
     </nav>
@@ -55,16 +137,16 @@ export default function App() {
       <div style={styles.mainContent}>
         {/* Register Screen */}
         {currentView === "register" && (
-          <div style={styles.card}>
+          <form style={styles.card} onSubmit={handleRegisterSubmit}>
             <h2 style={styles.title}>Register Account</h2>
             <div style={{ display: "flex", gap: "10px" }}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>First Name</label>
-                <input style={styles.input} value={registerForm.firstName} onChange={(e) => setRegisterForm({ ...registerForm, firstName: e.target.value })} />
+                <input required style={styles.input} value={registerForm.firstName} onChange={(e) => setRegisterForm({ ...registerForm, firstName: e.target.value })} />
               </div>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Last Name</label>
-                <input style={styles.input} value={registerForm.lastName} onChange={(e) => setRegisterForm({ ...registerForm, lastName: e.target.value })} />
+                <input required style={styles.input} value={registerForm.lastName} onChange={(e) => setRegisterForm({ ...registerForm, lastName: e.target.value })} />
               </div>
             </div>
             <div style={styles.inputGroup}>
@@ -73,55 +155,55 @@ export default function App() {
             </div>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
-              <input style={styles.input} type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} />
+              <input required style={styles.input} type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} />
             </div>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Password (min 8 chars)</label>
-              <input style={styles.input} type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
+              <input required style={styles.input} type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
             </div>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Select Role</label>
               <select style={styles.input} value={registerForm.role} onChange={(e) => setRegisterForm({ ...registerForm, role: e.target.value })}>
-                <option>Brand Manager</option>
-                <option>Resolution Agent</option>
-                <option>Platform Admin</option>
+                <option value="BRAND_MANAGER">Brand Manager</option>
+                <option value="RESOLUTION_AGENT">Resolution Agent</option>
+                <option value="PLATFORM_ADMIN">Platform Admin</option>
               </select>
             </div>
-            <button style={styles.primaryButton} onClick={() => setCurrentView("dashboard")}>Create Account</button>
+            <button type="submit" style={styles.primaryButton}>Create Account</button>
             <p style={styles.switchText}>
               Already have an account? <span style={styles.linkText} onClick={() => setCurrentView("login")}>Login here</span>
             </p>
-          </div>
+          </form>
         )}
 
         {/* Login Screen */}
         {currentView === "login" && (
-          <div style={styles.card}>
+          <form style={styles.card} onSubmit={handleLoginSubmit}>
             <h2 style={styles.title}>Login to ReviewRave</h2>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email Address</label>
-              <input style={styles.input} type="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
+              <input required style={styles.input} type="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
             </div>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Password</label>
-              <input style={styles.input} type="password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
+              <input required style={styles.input} type="password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
             </div>
-            <button style={styles.primaryButton} onClick={() => setCurrentView("dashboard")}>Login</button>
+            <button type="submit" style={styles.primaryButton}>Login</button>
             <p style={styles.switchText}>
               Don't have an account? <span style={styles.linkText} onClick={() => setCurrentView("register")}>Register here</span>
             </p>
-          </div>
+          </form>
         )}
 
-        {/* Dashboard / Platform Overview */}
+        {/* Dashboard View */}
         {currentView === "dashboard" && (
           <div style={styles.dashboardContainer}>
             {renderNavbar()}
             <h2 style={styles.sectionHeader}>Platform Overview</h2>
             <div style={styles.statsGrid}>
-              <div style={styles.statCard}><small>Total Users</small><h3>8</h3></div>
-              <div style={styles.statCard}><small>Tracked Products</small><h3>12</h3></div>
-              <div style={styles.statCard}><small>Active Tickets</small><h3>3</h3></div>
+              <div style={styles.statCard}><small>Total Users</small><h3>{usersList.length}</h3></div>
+              <div style={styles.statCard}><small>Tracked Products</small><h3>{productsList.length}</h3></div>
+              <div style={styles.statCard}><small>Active Tickets</small><h3>{ticketsList.filter(t => t.status === "Open").length}</h3></div>
               <div style={styles.statCard}><small>System Sentiment</small><h3>2.8</h3></div>
             </div>
             <div style={styles.dashGrid}>
@@ -130,9 +212,9 @@ export default function App() {
                 <div style={styles.donutPlaceholder}>
                   <div style={styles.donutCircle}></div>
                   <div style={styles.legend}>
-                    <div>🔴 Admin (25%)</div>
-                    <div>🔵 Brand Manager (50%)</div>
-                    <div>🟢 Agent (25%)</div>
+                    <div>🔴 Admin ({usersList.filter(u => u.role === "PLATFORM_ADMIN").length})</div>
+                    <div>🔵 Brand Manager ({usersList.filter(u => u.role === "BRAND_MANAGER").length})</div>
+                    <div>🟢 Agent ({usersList.filter(u => u.role === "RESOLUTION_AGENT").length})</div>
                   </div>
                 </div>
               </div>
@@ -159,15 +241,22 @@ export default function App() {
                   <tr><th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Role</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                  {initialUsers.map((u) => (
+                  {usersList.map((u) => (
                     <tr key={u.id}>
                       <td>{u.id}</td>
                       <td>{u.name}</td>
                       <td>{u.email}</td>
                       <td>{u.company}</td>
                       <td><span style={styles.badgeRole}>{u.role}</span></td>
-                      <td>{u.status}</td>
-                      <td><button style={styles.smallBtn}>Deactivate</button></td>
+                      <td><span style={{ color: u.status === "Active" ? "green" : u.status === "Pending" ? "orange" : "red" }}>{u.status}</span></td>
+                      <td>
+                        <button style={styles.smallBtn} onClick={() => toggleUserStatus(u.id)}>
+                          {u.status === "Active" ? "Deactivate" : "Activate"}
+                        </button>
+                        <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c", marginLeft: "5px" }} onClick={() => deleteUser(u.id)}>
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -182,24 +271,58 @@ export default function App() {
             {renderNavbar()}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h2 style={styles.sectionHeader}>Tracked Products</h2>
-              <button style={{ ...styles.primaryButton, width: "auto", padding: "8px 16px" }}>+ Add Product</button>
+              <button style={{ ...styles.primaryButton, width: "auto", padding: "8px 16px" }} onClick={() => setShowAddProductModal(!showAddProductModal)}>
+                {showAddProductModal ? "Cancel" : "+ Add Product"}
+              </button>
             </div>
+
+            {showAddProductModal && (
+              <form style={{ ...styles.contentCard, marginBottom: "15px" }} onSubmit={handleAddProductSubmit}>
+                <h4 style={{ marginBottom: "10px" }}>Create New Tracked Product</h4>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <input
+                    required
+                    style={styles.input}
+                    placeholder="Product Name"
+                    value={newProductData.name}
+                    onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
+                  />
+                  <select style={styles.input} value={newProductData.category} onChange={(e) => setNewProductData({ ...newProductData, category: e.target.value })}>
+                    <option value="ELECTRONICS">ELECTRONICS</option>
+                    <option value="SOFTWARE">SOFTWARE</option>
+                    <option value="HOSPITALITY">HOSPITALITY</option>
+                    <option value="RETAIL">RETAIL</option>
+                  </select>
+                  <button type="submit" style={{ ...styles.primaryButton, width: "auto", marginTop: 0 }}>Save</button>
+                </div>
+              </form>
+            )}
+
             <div style={styles.contentCard}>
-              <input style={{ ...styles.input, marginBottom: "15px" }} placeholder="Search products by name or category..." />
+              <input
+                style={{ ...styles.input, marginBottom: "15px" }}
+                placeholder="Search products by name or category..."
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+              />
               <table style={styles.table}>
                 <thead>
                   <tr><th>Name</th><th>Category</th><th>Total Reviews</th><th>Avg Sentiment</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                  {initialProducts.map((p, idx) => (
-                    <tr key={idx}>
-                      <td>{p.name}</td>
-                      <td>{p.category}</td>
-                      <td>{p.reviews}</td>
-                      <td>{p.sentiment}</td>
-                      <td><button style={styles.smallBtn}>Edit</button></td>
-                    </tr>
-                  ))}
+                  {productsList
+                    .filter((p) => p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.category.toLowerCase().includes(productSearch.toLowerCase()))
+                    .map((p) => (
+                      <tr key={p.id}>
+                        <td>{p.name}</td>
+                        <td>{p.category}</td>
+                        <td>{p.reviews}</td>
+                        <td>{p.sentiment}</td>
+                        <td>
+                          <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c" }} onClick={() => deleteProduct(p.id)}>Delete</button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -220,9 +343,10 @@ export default function App() {
             <div style={styles.contentCard}>
               <div style={{ marginBottom: "15px" }}>
                 <label style={{ fontSize: "12px", marginRight: "10px" }}>Filter by Status:</label>
-                <select style={{ ...styles.input, width: "150px", display: "inline-block" }}>
-                  <option>Open</option>
-                  <option>Resolved</option>
+                <select style={{ ...styles.input, width: "150px", display: "inline-block" }} value={ticketStatusFilter} onChange={(e) => setTicketStatusFilter(e.target.value)}>
+                  <option value="All">All</option>
+                  <option value="Open">Open</option>
+                  <option value="Resolved">Resolved</option>
                 </select>
               </div>
               <table style={styles.table}>
@@ -230,15 +354,24 @@ export default function App() {
                   <tr><th>Ticket ID</th><th>Priority</th><th>Status</th><th>Review Snippet</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                  {initialTickets
+                  {ticketsList
                     .filter((t) => t.team === ticketTab)
+                    .filter((t) => (ticketStatusFilter === "All" ? true : t.status === ticketStatusFilter))
                     .map((t) => (
                       <tr key={t.id}>
                         <td>{t.id}</td>
                         <td><span style={styles.badgePriority(t.priority)}>{t.priority}</span></td>
                         <td>{t.status}</td>
                         <td>{t.snippet}</td>
-                        <td><button style={styles.smallBtn}>{ticketTab === "my" ? "Update" : "Claim Ticket"}</button></td>
+                        <td>
+                          {ticketTab === "my" ? (
+                            <button style={styles.smallBtn} onClick={() => toggleTicketStatus(t.id)}>
+                              {t.status === "Open" ? "Mark Resolved" : "Reopen"}
+                            </button>
+                          ) : (
+                            <button style={styles.smallBtn} onClick={() => handleClaimTicket(t.id)}>Claim Ticket</button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -250,8 +383,8 @@ export default function App() {
 
       {/* Bottom Action Bar */}
       <div style={styles.bottomBar}>
-        <button style={styles.pullBtn}>Pull</button>
-        <button style={styles.checkBtn}>Check Verify</button>
+        <button style={styles.pullBtn} onClick={handlePullAction}>Pull</button>
+        <button style={styles.checkBtn} onClick={handleCheckVerifyAction}>Check Verify</button>
       </div>
     </div>
   );
@@ -264,9 +397,9 @@ const styles = {
   mainContent: { flex: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" },
   card: { backgroundColor: "#fff", padding: "30px", borderRadius: "8px", width: "100%", maxWidth: "420px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" },
   title: { textAlign: "center", marginBottom: "20px", color: "#333" },
-  inputGroup: { marginBottom: "12px", display: "flex", flexDirection: "column" },
+  inputGroup: { marginBottom: "12px", display: "flex", flexDirection: "column", flex: 1 },
   label: { fontSize: "12px", fontWeight: "bold", color: "#555", marginBottom: "4px" },
-  input: { padding: "8px 12px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px" },
+  input: { padding: "8px 12px", border: "1px solid #ccc", borderRadius: "4px", fontSize: "14px", boxSizing: "border-box", width: "100%" },
   primaryButton: { width: "100%", padding: "10px", backgroundColor: "#4a90e2", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: "pointer", marginTop: "10px" },
   switchText: { textAlign: "center", fontSize: "12px", marginTop: "15px", color: "#666" },
   linkText: { color: "#4a90e2", cursor: "pointer", fontWeight: "bold" },
@@ -284,7 +417,7 @@ const styles = {
   donutCircle: { width: "80px", height: "80px", borderRadius: "50%", border: "12px solid #4a90e2", borderTopColor: "#e74c3c" },
   legend: { fontSize: "12px", lineHeight: "1.8" },
   timelineList: { listStyleType: "none", paddingLeft: 0, fontSize: "13px", lineHeight: "1.8" },
-  table: { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
+  table: { width: "100%", borderCollapse: "collapse", fontSize: "13px", textAlign: "left" },
   badgeRole: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold" },
   badgePriority: (p) => ({ backgroundColor: p === "CRITICAL" ? "#fee2e2" : "#fef3c7", color: p === "CRITICAL" ? "#dc2626" : "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px" }),
   smallBtn: { padding: "4px 8px", backgroundColor: "#4a90e2", color: "#fff", border: "none", borderRadius: "3px", cursor: "pointer" },
