@@ -1,157 +1,199 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { login, clearError } from "./store/slices/authSlice";
+import { addNotification } from "./store/slices/notificationSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { user, loading, error } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      dispatch(
+        addNotification({
+          type: "error",
+          message: error,
+        })
+      );
+
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      alert("Please enter your email and password.");
-      return;
-    }
-
-    setLoading(true);
-
-    // Get registered users from browser storage
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
+    dispatch(
+      login({
+        email,
+        password,
+      })
     );
-
-    // Find matching user
-    const user = users.find(
-      (item) =>
-        item.email.toLowerCase() === email.trim().toLowerCase() &&
-        item.password === password
-    );
-
-    // User not found / wrong password
-    if (!user) {
-      alert("Invalid email or password.");
-      setLoading(false);
-      return;
-    }
-
-    // Create login token
-    const token =
-      user.token || "frontend-token-" + Date.now();
-
-    // Save current logged-in user
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", user.role);
-    localStorage.setItem(
-      "userId",
-      String(user.userId)
-    );
-    localStorage.setItem("email", user.email);
-
-    setLoading(false);
-
-    // Go to dashboard/home
-    navigate("/", { replace: true });
   };
 
   return (
-    <div className="simple-login-page">
+    <div className="auth-page">
+      <div className="auth-container">
 
-      <div className="simple-login-card">
+        {/* LEFT SIDE */}
+        <div className="auth-brand-panel">
+          <div className="brand-logo">
+            <div className="brand-icon">R</div>
+            <span>ReviewRave</span>
+          </div>
 
-        {/* HEADER */}
+          <div className="brand-content">
+            <span className="brand-badge">SOCIAL SENTIMENT PLATFORM</span>
 
-        <div className="simple-login-header">
-          <h1>Login to ReviewRave</h1>
+            <h1>
+              Turn customer
+              <br />
+              <span>feedback</span> into
+              <br />
+              action.
+            </h1>
+
+            <p>
+              Monitor reviews, understand customer sentiment,
+              and resolve issues faster with ReviewRave.
+            </p>
+          </div>
+
+          <div className="brand-footer">
+            <div className="brand-stat">
+              <strong>Real-time</strong>
+              <span>Sentiment Insights</span>
+            </div>
+
+            <div className="brand-stat">
+              <strong>Smart</strong>
+              <span>Issue Resolution</span>
+            </div>
+          </div>
         </div>
 
-        {/* FORM */}
+        {/* RIGHT SIDE */}
+        <div className="auth-form-panel">
+          <div className="login-card">
 
-        <form
-          className="simple-login-form"
-          onSubmit={handleSubmit}
-        >
+            <div className="mobile-brand">
+              <div className="brand-icon">R</div>
+              <span>ReviewRave</span>
+            </div>
 
-          {/* EMAIL */}
+            <div className="auth-header">
+              <span className="auth-eyebrow">WELCOME BACK</span>
 
-          <div className="simple-login-form-group">
+              <h2>Login to ReviewRave</h2>
 
-            <label htmlFor="email">
-              Email Address
-            </label>
+              <p>
+                Sign in to continue to your dashboard.
+              </p>
+            </div>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-              placeholder="manager@gmail.com"
-              autoComplete="email"
-              disabled={loading}
-              required
-            />
+            <form onSubmit={handleSubmit} className="auth-form">
+
+              {/* EMAIL */}
+              <div className="form-group">
+                <label htmlFor="email">
+                  Email Address
+                </label>
+
+                <div className="input-wrapper">
+                  <span className="input-icon">✉</span>
+
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="agent@reviewrave.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              {/* PASSWORD */}
+              <div className="form-group">
+                <div className="password-label-row">
+                  <label htmlFor="password">
+                    Password
+                  </label>
+                </div>
+
+                <div className="input-wrapper">
+                  <span className="input-icon">●</span>
+
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                  />
+
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() =>
+                      setShowPassword((previous) => !previous)
+                    }
+                    aria-label={
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* LOGIN */}
+              <button
+                type="submit"
+                className="auth-submit"
+                disabled={loading}
+              >
+                {loading ? "Authenticating..." : "Login"}
+              </button>
+            </form>
+
+            <div className="auth-divider">
+              <span>OR</span>
+            </div>
+
+            <p className="register-text">
+              Don't have an account?
+              <Link to="/register"> Register here</Link>
+            </p>
+
+            <div className="login-security">
+              <span>🔒</span>
+              <span>Secure authentication powered by ReviewRave</span>
+            </div>
 
           </div>
-
-          {/* PASSWORD */}
-
-          <div className="simple-login-form-group">
-
-            <label htmlFor="password">
-              Password
-            </label>
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              placeholder="••••••••"
-              autoComplete="current-password"
-              disabled={loading}
-              required
-            />
-
-          </div>
-
-          {/* LOGIN BUTTON */}
-
-          <button
-            type="submit"
-            className="simple-login-button"
-            disabled={loading}
-          >
-            {loading
-              ? "Logging in..."
-              : "Login"}
-          </button>
-
-        </form>
-
-        {/* REGISTER LINK */}
-
-        <div className="simple-register-text">
-
-          <span>
-            Don't have an account?
-          </span>
-
-          <Link to="/register">
-            Register here
-          </Link>
-
         </div>
 
       </div>
-
     </div>
   );
 };
