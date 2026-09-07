@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// Initial Datasets
+// Default Seed Data
 const initialUsers = [
   { id: "#1", name: "Brand Manager", email: "manager@gmail.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
   { id: "#2", name: "Support Agent", email: "agent@gmail.com", company: "PandaPure Support", role: "RESOLUTION_AGENT", status: "Inactive" },
@@ -29,24 +29,45 @@ export default function App() {
   const [currentView, setCurrentView] = useState("login");
   const [ticketTab, setTicketTab] = useState("my");
 
-  // Dynamic Application Data States
-  const [usersList, setUsersList] = useState(initialUsers);
-  const [productsList, setProductsList] = useState(initialProducts);
-  const [ticketsList, setTicketsList] = useState(initialTickets);
+  // --- LOCALSTORAGE INITIALIZATION ---
+  const [usersList, setUsersList] = useState(() => {
+    const saved = localStorage.getItem("rr_users");
+    return saved ? JSON.parse(saved) : initialUsers;
+  });
 
-  // Active Interactive Form States
+  const [productsList, setProductsList] = useState(() => {
+    const saved = localStorage.getItem("rr_products");
+    return saved ? JSON.parse(saved) : initialProducts;
+  });
+
+  const [ticketsList, setTicketsList] = useState(() => {
+    const saved = localStorage.getItem("rr_tickets");
+    return saved ? JSON.parse(saved) : initialTickets;
+  });
+
+  // --- LOCALSTORAGE PERSISTENCE EFFECTS ---
+  useEffect(() => {
+    localStorage.setItem("rr_users", JSON.stringify(usersList));
+  }, [usersList]);
+
+  useEffect(() => {
+    localStorage.setItem("rr_products", JSON.stringify(productsList));
+  }, [productsList]);
+
+  useEffect(() => {
+    localStorage.setItem("rr_tickets", JSON.stringify(ticketsList));
+  }, [ticketsList]);
+
+  // Form & UI States
   const [registerForm, setRegisterForm] = useState({ firstName: "Jane", lastName: "Doe", company: "Acme Corp (Optional)", email: "manager@gmail.com", password: "••••••••", role: "BRAND_MANAGER" });
   const [loginForm, setLoginForm] = useState({ email: "manager@gmail.com", password: "••••••••" });
   
-  // Interactive UI Filters & Controls
   const [productSearch, setProductSearch] = useState("");
   const [ticketStatusFilter, setTicketStatusFilter] = useState("All");
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [newProductData, setNewProductData] = useState({ name: "", category: "ELECTRONICS" });
 
   // --- INTERACTIVE EVENT HANDLERS ---
-
-  // Auth Operations
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
     const newUser = {
@@ -58,7 +79,7 @@ export default function App() {
       status: "Active"
     };
     setUsersList([...usersList, newUser]);
-    alert("Account Registered Successfully!");
+    alert("Account Registered & Saved to LocalStorage!");
     setCurrentView("dashboard");
   };
 
@@ -68,7 +89,6 @@ export default function App() {
     setCurrentView("dashboard");
   };
 
-  // User Action Handlers
   const toggleUserStatus = (id) => {
     setUsersList(usersList.map(u => u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u));
   };
@@ -77,7 +97,6 @@ export default function App() {
     setUsersList(usersList.filter(u => u.id !== id));
   };
 
-  // Product Action Handlers
   const handleAddProductSubmit = (e) => {
     e.preventDefault();
     if (!newProductData.name) return;
@@ -97,22 +116,21 @@ export default function App() {
     setProductsList(productsList.filter(p => p.id !== id));
   };
 
-  // Ticket Action Handlers
   const handleClaimTicket = (id) => {
     setTicketsList(ticketsList.map(t => t.id === id ? { ...t, team: "my" } : t));
-    alert(`Ticket ${id} moved to your team workspace.`);
   };
 
   const toggleTicketStatus = (id) => {
     setTicketsList(ticketsList.map(t => t.id === id ? { ...t, status: t.status === "Open" ? "Resolved" : "Open" } : t));
   };
 
-  const handlePullAction = () => {
-    alert("Pulled latest state synchronization successfully!");
-  };
-
-  const handleCheckVerifyAction = () => {
-    alert(`Verification check passed! Total users: ${usersList.length}, Products: ${productsList.length}, Tickets: ${ticketsList.length}`);
+  const handleResetStorage = () => {
+    if (window.confirm("Reset all stored data back to defaults?")) {
+      localStorage.clear();
+      setUsersList(initialUsers);
+      setProductsList(initialProducts);
+      setTicketsList(initialTickets);
+    }
   };
 
   const renderNavbar = () => (
@@ -122,7 +140,6 @@ export default function App() {
         <span style={styles.navItem(currentView === "users")} onClick={() => setCurrentView("users")}>Users</span>
         <span style={styles.navItem(currentView === "products")} onClick={() => setCurrentView("products")}>Products</span>
         <span style={styles.navItem(currentView === "tickets")} onClick={() => setCurrentView("tickets")}>Reviews</span>
-        <span style={styles.navItem(false)} onClick={() => alert("Insights screen active.")}>Insights</span>
       </div>
       <button style={styles.logoutBtn} onClick={() => setCurrentView("login")}>Logout</button>
     </nav>
@@ -219,12 +236,11 @@ export default function App() {
                 </div>
               </div>
               <div style={styles.contentCard}>
-                <h4 style={{ marginBottom: "15px" }}>Recent Timeline</h4>
-                <ul style={styles.timelineList}>
-                  <li>🔵 New brand manager registered: Brand Corp <br /><small style={{ color: "#888" }}>1 hour ago</small></li>
-                  <li>🔵 System wide review inspection completed <br /><small style={{ color: "#888" }}>2 hours ago</small></li>
-                  <li>🔵 Critical ticket auto assigned to Agent Smith <br /><small style={{ color: "#888" }}>3 hours ago</small></li>
-                </ul>
+                <h4 style={{ marginBottom: "15px" }}>Storage Settings</h4>
+                <p style={{ fontSize: "12px", color: "#666" }}>Data persistent state is active through browser LocalStorage.</p>
+                <button style={{ ...styles.smallBtn, backgroundColor: "#e74c3c", marginTop: "10px" }} onClick={handleResetStorage}>
+                  Clear & Reset LocalStorage
+                </button>
               </div>
             </div>
           </div>
@@ -383,8 +399,8 @@ export default function App() {
 
       {/* Bottom Action Bar */}
       <div style={styles.bottomBar}>
-        <button style={styles.pullBtn} onClick={handlePullAction}>Pull</button>
-        <button style={styles.checkBtn} onClick={handleCheckVerifyAction}>Check Verify</button>
+        <button style={styles.pullBtn} onClick={() => alert("Pulled fresh data sync!")}>Pull</button>
+        <button style={styles.checkBtn} onClick={() => alert("Verification check passed!")}>Check Verify</button>
       </div>
     </div>
   );
@@ -416,7 +432,6 @@ const styles = {
   donutPlaceholder: { display: "flex", gap: "20px", alignItems: "center" },
   donutCircle: { width: "80px", height: "80px", borderRadius: "50%", border: "12px solid #4a90e2", borderTopColor: "#e74c3c" },
   legend: { fontSize: "12px", lineHeight: "1.8" },
-  timelineList: { listStyleType: "none", paddingLeft: 0, fontSize: "13px", lineHeight: "1.8" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "13px", textAlign: "left" },
   badgeRole: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "bold" },
   badgePriority: (p) => ({ backgroundColor: p === "CRITICAL" ? "#fee2e2" : "#fef3c7", color: p === "CRITICAL" ? "#dc2626" : "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px" }),
