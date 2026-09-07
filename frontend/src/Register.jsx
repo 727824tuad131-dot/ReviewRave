@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { registerUser, clearError } from "./store/slices/authSlice";
+import { addNotification } from "./store/slices/notificationSlice";
 
 const Register = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { user, loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -14,7 +21,25 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (error) {
+      dispatch(
+        addNotification({
+          type: "error",
+          message: error,
+        })
+      );
+
+      dispatch(clearError());
+    }
+  }, [error, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,312 +53,296 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setLoading(true);
-
-    /* =========================================
-       GET EXISTING USERS
-    ========================================= */
-
-    const users = JSON.parse(
-      localStorage.getItem("users") || "[]"
-    );
-
-    /* =========================================
-       CHECK EMAIL
-    ========================================= */
-
-    const existingUser = users.find(
-      (user) =>
-        user.email.toLowerCase() ===
-        formData.email.toLowerCase()
-    );
-
-    if (existingUser) {
-      alert(
-        "This email is already registered. Please login."
-      );
-
-      setLoading(false);
-      return;
-    }
-
-    /* =========================================
-       CREATE NEW USER
-    ========================================= */
-
-    const newUser = {
-      userId: Date.now(),
-
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      companyName: formData.companyName,
-
-      email: formData.email,
-      password: formData.password,
-
-      role: formData.role,
-
-      token: "frontend-token-" + Date.now(),
-    };
-
-    /* =========================================
-       SAVE USER
-    ========================================= */
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "users",
-      JSON.stringify(users)
-    );
-
-    /* =========================================
-       SAVE CURRENT LOGIN
-    ========================================= */
-
-    localStorage.setItem(
-      "token",
-      newUser.token
-    );
-
-    localStorage.setItem(
-      "role",
-      newUser.role
-    );
-
-    localStorage.setItem(
-      "userId",
-      String(newUser.userId)
-    );
-
-    localStorage.setItem(
-      "email",
-      newUser.email
-    );
-
-    /* =========================================
-       GO TO DASHBOARD
-    ========================================= */
-
-    navigate("/");
+    dispatch(registerUser(formData));
   };
 
   return (
-    <div className="simple-register-page">
+    <div className="auth-page">
+      <div className="auth-container register-container">
 
-      <div className="simple-register-card">
+        {/* =================================================
+            LEFT BRAND PANEL
+        ================================================= */}
 
-        {/* HEADER */}
+        <div className="auth-brand-panel register-brand-panel">
+          <div className="brand-logo">
+            <div className="brand-icon">R</div>
+            <span>ReviewRave</span>
+          </div>
 
-        <div className="simple-register-header">
-          <h1>Register Account</h1>
+          <div className="brand-content">
+            <span className="brand-badge">
+              JOIN REVIEWRAVE
+            </span>
+
+            <h1>
+              Build better
+              <br />
+              <span>customer</span>
+              <br />
+              experiences.
+            </h1>
+
+            <p>
+              Create your ReviewRave account and turn
+              customer feedback into meaningful action.
+            </p>
+
+            <div className="register-benefits">
+              <div className="register-benefit">
+                <span className="benefit-icon">✓</span>
+                <div>
+                  <strong>Monitor sentiment</strong>
+                  <small>Understand what customers really think.</small>
+                </div>
+              </div>
+
+              <div className="register-benefit">
+                <span className="benefit-icon">✓</span>
+                <div>
+                  <strong>Track reviews</strong>
+                  <small>Bring customer feedback into one place.</small>
+                </div>
+              </div>
+
+              <div className="register-benefit">
+                <span className="benefit-icon">✓</span>
+                <div>
+                  <strong>Resolve issues faster</strong>
+                  <small>Turn negative feedback into action.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="brand-footer">
+            <div className="brand-stat">
+              <strong>One platform</strong>
+              <span>For smarter feedback</span>
+            </div>
+
+            <div className="brand-stat">
+              <strong>Secure</strong>
+              <span>Role-based access</span>
+            </div>
+          </div>
         </div>
 
+        {/* =================================================
+            REGISTER FORM
+        ================================================= */}
 
-        {/* FORM */}
+        <div className="auth-form-panel register-form-panel">
+          <div className="register-card">
 
-        <form
-          className="simple-register-form"
-          onSubmit={handleSubmit}
-        >
-
-          {/* FIRST + LAST NAME */}
-
-          <div className="simple-name-row">
-
-            <div className="simple-form-group">
-
-              <label htmlFor="firstName">
-                First Name
-              </label>
-
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={formData.firstName}
-                onChange={handleChange}
-                placeholder="First Name"
-                required
-                disabled={loading}
-              />
-
+            <div className="mobile-brand">
+              <div className="brand-icon">R</div>
+              <span>ReviewRave</span>
             </div>
 
+            <div className="auth-header">
+              <span className="auth-eyebrow">
+                GET STARTED
+              </span>
 
-            <div className="simple-form-group">
+              <h2>Register Account</h2>
 
-              <label htmlFor="lastName">
-                Last Name
-              </label>
-
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={formData.lastName}
-                onChange={handleChange}
-                placeholder="Last Name"
-                required
-                disabled={loading}
-              />
-
+              <p>
+                Create your account to start using ReviewRave.
+              </p>
             </div>
 
-          </div>
-
-
-          {/* COMPANY */}
-
-          <div className="simple-form-group">
-
-            <label htmlFor="companyName">
-              Company Name
-            </label>
-
-            <input
-              id="companyName"
-              name="companyName"
-              type="text"
-              value={formData.companyName}
-              onChange={handleChange}
-              placeholder="Enter company name"
-              required
-              disabled={loading}
-            />
-
-          </div>
-
-
-          {/* EMAIL */}
-
-          <div className="simple-form-group">
-
-            <label htmlFor="email">
-              Email Address
-            </label>
-
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email address"
-              required
-              disabled={loading}
-            />
-
-          </div>
-
-
-          {/* PASSWORD */}
-
-          <div className="simple-form-group">
-
-            <label htmlFor="password">
-              Password (minimum 8 characters)
-            </label>
-
-
-            <div className="simple-password-wrapper">
-
-              <input
-                id="password"
-                name="password"
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter password"
-                minLength={8}
-                required
-                disabled={loading}
-              />
-
-
-              <button
-                type="button"
-                className="simple-password-toggle"
-                onClick={() =>
-                  setShowPassword(!showPassword)
-                }
-              >
-                {showPassword
-                  ? "Hide"
-                  : "Show"}
-              </button>
-
-            </div>
-
-          </div>
-
-
-          {/* ROLE */}
-
-          <div className="simple-form-group">
-
-            <label htmlFor="role">
-              Select Role
-            </label>
-
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              disabled={loading}
+            <form
+              onSubmit={handleSubmit}
+              className="auth-form register-form"
             >
 
-              <option value="BRAND_MANAGER">
-                Brand Manager
-              </option>
+              {/* FIRST + LAST NAME */}
 
-              <option value="RESOLUTION_AGENT">
-                Resolution Agent
-              </option>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="firstName">
+                    First Name
+                  </label>
 
-              <option value="PLATFORM_ADMIN">
-                Platform Admin
-              </option>
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="given-name"
+                  />
+                </div>
 
-            </select>
+                <div className="form-group">
+                  <label htmlFor="lastName">
+                    Last Name
+                  </label>
+
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+              </div>
+
+              {/* COMPANY */}
+
+              <div className="form-group">
+                <label htmlFor="companyName">
+                  Company Name
+                  <span className="optional-label">Optional</span>
+                </label>
+
+                <div className="input-wrapper">
+                  <span className="input-icon">▣</span>
+
+                  <input
+                    id="companyName"
+                    name="companyName"
+                    type="text"
+                    placeholder="Enter company name"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    autoComplete="organization"
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL */}
+
+              <div className="form-group">
+                <label htmlFor="register-email">
+                  Email Address
+                </label>
+
+                <div className="input-wrapper">
+                  <span className="input-icon">✉</span>
+
+                  <input
+                    id="register-email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter email address"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              {/* PASSWORD */}
+
+              <div className="form-group">
+                <label htmlFor="register-password">
+                  Password
+                  <span className="password-hint">
+                    Minimum 8 characters
+                  </span>
+                </label>
+
+                <div className="input-wrapper">
+                  <span className="input-icon">●</span>
+
+                  <input
+                    id="register-password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                  />
+
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() =>
+                      setShowPassword((previous) => !previous)
+                    }
+                    aria-label={
+                      showPassword
+                        ? "Hide password"
+                        : "Show password"
+                    }
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* ROLE */}
+
+              <div className="form-group">
+                <label htmlFor="role">
+                  Select Role
+                </label>
+
+                <div className="select-wrapper">
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="BRAND_MANAGER">
+                      Brand Manager
+                    </option>
+
+                    <option value="RESOLUTION_AGENT">
+                      Resolution Agent
+                    </option>
+
+                    <option value="PLATFORM_ADMIN">
+                      Platform Admin
+                    </option>
+                  </select>
+
+                  <span className="select-arrow">⌄</span>
+                </div>
+              </div>
+
+              {/* SUBMIT */}
+
+              <button
+                type="submit"
+                className="auth-submit"
+                disabled={loading}
+              >
+                {loading ? "Registering..." : "Create Account"}
+              </button>
+            </form>
+
+            <div className="auth-divider">
+              <span>ALREADY REGISTERED?</span>
+            </div>
+
+            <p className="register-text">
+              Already have an account?
+              <Link to="/login"> Login here</Link>
+            </p>
+
+            <div className="login-security">
+              <span>🔒</span>
+              <span>Your information is securely protected</span>
+            </div>
 
           </div>
-
-
-          {/* BUTTON */}
-
-          <button
-            type="submit"
-            className="simple-create-button"
-            disabled={loading}
-          >
-            {loading
-              ? "Creating Account..."
-              : "Create Account"}
-          </button>
-
-        </form>
-
-
-        {/* LOGIN */}
-
-        <div className="simple-login-text">
-
-          Already have an account?
-
-          <Link to="/login">
-            Login here
-          </Link>
-
         </div>
-
       </div>
-
     </div>
   );
 };
