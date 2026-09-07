@@ -23,7 +23,7 @@ const ProductList = () => {
   const role = localStorage.getItem("role");
 
   const canManageProducts =
-    role === "BRAND_MANAGER" ||
+    role === "BRAND_MANAGER" ||  
     role === "PLATFORM_ADMIN";
 
   useEffect(() => {
