@@ -37,33 +37,7 @@ export const login = createAsyncThunk(
     try {
       const response = await authService.login(credentials);
 
-      const data = response?.data ?? response;
-
-      /*
-       * Store authentication information immediately
-       * after successful login.
-       */
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      if (data?.role) {
-        localStorage.setItem("role", data.role);
-      }
-
-      if (data?.userId !== undefined && data?.userId !== null) {
-        localStorage.setItem("userId", String(data.userId));
-      }
-
-      /*
-       * Email is optional because AuthResponseDto
-       * officially contains token, role and userId.
-       */
-      if (data?.email) {
-        localStorage.setItem("email", data.email);
-      }
-
-      return data;
+      return response?.data ?? response;
     } catch (error) {
       return rejectWithValue(
         getErrorMessage(error, "Login failed")
@@ -82,25 +56,7 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await authService.register(userData);
 
-      const data = response?.data ?? response;
-
-      if (data?.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      if (data?.role) {
-        localStorage.setItem("role", data.role);
-      }
-
-      if (data?.userId !== undefined && data?.userId !== null) {
-        localStorage.setItem("userId", String(data.userId));
-      }
-
-      if (data?.email) {
-        localStorage.setItem("email", data.email);
-      }
-
-      return data;
+      return response?.data ?? response;
     } catch (error) {
       return rejectWithValue(
         getErrorMessage(error, "Registration failed")
@@ -115,6 +71,12 @@ export const registerUser = createAsyncThunk(
 
 const initialState = {
   user: null,
+
+  /* These are required by the Redux tests */
+  token: null,
+  role: null,
+  userId: null,
+
   loading: false,
   error: null,
 };
@@ -125,6 +87,7 @@ const initialState = {
 
 const authSlice = createSlice({
   name: "auth",
+
   initialState,
 
   reducers: {
@@ -137,11 +100,14 @@ const authSlice = createSlice({
        * Clear Redux authentication state.
        */
       state.user = null;
+      state.token = null;
+      state.role = null;
+      state.userId = null;
       state.loading = false;
       state.error = null;
 
       /*
-       * Clear all ReviewRave authentication keys.
+       * Clear browser session.
        */
       localStorage.removeItem("token");
       localStorage.removeItem("role");
@@ -160,47 +126,141 @@ const authSlice = createSlice({
 
   extraReducers: (builder) => {
     /* =====================================================
-       LOGIN
+       LOGIN PENDING
     ===================================================== */
 
-    builder
-      .addCase(login.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-
-      .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
-        state.error = null;
-        state.user = action.payload;
-      })
-
-      .addCase(login.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Login failed";
-      });
+    builder.addCase(login.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
 
     /* =====================================================
-       REGISTER
+       LOGIN SUCCESS
     ===================================================== */
 
-    builder
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+    builder.addCase(login.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
 
-      .addCase(registerUser.fulfilled, (state, action) => {
+      const data = action.payload || {};
+
+      /*
+       * Store authentication data directly in Redux.
+       *
+       * T29 checks:
+       * state.auth.token
+       */
+      state.token = data.token ?? null;
+      state.role = data.role ?? null;
+      state.userId =
+        data.userId !== undefined && data.userId !== null
+          ? data.userId
+          : null;
+
+      state.user = data;
+
+      /*
+       * Persist authentication information.
+       */
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      if (data.role) {
+        localStorage.setItem("role", data.role);
+      }
+
+      if (
+        data.userId !== undefined &&
+        data.userId !== null
+      ) {
+        localStorage.setItem(
+          "userId",
+          String(data.userId)
+        );
+      }
+
+      if (data.email) {
+        localStorage.setItem("email", data.email);
+      }
+    });
+
+    /* =====================================================
+       LOGIN FAILURE
+    ===================================================== */
+
+    builder.addCase(login.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Login failed";
+    });
+
+    /* =====================================================
+       REGISTER PENDING
+    ===================================================== */
+
+    builder.addCase(registerUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    /* =====================================================
+       REGISTER SUCCESS
+    ===================================================== */
+
+    builder.addCase(
+      registerUser.fulfilled,
+      (state, action) => {
         state.loading = false;
         state.error = null;
-        state.user = action.payload;
-      })
 
-      .addCase(registerUser.rejected, (state, action) => {
+        const data = action.payload || {};
+
+        state.token = data.token ?? null;
+        state.role = data.role ?? null;
+        state.userId =
+          data.userId !== undefined &&
+          data.userId !== null
+            ? data.userId
+            : null;
+
+        state.user = data;
+
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        if (data.role) {
+          localStorage.setItem("role", data.role);
+        }
+
+        if (
+          data.userId !== undefined &&
+          data.userId !== null
+        ) {
+          localStorage.setItem(
+            "userId",
+            String(data.userId)
+          );
+        }
+
+        if (data.email) {
+          localStorage.setItem("email", data.email);
+        }
+      }
+    );
+
+    /* =====================================================
+       REGISTER FAILURE
+    ===================================================== */
+
+    builder.addCase(
+      registerUser.rejected,
+      (state, action) => {
         state.loading = false;
         state.error =
           action.payload || "Registration failed";
-      });
+      }
+    );
   },
 });
 
