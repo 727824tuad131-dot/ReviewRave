@@ -10,7 +10,7 @@ const ProductList = () => {
   const dispatch = useDispatch();
 
   const {
-    items = [],
+    items = [], 
     loading,
     error,
   } = useSelector(
