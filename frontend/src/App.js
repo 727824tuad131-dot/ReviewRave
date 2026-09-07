@@ -147,7 +147,6 @@ export default function App() {
         <span style={styles.navItem(currentView === "users")} onClick={() => setCurrentView("users")}>Users</span>
         <span style={styles.navItem(currentView === "products")} onClick={() => setCurrentView("products")}>Products</span>
         <span style={styles.navItem(currentView === "tickets")} onClick={() => setCurrentView("tickets")}>Reviews</span>
-        <span style={styles.navItem(false)}>Insights</span>
       </div>
       <button style={styles.logoutBtn} onClick={() => setCurrentView("login")}>Logout</button>
     </nav>
