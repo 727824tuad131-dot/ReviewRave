@@ -1,416 +1,196 @@
 /* =========================================================
-   REVIEWRAVE LOGIN PAGE
+   REGISTER PAGE
 ========================================================= */
 
-.auth-page {
-  min-height: 100vh;
-  width: 100%;
-  background: #f4f7fb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  box-sizing: border-box;
+.register-container {
+  min-height: 720px;
 }
 
-.auth-container {
-  width: min(1180px, 100%);
-  min-height: 680px;
+.register-form-panel {
+  padding-top: 35px;
+  padding-bottom: 35px;
+}
+
+.register-card {
+  width: min(500px, 100%);
+}
+
+.register-form {
+  gap: 16px;
+}
+
+.form-row {
   display: grid;
-  grid-template-columns: 46% 54%;
-  background: #ffffff;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-/* =========================================================
-   BRAND PANEL
-========================================================= */
-
-.auth-brand-panel {
-  position: relative;
-  padding: 48px;
-  background: linear-gradient(145deg, #172554 0%, #1e3a8a 55%, #2563eb 100%);
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+.register-form .form-group {
+  gap: 7px;
 }
 
-.auth-brand-panel::before {
-  content: "";
-  position: absolute;
-  width: 320px;
-  height: 320px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
-  top: -120px;
-  right: -100px;
-}
-
-.auth-brand-panel::after {
-  content: "";
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50%;
-  bottom: -230px;
-  left: -180px;
-}
-
-.brand-logo {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 23px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-.brand-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 21px;
-  font-weight: 800;
-}
-
-.brand-content {
-  position: relative;
-  z-index: 2;
-  max-width: 470px;
-}
-
-.brand-badge {
-  display: inline-block;
-  padding: 8px 13px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-}
-
-.brand-content h1 {
-  margin: 24px 0 20px;
-  font-size: clamp(38px, 4vw, 54px);
-  line-height: 1.05;
-  letter-spacing: -2px;
-}
-
-.brand-content h1 span {
-  color: #93c5fd;
-}
-
-.brand-content p {
-  max-width: 430px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.brand-footer {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  gap: 45px;
-  padding-top: 25px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.brand-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.brand-stat strong {
-  font-size: 14px;
-}
-
-.brand-stat span {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.62);
-}
-
-/* =========================================================
-   FORM PANEL
-========================================================= */
-
-.auth-form-panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 50px 70px;
-  background: #ffffff;
-}
-
-.login-card {
-  width: min(430px, 100%);
-}
-
-.mobile-brand {
-  display: none;
-}
-
-.auth-header {
-  margin-bottom: 32px;
-}
-
-.auth-eyebrow {
-  display: block;
-  margin-bottom: 10px;
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.8px;
-}
-
-.auth-header h2 {
-  margin: 0;
-  color: #172033;
-  font-size: 32px;
-  line-height: 1.2;
-  letter-spacing: -1px;
-}
-
-.auth-header p {
-  margin: 10px 0 0;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* =========================================================
-   FORM
-========================================================= */
-
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  color: #273449;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  color: #94a3b8;
-  font-size: 14px;
-  pointer-events: none;
-}
-
-.input-wrapper input {
+.register-form .form-group > input {
   width: 100%;
-  height: 52px;
+  height: 48px;
   box-sizing: border-box;
   border: 1px solid #dbe2ea;
-  border-radius: 11px;
+  border-radius: 10px;
   background: #f8fafc;
   color: #172033;
-  padding: 0 16px 0 45px;
-  font-size: 14px;
+  padding: 0 14px;
+  font-size: 13px;
   outline: none;
   transition: 0.2s ease;
 }
 
-.input-wrapper input::placeholder {
-  color: #a0aec0;
-}
-
-.input-wrapper input:hover {
+.register-form .form-group > input:hover {
   border-color: #b9c5d4;
 }
 
-.input-wrapper input:focus {
+.register-form .form-group > input:focus {
   background: #ffffff;
   border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-.password-label-row {
-  display: flex;
-  justify-content: space-between;
+.register-form .input-wrapper input {
+  height: 48px;
 }
 
-.password-toggle {
-  position: absolute;
-  right: 12px;
-  border: none;
-  background: transparent;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 7px;
+.optional-label,
+.password-hint {
+  margin-left: 7px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 500;
 }
 
-.password-toggle:hover {
-  color: #1d4ed8;
+.password-hint {
+  float: right;
+  margin-top: 2px;
 }
 
-.auth-submit {
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
   width: 100%;
-  height: 52px;
-  margin-top: 5px;
-  border: none;
-  border-radius: 11px;
-  background: #2563eb;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 800;
+  height: 48px;
+  appearance: none;
+  box-sizing: border-box;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  padding: 0 42px 0 14px;
+  font-size: 13px;
+  outline: none;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
   transition: 0.2s ease;
 }
 
-.auth-submit:hover:not(:disabled) {
-  background: #1d4ed8;
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28);
+.select-wrapper select:hover {
+  border-color: #b9c5d4;
 }
 
-.auth-submit:active:not(:disabled) {
-  transform: translateY(0);
+.select-wrapper select:focus {
+  background: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-.auth-submit:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+.select-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  font-size: 17px;
 }
 
-/* =========================================================
-   DIVIDER / REGISTER
-========================================================= */
+.register-benefits {
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
-.auth-divider {
+.register-benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.benefit-icon {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin: 30px 0 20px;
-  color: #94a3b8;
-  font-size: 10px;
-  font-weight: 700;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(147, 197, 253, 0.15);
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 800;
 }
 
-.auth-divider::before,
-.auth-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #e5eaf0;
+.register-benefit div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.register-text {
-  margin: 0;
-  text-align: center;
-  color: #64748b;
+.register-benefit strong {
   font-size: 13px;
 }
 
-.register-text a {
-  color: #2563eb;
-  font-weight: 800;
-  text-decoration: none;
-  margin-left: 4px;
-}
-
-.register-text a:hover {
-  text-decoration: underline;
-}
-
-.login-security {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  color: #94a3b8;
+.register-benefit small {
+  color: rgba(255, 255, 255, 0.58);
   font-size: 11px;
+  line-height: 1.5;
+}
+
+.register-form .auth-submit {
+  margin-top: 7px;
 }
 
 /* =========================================================
-   RESPONSIVE
+   REGISTER RESPONSIVE
 ========================================================= */
 
 @media (max-width: 900px) {
-  .auth-container {
-    grid-template-columns: 1fr;
+  .register-container {
     min-height: auto;
-    max-width: 560px;
   }
 
-  .auth-brand-panel {
-    display: none;
+  .register-form-panel {
+    padding-top: 40px;
+    padding-bottom: 40px;
   }
 
-  .auth-form-panel {
-    padding: 45px 35px;
-  }
-
-  .mobile-brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 35px;
-    color: #172033;
-    font-size: 22px;
-    font-weight: 800;
-  }
-
-  .mobile-brand .brand-icon {
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
+  .register-card {
+    width: min(520px, 100%);
   }
 }
 
-@media (max-width: 500px) {
-  .auth-page {
-    padding: 0;
-    align-items: stretch;
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .auth-container {
-    min-height: 100vh;
-    border-radius: 0;
+  .password-hint {
+    display: none;
   }
 
-  .auth-form-panel {
+  .register-form-panel {
     padding: 30px 22px;
   }
 
-  .auth-header h2 {
-    font-size: 28px;
+  .register-card {
+    width: 100%;
   }
 }
