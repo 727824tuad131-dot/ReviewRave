@@ -2,14 +2,26 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { registerUser, clearError } from "./store/slices/authSlice";
-import { addNotification } from "./store/slices/notificationSlice";
+import {
+  registerUser,
+  clearError,
+} from "./store/slices/authSlice";
+
+import {
+  addNotification,
+} from "./store/slices/notificationSlice";
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error } = useSelector(
+    (state) => state.auth || {}
+  );
+
+  /* =========================================================
+     FORM STATE
+  ========================================================= */
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -22,11 +34,19 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  /* =========================================================
+     REDIRECT AFTER SUCCESSFUL REGISTRATION
+  ========================================================= */
+
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, [user, navigate]);
+
+  /* =========================================================
+     ERROR HANDLING
+  ========================================================= */
 
   useEffect(() => {
     if (error) {
@@ -41,6 +61,10 @@ const Register = () => {
     }
   }, [error, dispatch]);
 
+  /* =========================================================
+     HANDLE INPUT CHANGE
+  ========================================================= */
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -50,11 +74,23 @@ const Register = () => {
     }));
   };
 
+  /* =========================================================
+     HANDLE REGISTER
+  ========================================================= */
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    /*
+     * Send the complete registration object
+     * to Redux -> authSlice -> authService -> backend.
+     */
     dispatch(registerUser(formData));
   };
+
+  /* =========================================================
+     UI
+  ========================================================= */
 
   return (
     <div className="auth-page">
@@ -65,12 +101,18 @@ const Register = () => {
         ================================================= */}
 
         <div className="auth-brand-panel register-brand-panel">
+
+          {/* LOGO */}
+
           <div className="brand-logo">
             <div className="brand-icon">R</div>
             <span>ReviewRave</span>
           </div>
 
+          {/* BRAND CONTENT */}
+
           <div className="brand-content">
+
             <span className="brand-badge">
               JOIN REVIEWRAVE
             </span>
@@ -88,79 +130,143 @@ const Register = () => {
               customer feedback into meaningful action.
             </p>
 
+            {/* BENEFITS */}
+
             <div className="register-benefits">
+
               <div className="register-benefit">
-                <span className="benefit-icon">✓</span>
+                <span className="benefit-icon">
+                  ✓
+                </span>
+
                 <div>
-                  <strong>Monitor sentiment</strong>
-                  <small>Understand what customers really think.</small>
+                  <strong>
+                    Monitor sentiment
+                  </strong>
+
+                  <small>
+                    Understand what customers really think.
+                  </small>
                 </div>
               </div>
 
               <div className="register-benefit">
-                <span className="benefit-icon">✓</span>
+                <span className="benefit-icon">
+                  ✓
+                </span>
+
                 <div>
-                  <strong>Track reviews</strong>
-                  <small>Bring customer feedback into one place.</small>
+                  <strong>
+                    Track reviews
+                  </strong>
+
+                  <small>
+                    Bring customer feedback into one place.
+                  </small>
                 </div>
               </div>
 
               <div className="register-benefit">
-                <span className="benefit-icon">✓</span>
+                <span className="benefit-icon">
+                  ✓
+                </span>
+
                 <div>
-                  <strong>Resolve issues faster</strong>
-                  <small>Turn negative feedback into action.</small>
+                  <strong>
+                    Resolve issues faster
+                  </strong>
+
+                  <small>
+                    Turn negative feedback into action.
+                  </small>
                 </div>
               </div>
+
             </div>
           </div>
 
+          {/* BRAND FOOTER */}
+
           <div className="brand-footer">
+
             <div className="brand-stat">
-              <strong>One platform</strong>
-              <span>For smarter feedback</span>
+              <strong>
+                One platform
+              </strong>
+
+              <span>
+                For smarter feedback
+              </span>
             </div>
 
             <div className="brand-stat">
-              <strong>Secure</strong>
-              <span>Role-based access</span>
+              <strong>
+                Secure
+              </strong>
+
+              <span>
+                Role-based access
+              </span>
             </div>
+
           </div>
         </div>
 
         {/* =================================================
-            REGISTER FORM
+            RIGHT REGISTER FORM
         ================================================= */}
 
         <div className="auth-form-panel register-form-panel">
+
           <div className="register-card">
 
+            {/* MOBILE BRAND */}
+
             <div className="mobile-brand">
-              <div className="brand-icon">R</div>
-              <span>ReviewRave</span>
+              <div className="brand-icon">
+                R
+              </div>
+
+              <span>
+                ReviewRave
+              </span>
             </div>
 
+            {/* HEADER */}
+
             <div className="auth-header">
+
               <span className="auth-eyebrow">
                 GET STARTED
               </span>
 
-              <h2>Register Account</h2>
+              <h2>
+                Register Account
+              </h2>
 
               <p>
                 Create your account to start using ReviewRave.
               </p>
+
             </div>
+
+            {/* =================================================
+                REGISTER FORM
+            ================================================= */}
 
             <form
               onSubmit={handleSubmit}
               className="auth-form register-form"
             >
 
-              {/* FIRST + LAST NAME */}
+              {/* =================================================
+                  FIRST NAME + LAST NAME
+              ================================================= */}
 
               <div className="form-row">
+
                 <div className="form-group">
+
                   <label htmlFor="firstName">
                     First Name
                   </label>
@@ -175,9 +281,11 @@ const Register = () => {
                     required
                     autoComplete="given-name"
                   />
+
                 </div>
 
                 <div className="form-group">
+
                   <label htmlFor="lastName">
                     Last Name
                   </label>
@@ -192,19 +300,30 @@ const Register = () => {
                     required
                     autoComplete="family-name"
                   />
+
                 </div>
+
               </div>
 
-              {/* COMPANY */}
+              {/* =================================================
+                  COMPANY NAME
+              ================================================= */}
 
               <div className="form-group">
+
                 <label htmlFor="companyName">
                   Company Name
-                  <span className="optional-label">Optional</span>
+
+                  <span className="optional-label">
+                    Optional
+                  </span>
                 </label>
 
                 <div className="input-wrapper">
-                  <span className="input-icon">▣</span>
+
+                  <span className="input-icon">
+                    ▣
+                  </span>
 
                   <input
                     id="companyName"
@@ -215,21 +334,29 @@ const Register = () => {
                     onChange={handleChange}
                     autoComplete="organization"
                   />
+
                 </div>
+
               </div>
 
-              {/* EMAIL */}
+              {/* =================================================
+                  EMAIL
+              ================================================= */}
 
               <div className="form-group">
-                <label htmlFor="register-email">
+
+                <label htmlFor="email">
                   Email Address
                 </label>
 
                 <div className="input-wrapper">
-                  <span className="input-icon">✉</span>
+
+                  <span className="input-icon">
+                    ✉
+                  </span>
 
                   <input
-                    id="register-email"
+                    id="email"
                     name="email"
                     type="email"
                     placeholder="Enter email address"
@@ -238,26 +365,41 @@ const Register = () => {
                     required
                     autoComplete="email"
                   />
+
                 </div>
+
               </div>
 
-              {/* PASSWORD */}
+              {/* =================================================
+                  PASSWORD
+              ================================================= */}
 
               <div className="form-group">
-                <label htmlFor="register-password">
+
+                <label htmlFor="password">
+
                   Password
+
                   <span className="password-hint">
                     Minimum 8 characters
                   </span>
+
                 </label>
 
                 <div className="input-wrapper">
-                  <span className="input-icon">●</span>
+
+                  <span className="input-icon">
+                    ●
+                  </span>
 
                   <input
-                    id="register-password"
+                    id="password"
                     name="password"
-                    type={showPassword ? "text" : "password"}
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
                     placeholder="Enter password"
                     value={formData.password}
                     onChange={handleChange}
@@ -270,7 +412,9 @@ const Register = () => {
                     type="button"
                     className="password-toggle"
                     onClick={() =>
-                      setShowPassword((previous) => !previous)
+                      setShowPassword(
+                        (previous) => !previous
+                      )
                     }
                     aria-label={
                       showPassword
@@ -278,19 +422,27 @@ const Register = () => {
                         : "Show password"
                     }
                   >
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword
+                      ? "Hide"
+                      : "Show"}
                   </button>
+
                 </div>
+
               </div>
 
-              {/* ROLE */}
+              {/* =================================================
+                  ROLE
+              ================================================= */}
 
               <div className="form-group">
+
                 <label htmlFor="role">
                   Select Role
                 </label>
 
                 <div className="select-wrapper">
+
                   <select
                     id="role"
                     name="role"
@@ -298,6 +450,7 @@ const Register = () => {
                     onChange={handleChange}
                     required
                   >
+
                     <option value="BRAND_MANAGER">
                       Brand Manager
                     </option>
@@ -309,39 +462,69 @@ const Register = () => {
                     <option value="PLATFORM_ADMIN">
                       Platform Admin
                     </option>
+
                   </select>
 
-                  <span className="select-arrow">⌄</span>
+                  <span className="select-arrow">
+                    ⌄
+                  </span>
+
                 </div>
+
               </div>
 
-              {/* SUBMIT */}
+              {/* =================================================
+                  SUBMIT BUTTON
+              ================================================= */}
 
               <button
                 type="submit"
                 className="auth-submit"
                 disabled={loading}
               >
-                {loading ? "Registering..." : "Create Account"}
+                {loading
+                  ? "Registering..."
+                  : "Create Account"}
               </button>
+
             </form>
 
+            {/* =================================================
+                DIVIDER
+            ================================================= */}
+
             <div className="auth-divider">
-              <span>ALREADY REGISTERED?</span>
+              <span>
+                ALREADY REGISTERED?
+              </span>
             </div>
+
+            {/* LOGIN LINK */}
 
             <p className="register-text">
               Already have an account?
-              <Link to="/login"> Login here</Link>
+              <Link to="/login">
+                {" "}Login here
+              </Link>
             </p>
 
+            {/* SECURITY */}
+
             <div className="login-security">
-              <span>🔒</span>
-              <span>Your information is securely protected</span>
+
+              <span>
+                🔒
+              </span>
+
+              <span>
+                Your information is securely protected
+              </span>
+
             </div>
 
           </div>
         </div>
+
       </div>
     </div>
   );
