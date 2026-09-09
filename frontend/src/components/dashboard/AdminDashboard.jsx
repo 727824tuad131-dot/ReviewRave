@@ -14,20 +14,6 @@ import {
 } from "../../store/slices/productSlice";
 import { fetchTickets } from "../../store/slices/ticketSlice";
 
-// MOCK DATA FOR FALLBACK WHEN REDUX IS EMPTY
-const MOCK_PRODUCTS = [
-  { id: 1, name: "Smart Analytics Suite", category: "SOFTWARE", totalReviews: 320, averageSentiment: 0.88 },
-  { id: 2, name: "Wireless Noise-Canceling Headphones", category: "ELECTRONICS", totalReviews: 450, averageSentiment: 0.76 },
-  { id: 3, name: "Grand Resort & Spa", category: "HOSPITALITY", totalReviews: 190, averageSentiment: 0.92 },
-  { id: 4, name: "E-Commerce Express Store", category: "RETAIL", totalReviews: 280, averageSentiment: 0.65 },
-];
-
-const MOCK_TICKETS = [
-  { id: 101, createdAt: "10 mins ago" },
-  { id: 102, createdAt: "25 mins ago" },
-  { id: 103, createdAt: "1 hour ago" },
-];
-
 const AdminDashboard = () => {
   const dispatch = useDispatch();
 
@@ -38,12 +24,8 @@ const AdminDashboard = () => {
     (state) => state.tickets || state.ticket || {}
   );
 
-  // Fallback to MOCK data if backend returns empty list
-  const rawProducts = productsState.items || [];
-  const rawTickets = ticketsState.items || [];
-  
-  const products = rawProducts.length > 0 ? rawProducts : MOCK_PRODUCTS;
-  const tickets = rawTickets.length > 0 ? rawTickets : MOCK_TICKETS;
+  const products = productsState.items || [];
+  const tickets = ticketsState.items || [];
   const loading = productsState.loading === true || ticketsState.loading === true;
 
   const [searchVal, setSearchVal] = useState("");
@@ -184,11 +166,13 @@ const AdminDashboard = () => {
         {/* PRODUCTS OVERVIEW TABLE */}
         <section style={{ background: "#1e293b", borderRadius: "8px", padding: "20px", border: "1px solid #334155" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
-            <h2 style={{ margin: 0, fontSize: "18px" }}>Tracked Products</h2>
+            <h2>Tracked Products</h2>
             <span style={{ color: "#94a3b8" }}>{filteredProducts.length} products</span>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <p style={{ color: "#94a3b8" }}>Loading dashboard data...</p>
+          ) : filteredProducts.length === 0 ? (
             <EmptyState message="No products match your current search or filter." />
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse", color: "#f8fafc" }}>
