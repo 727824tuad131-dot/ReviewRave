@@ -102,3 +102,113 @@
 //         return ticketRepository.findByTicketStatus(ResolutionTicket.TicketStatus.OPEN);
 //     }
 // }
+
+
+package com.example.demo.service;
+
+import com.example.demo.dto.ReviewIngestDto;
+import com.example.demo.entity.CustomerReview;
+import com.example.demo.entity.ResolutionTicket;
+import com.example.demo.entity.TrackedProduct;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.CustomerReviewRepository;
+import com.example.demo.repository.ResolutionTicketRepository;
+import com.example.demo.repository.TrackedProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ReviewService {
+
+    private static final double NEGATIVE_SENTIMENT_THRESHOLD = 0.4;
+
+    private final CustomerReviewRepository reviewRepository;
+    private final TrackedProductRepository productRepository;
+    private final ResolutionTicketRepository ticketRepository;
+    private final ProductService productService;
+    private final ApplicationEventPublisher eventPublisher;
+
+    @Transactional
+    public CustomerReview submitReview(ReviewIngestDto dto) {
+        TrackedProduct product = productRepository.findById(dto.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + dto.getProductId()));
+
+        double sentimentScore = calculateSentimentScore(dto.getContent(), dto.getRating());
+
+        CustomerReview review = CustomerReview.builder()
+                .product(product)
+                .content(dto.getContent())
+                .rating(dto.getRating())
+                .sentimentScore(sentimentScore)
+                .build();
+
+        CustomerReview saved = reviewRepository.save(review);
+
+        // Recalculate product metrics
+        productService.updateProductMetrics(product.getId());
+
+        // Trigger resolution workflow if sentiment is negative
+        if (sentimentScore < NEGATIVE_SENTIMENT_THRESHOLD) {
+            createResolutionTicket(saved);
+        }
+
+        return saved;
+    }
+
+    public List<CustomerReview> getReviewsByProductId(Long productId) {
+        return reviewRepository.findByProductId(productId);
+    }
+
+    @Transactional
+    public void deleteReview(Long id) {
+        CustomerReview review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
+
+        // Delete associated ticket first
+        ticketRepository.findByReviewId(id).ifPresent(ticketRepository::delete);
+
+        reviewRepository.delete(review);
+
+        // Recalculate product metrics
+        productService.updateProductMetrics(review.getProduct().getId());
+    }
+
+    private void createResolutionTicket(CustomerReview review) {
+        ResolutionTicket ticket = ResolutionTicket.builder()
+                .review(review)
+                .status(ResolutionTicket.Status.PENDING)
+                .build();
+        ticketRepository.save(ticket);
+    }
+
+    private double calculateSentimentScore(String content, int rating) {
+        // Simple heuristic sentiment analysis based on rating and keyword detection
+        double baseScore = rating / 5.0;
+
+        String lower = content.toLowerCase();
+        double keywordAdjustment = 0.0;
+
+        String[] positiveWords = {"great", "excellent", "amazing", "love", "best", "good", "awesome", "fantastic", "perfect", "happy"};
+        String[] negativeWords = {"bad", "terrible", "awful", "worst", "hate", "poor", "broken", "disappointing", "horrible", "useless"};
+
+        for (String word : positiveWords) {
+            if (lower.contains(word)) {
+                keywordAdjustment += 0.1;
+            }
+        }
+
+        for (String word : negativeWords) {
+            if (lower.contains(word)) {
+                keywordAdjustment -= 0.1;
+            }
+        }
+
+        double score = baseScore + keywordAdjustment;
+        return Math.max(0.0, Math.min(1.0, Math.round(score * 100.0) / 100.0));
+    }
+}
