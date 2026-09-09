@@ -104,3 +104,81 @@
 //     }
 // }
 
+
+package com.example.demo.service;
+
+import com.example.demo.dto.ProductCreationDto;
+import com.example.demo.entity.PlatformUser;
+import com.example.demo.entity.TrackedProduct;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.CustomerReviewRepository;
+import com.example.demo.repository.PlatformUserRepository;
+import com.example.demo.repository.ResolutionTicketRepository;
+import com.example.demo.repository.TrackedProductRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class ProductManagementService {
+
+    private final TrackedProductRepository productRepository;
+    private final PlatformUserRepository userRepository;
+    private final CustomerReviewRepository reviewRepository;
+    private final ResolutionTicketRepository ticketRepository;
+
+    public ProductManagementService(TrackedProductRepository productRepository,
+                                    PlatformUserRepository userRepository,
+                                    CustomerReviewRepository reviewRepository,
+                                    ResolutionTicketRepository ticketRepository) {
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
+        this.ticketRepository = ticketRepository;
+    }
+
+    public List<TrackedProduct> getAllProducts() {
+        return productRepository.findAll();
+    }
+
+    public TrackedProduct getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+    }
+
+    @Transactional
+    public TrackedProduct createProduct(ProductCreationDto dto, PlatformUser owner) {
+        PlatformUser user = userRepository.findById(owner.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + owner.getId()));
+
+        TrackedProduct product = TrackedProduct.builder()
+                .name(dto.getName())
+                .category(dto.getCategory())
+                .totalReviews(0)
+                .avgSentiment(0.0)
+                .owner(user)
+                .build();
+
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    public TrackedProduct updateProduct(Long id, ProductCreationDto dto) {
+        TrackedProduct product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        product.setName(dto.getName());
+        product.setCategory(dto.getCategory());
+
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    public void deleteProduct(Long id, PlatformUser user) {
+        TrackedProduct product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        productRepository.delete(product);
+    }
+}
