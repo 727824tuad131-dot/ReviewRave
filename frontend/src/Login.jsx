@@ -15,9 +15,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // REDIRECT LOGIC: Redirect to Dashboard based on user role when logged in
   useEffect(() => {
     if (user) {
-      navigate("/");
+      if (user.role === "ADMIN" || user.role === "MANAGER" || user.role === "STAFF") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     }
   }, [user, navigate]);
 
@@ -124,6 +129,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
+                    required
                   />
                 </div>
               </div>
@@ -147,6 +153,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
+                    required
                   />
 
                   <button
