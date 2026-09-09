@@ -1,0 +1,503 @@
+/* ==========================================================================
+   1. GLOBAL RESET & BASE STYLES
+   ========================================================================== */
+:root {
+  /* Color Palette */
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --success-hover: #059669;
+  --warning-color: #f59e0b;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+
+  /* Neutrals */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  /* Typography & Layout */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Common Utility Classes */
+.error-message {
+  background-color: #fef2f2;
+  color: var(--danger-color);
+  border: 1px solid #fecaca;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   2. REVIEW FORM COMPONENT (ReviewForm.jsx)
+   ========================================================================== */
+.review-form-container {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.review-form-container h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+
+.star-rating-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.star-rating-input .star {
+  font-size: 28px;
+  color: #cbd5e1;
+  transition: color 0.15s ease;
+}
+
+.star-rating-input .star.filled {
+  color: var(--warning-color);
+}
+
+.rating-text {
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Form Shared Controls */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.form-control,
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+}
+
+.submit-review-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-review-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.submit-review-btn:disabled {
+  background-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   3. REVIEW LIST COMPONENT (ReviewList.jsx)
+   ========================================================================== */
+.review-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.summary-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avg-rating {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.summary-stars .star {
+  font-size: 18px;
+  color: #cbd5e1;
+}
+
+.summary-stars .star.filled {
+  color: var(--warning-color);
+}
+
+.total-count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.filter-select {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.reviews-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card {
+  background-color: var(--bg-card);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviewer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.reviewer-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.review-date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.review-stars .star {
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.review-stars .star.filled {
+  color: var(--warning-color);
+}
+
+.review-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.review-comment {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   4. TICKET FORM COMPONENT (TicketForm.jsx)
+   ========================================================================== */
+.ticket-form-container {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.ticket-form-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ticket-form-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.submit-ticket-btn {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-ticket-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ==========================================================================
+   5. USER LIST COMPONENT (UserList.jsx)
+   ========================================================================== */
+.user-list-container {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.user-list-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.user-search-input {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.user-filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+/* User Table */
+.user-table-wrapper {
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: var(--bg-main);
+  padding: 12px 16px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Badges and Pills */
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.role-admin {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.role-user {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.role-moderator {
+  background-color: #f3e8ff;
+  color: #9333ea;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-active {
+  background-color: #dcfce7;
+  color: var(--success-hover);
+}
+
+.status-inactive {
+  background-color: #f1f5f9;
+  color: var(--text-muted);
+}
+
+/* User Actions */
+.user-actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.btn-toggle {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.btn-edit {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-delete {
+  background-color: var(--danger-color);
+  color: #ffffff;
+}
+
+.no-users-state,
+.no-reviews {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-muted);
+}
