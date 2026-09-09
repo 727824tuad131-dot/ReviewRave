@@ -104,6 +104,11 @@ const Home = () => {
           className="stat-card"
           onClick={() => navigate("/tickets")}
         >
+            <span
+  onClick={() => setCurrentView("home")}
+>
+  Home
+</span>
           <span className="stat-icon">🎫</span>
 
           <div>
