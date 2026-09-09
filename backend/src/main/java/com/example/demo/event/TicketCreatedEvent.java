@@ -26,13 +26,13 @@
 
 package com.example.demo.event;
 
-import com.example.demo.entity.CustomerReview;
+import com.example.demo.entity.ResolutionTicket;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ReviewIngestedEvent {
+public class TicketCreatedEvent {
 
-    private CustomerReview review;
+    private ResolutionTicket ticket;
 }
