@@ -194,3 +194,274 @@
     width: 100%;
   }
 }
+
+/* =========================
+   REVIEWRAVE HOME PAGE
+   ========================= */
+
+.home-page {
+  min-height: calc(100vh - 70px);
+  background: #f6f8fb;
+  padding-bottom: 50px;
+}
+
+/* Hero */
+
+.reviewrave-hero {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background:
+    linear-gradient(
+      135deg,
+      #182848 0%,
+      #334d7a 50%,
+      #506da3 100%
+    );
+  position: relative;
+  overflow: hidden;
+}
+
+.reviewrave-hero::before {
+  content: "";
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  top: -160px;
+  right: -80px;
+}
+
+.reviewrave-hero::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  bottom: -130px;
+  left: -70px;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  width: 100%;
+  text-align: center;
+  color: #ffffff;
+}
+
+.hero-tagline {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  opacity: 0.85;
+}
+
+.hero-overlay h1 {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.hero-overlay h1 span {
+  color: #dce8ff;
+}
+
+.hero-description {
+  max-width: 680px;
+  margin: 22px auto 30px;
+  font-size: 17px;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  padding: 13px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.primary-btn {
+  background: #ffffff;
+  color: #182848;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Cards */
+
+.stats-section {
+  max-width: 1150px;
+  margin: -55px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.stat-card {
+  min-height: 145px;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  border: 1px solid #e4e8ef;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 25px rgba(20, 40, 80, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(20, 40, 80, 0.14);
+}
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #eef3ff;
+  font-size: 25px;
+}
+
+.stat-card h3 {
+  margin: 0 0 7px;
+  color: #17233c;
+  font-size: 16px;
+}
+
+.stat-card p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Role Card */
+
+.role-section {
+  max-width: 1150px;
+  margin: 30px auto 0;
+  padding: 0 24px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e4e8ef;
+  border-radius: 16px;
+  box-shadow: 0 5px 18px rgba(20, 40, 80, 0.05);
+}
+
+.role-card-icon {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef3ff;
+  border-radius: 14px;
+  font-size: 25px;
+}
+
+.role-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #718096;
+}
+
+.role-card h3 {
+  margin: 5px 0;
+  color: #17233c;
+  font-size: 18px;
+}
+
+.role-card p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-overlay h1 {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 600px) {
+  .reviewrave-hero {
+    min-height: 430px;
+    padding: 50px 20px;
+  }
+
+  .hero-overlay h1 {
+    font-size: 32px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+    margin-top: 25px;
+  }
+
+  .role-card {
+    align-items: flex-start;
+  }
+}
