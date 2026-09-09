@@ -1,105 +1,106 @@
-package com.example.demo.service;
+// package com.example.demo.service;
 
-import com.example.demo.entity.PlatformUser;
-import com.example.demo.entity.ResolutionTicket;
-import com.example.demo.entity.TrackedProduct;
-import com.example.demo.repository.PlatformUserRepository;
-import com.example.demo.repository.ResolutionTicketRepository;
-import com.example.demo.repository.SentimentInsightRepository;
-import com.example.demo.repository.TrackedProductRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+// import com.example.demo.entity.PlatformUser;
+// import com.example.demo.entity.ResolutionTicket;
+// import com.example.demo.entity.TrackedProduct;
+// import com.example.demo.repository.PlatformUserRepository;
+// import com.example.demo.repository.ResolutionTicketRepository;
+// import com.example.demo.repository.SentimentInsightRepository;
+// import com.example.demo.repository.TrackedProductRepository;
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.dto.ProductCreationDto;
-import com.example.demo.dto.ProductSummaryDto;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.exception.BusinessValidationException;
+// import com.example.demo.dto.ProductCreationDto;
+// import com.example.demo.dto.ProductSummaryDto;
+// import com.example.demo.exception.ResourceNotFoundException;
+// import com.example.demo.exception.BusinessValidationException;
 
-import java.util.List;
+// import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class ProductManagementService {
+// @Service
+// @RequiredArgsConstructor
+// public class ProductManagementService {
 
-    private final TrackedProductRepository productRepository;
-    private final PlatformUserRepository userRepository;
-    private final ResolutionTicketRepository ticketRepository;
-    private final SentimentInsightRepository insightRepository;
+//     private final TrackedProductRepository productRepository;
+//     private final PlatformUserRepository userRepository;
+//     private final ResolutionTicketRepository ticketRepository;
+//     private final SentimentInsightRepository insightRepository;
 
-    @Transactional
-    public TrackedProduct createProduct(Long ownerId, ProductCreationDto dto) {
-        PlatformUser owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Owner not found with ID: " + ownerId));
+//     @Transactional
+//     public TrackedProduct createProduct(Long ownerId, ProductCreationDto dto) {
+//         PlatformUser owner = userRepository.findById(ownerId)
+//                 .orElseThrow(() -> new ResourceNotFoundException("Owner not found with ID: " + ownerId));
 
-        TrackedProduct product = TrackedProduct.builder()
-                .name(dto.getName())
-                .category(dto.getCategory())
-                .totalReviews(0)
-                .averageSentiment(0.0)
-                .owner(owner)
-                .build();
+//         TrackedProduct product = TrackedProduct.builder()
+//                 .name(dto.getName())
+//                 .category(dto.getCategory())
+//                 .totalReviews(0)
+//                 .averageSentiment(0.0)
+//                 .owner(owner)
+//                 .build();
 
-        return productRepository.save(product);
-    }
+//         return productRepository.save(product);
+//     }
 
-    @Transactional(readOnly = true)
-    public List<TrackedProduct> getProductsByOwner(Long ownerId) {
-        return productRepository.findByOwnerId(ownerId);
-    }
+//     @Transactional(readOnly = true)
+//     public List<TrackedProduct> getProductsByOwner(Long ownerId) {
+//         return productRepository.findByOwnerId(ownerId);
+//     }
 
-    @Transactional(readOnly = true)
-    public List<TrackedProduct> getAllProducts() {
-        return productRepository.findAll();
-    }
+//     @Transactional(readOnly = true)
+//     public List<TrackedProduct> getAllProducts() {
+//         return productRepository.findAll();
+//     }
 
-    @Transactional(readOnly = true)
-    public TrackedProduct getProductById(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
-    }
+//     @Transactional(readOnly = true)
+//     public TrackedProduct getProductById(Long productId) {
+//         return productRepository.findById(productId)
+//                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
+//     }
 
-    @Transactional(readOnly = true)
-    public ProductSummaryDto getProductSummary(Long productId) {
-        TrackedProduct product = getProductById(productId);
+//     @Transactional(readOnly = true)
+//     public ProductSummaryDto getProductSummary(Long productId) {
+//         TrackedProduct product = getProductById(productId);
         
-        // Count open tickets linked to this product's reviews
-        List<ResolutionTicket> openTickets = ticketRepository
-                .findByInsightReviewProductIdAndTicketStatus(productId, ResolutionTicket.TicketStatus.OPEN);
+//         // Count open tickets linked to this product's reviews
+//         List<ResolutionTicket> openTickets = ticketRepository
+//                 .findByInsightReviewProductIdAndTicketStatus(productId, ResolutionTicket.TicketStatus.OPEN);
 
-        return ProductSummaryDto.builder()
-                .productId(product.getId())
-                .name(product.getName())
-                .category(product.getCategory())
-                .totalReviews(product.getTotalReviews())
-                .averageSentiment(product.getAverageSentiment())
-                .openTicketsCount(openTickets.size())
-                .build();
-    }
+//         return ProductSummaryDto.builder()
+//                 .productId(product.getId())
+//                 .name(product.getName())
+//                 .category(product.getCategory())
+//                 .totalReviews(product.getTotalReviews())
+//                 .averageSentiment(product.getAverageSentiment())
+//                 .openTicketsCount(openTickets.size())
+//                 .build();
+//     }
 
-    @Transactional
-    public TrackedProduct updateProduct(Long productId, ProductCreationDto dto, PlatformUser user) {
-        TrackedProduct product = getProductById(productId);
+//     @Transactional
+//     public TrackedProduct updateProduct(Long productId, ProductCreationDto dto, PlatformUser user) {
+//         TrackedProduct product = getProductById(productId);
 
-        // Security check: must be owner or platform admin
-        if (!product.getOwner().getId().equals(user.getId()) && !user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN)) {
-            throw new BusinessValidationException("You do not have permission to update this product.");
-        }
+//         // Security check: must be owner or platform admin
+//         if (!product.getOwner().getId().equals(user.getId()) && !user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN)) {
+//             throw new BusinessValidationException("You do not have permission to update this product.");
+//         }
 
-        product.setName(dto.getName());
-        product.setCategory(dto.getCategory());
-        return productRepository.save(product);
-    }
+//         product.setName(dto.getName());
+//         product.setCategory(dto.getCategory());
+//         return productRepository.save(product);
+//     }
 
-    @Transactional
-    public void deleteProduct(Long productId, PlatformUser user) {
-        TrackedProduct product = getProductById(productId);
+//     @Transactional
+//     public void deleteProduct(Long productId, PlatformUser user) {
+//         TrackedProduct product = getProductById(productId);
 
-        // Admin bypasses ownership checks
-        if (!user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN) && !product.getOwner().getId().equals(user.getId())) {
-            throw new BusinessValidationException("You do not have permission to delete this product.");
-        }
+//         // Admin bypasses ownership checks
+//         if (!user.getRole().equals(PlatformUser.Role.PLATFORM_ADMIN) && !product.getOwner().getId().equals(user.getId())) {
+//             throw new BusinessValidationException("You do not have permission to delete this product.");
+//         }
 
-        productRepository.delete(product);
-    }
-}
+//         productRepository.delete(product);
+//     }
+// }
+
