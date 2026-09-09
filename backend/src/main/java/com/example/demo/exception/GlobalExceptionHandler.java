@@ -1,8 +1,70 @@
+// package com.example.demo.exception;
+
+// import org.springframework.http.HttpStatus;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.validation.FieldError;
+// import org.springframework.web.bind.MethodArgumentNotValidException;
+// import org.springframework.web.bind.annotation.ExceptionHandler;
+// import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+// import java.util.HashMap;
+// import java.util.Map;
+
+// @RestControllerAdvice
+// public class GlobalExceptionHandler {
+
+//     @ExceptionHandler(ResourceNotFoundException.class)
+//     public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
+
+//         Map<String, String> errorMap = new HashMap<>();
+//         errorMap.put("message", ex.getMessage());
+
+//         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMap);
+//     }
+
+//     @ExceptionHandler(BusinessValidationException.class)
+//     public ResponseEntity<Map<String, String>> handleValidation(BusinessValidationException ex) {
+
+//         Map<String, String> errorMap = new HashMap<>();
+//         errorMap.put("message", ex.getMessage());
+
+//         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
+//     }
+
+//     @ExceptionHandler(MethodArgumentNotValidException.class)
+//     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+
+//         Map<String, String> errors = new HashMap<>();
+
+//         ex.getBindingResult().getAllErrors().forEach(error -> {
+//             String fieldName = ((FieldError) error).getField();
+//             String errorMessage = error.getDefaultMessage();
+//             errors.put(fieldName, errorMessage);
+//         });
+
+//         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//     }
+
+//     @ExceptionHandler(Exception.class)
+//     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
+
+//         // Print complete exception in console
+//         ex.printStackTrace();
+
+//         Map<String, String> errorMap = new HashMap<>();
+//         errorMap.put("exception", ex.getClass().getName());
+//         errorMap.put("message", ex.getMessage());
+
+//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMap);
+//     }
+// }
+
+
+
 package com.example.demo.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,47 +76,38 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
-
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMap);
+    public ResponseEntity<Map<String, String>> handleResourceNotFound(ResourceNotFoundException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BusinessValidationException.class)
-    public ResponseEntity<Map<String, String>> handleValidation(BusinessValidationException ex) {
+    public ResponseEntity<Map<String, String>> handleBusinessValidation(BusinessValidationException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
+    @ExceptionHandler(TicketLimitExceededException.class)
+    public ResponseEntity<Map<String, String>> handleTicketLimitExceeded(TicketLimitExceededException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-
-        Map<String, String> errors = new HashMap<>();
-
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> body = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                body.put(error.getField(), error.getDefaultMessage()));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
-
-        // Print complete exception in console
-        ex.printStackTrace();
-
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("exception", ex.getClass().getName());
-        errorMap.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMap);
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
