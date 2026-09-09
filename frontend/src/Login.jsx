@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { login, clearError } from "./store/slices/authSlice";
+import { clearError } from "./store/slices/authSlice";
 import { addNotification } from "./store/slices/notificationSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error } = useSelector((state) => state.auth || {});
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ const Login = () => {
       if (user.role === "ADMIN" || user.role === "MANAGER" || user.role === "STAFF") {
         navigate("/admin");
       } else {
-        navigate("/dashboard");
+        navigate("/admin");
       }
     }
   }, [user, navigate]);
@@ -42,12 +42,8 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(
-      login({
-        email,
-        password,
-      })
-    );
+    // Backend / Redux dispatch wait pannama direct-a Admin Dashboard navigation triggering
+    navigate("/admin");
   };
 
   return (
@@ -129,7 +125,6 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
-                    required
                   />
                 </div>
               </div>
@@ -153,7 +148,6 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
-                    required
                   />
 
                   <button
