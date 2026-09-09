@@ -1,8 +1,45 @@
+// package com.example.demo.controller;
+
+// import com.example.demo.entity.PlatformUser;
+// import com.example.demo.repository.PlatformUserRepository;
+// import com.example.demo.exception.ResourceNotFoundException;
+// import lombok.RequiredArgsConstructor;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.security.access.prepost.PreAuthorize;
+// import org.springframework.web.bind.annotation.*;
+
+// import java.util.List;
+
+// @RestController
+// @RequestMapping("/api/users")
+// @RequiredArgsConstructor
+// public class UserController {
+
+//     private final PlatformUserRepository userRepository;
+
+//     @GetMapping
+//     @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+//     public ResponseEntity<List<PlatformUser>> getAllUsers() {
+//         return ResponseEntity.ok(userRepository.findAll());
+//     }
+
+//     @PutMapping("/{id}/toggle-status")
+//     @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+//     public ResponseEntity<PlatformUser> toggleUserStatus(@PathVariable Long id) {
+//         PlatformUser user = userRepository.findById(id)
+//                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+        
+//         user.setIsActive(!Boolean.TRUE.equals(user.getIsActive()));
+//         return ResponseEntity.ok(userRepository.save(user));
+//     }
+// }
+
+
+usercontroller
 package com.example.demo.controller;
 
 import com.example.demo.entity.PlatformUser;
-import com.example.demo.repository.PlatformUserRepository;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,21 +52,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final PlatformUserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping
     @PreAuthorize("hasRole('PLATFORM_ADMIN')")
     public ResponseEntity<List<PlatformUser>> getAllUsers() {
-        return ResponseEntity.ok(userRepository.findAll());
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PutMapping("/{id}/toggle-status")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('PLATFORM_ADMIN')")
-    public ResponseEntity<PlatformUser> toggleUserStatus(@PathVariable Long id) {
-        PlatformUser user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-        
-        user.setIsActive(!Boolean.TRUE.equals(user.getIsActive()));
-        return ResponseEntity.ok(userRepository.save(user));
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
