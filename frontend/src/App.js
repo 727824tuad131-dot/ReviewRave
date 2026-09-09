@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+
 // Initial Seed Data
 const initialUsers = [
   { id: "#1", name: "Brand Manager", email: "manager@gmail.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
