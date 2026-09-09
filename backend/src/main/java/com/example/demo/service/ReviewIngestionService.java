@@ -112,3 +112,86 @@
 //     }
 // }
 
+
+package com.example.demo.service;
+
+import com.example.demo.dto.ReviewIngestDto;
+import com.example.demo.entity.CustomerReview;
+import com.example.demo.entity.TrackedProduct;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.CustomerReviewRepository;
+import com.example.demo.repository.ResolutionTicketRepository;
+import com.example.demo.repository.TrackedProductRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class ReviewIngestionService {
+
+    private final CustomerReviewRepository reviewRepository;
+    private final TrackedProductRepository productRepository;
+    private final ResolutionTicketRepository ticketRepository;
+
+    public ReviewIngestionService(CustomerReviewRepository reviewRepository,
+                                  TrackedProductRepository productRepository,
+                                  ResolutionTicketRepository ticketRepository) {
+        this.reviewRepository = reviewRepository;
+        this.productRepository = productRepository;
+        this.ticketRepository = ticketRepository;
+    }
+
+    public List<CustomerReview> getReviewsForProduct(Long productId) {
+        return reviewRepository.findByProductId(productId);
+    }
+
+    @Transactional
+    public CustomerReview submitReview(ReviewIngestDto dto) {
+        TrackedProduct product = productRepository.findById(dto.getProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + dto.getProductId()));
+
+        double sentimentScore = calculateSentimentScore(dto.getContent(), dto.getRating());
+
+        CustomerReview review = CustomerReview.builder()
+                .product(product)
+                .content(dto.getContent())
+                .rating(dto.getRating())
+                .sentimentScore(sentimentScore)
+                .build();
+
+        return reviewRepository.save(review);
+    }
+
+    @Transactional
+    public void deleteReview(Long id) {
+        if (!reviewRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Review not found with id: " + id);
+        }
+        reviewRepository.deleteById(id);
+    }
+
+    private double calculateSentimentScore(String content, int rating) {
+        double baseScore = rating / 5.0;
+        String lower = content.toLowerCase();
+        double keywordAdjustment = 0.0;
+
+        String[] positiveWords = {"great", "excellent", "amazing", "love", "best", "good", "awesome", "fantastic", "perfect", "happy"};
+        String[] negativeWords = {"bad", "terrible", "awful", "worst", "hate", "poor", "broken", "disappointing", "horrible", "useless"};
+
+        for (String word : positiveWords) {
+            if (lower.contains(word)) {
+                keywordAdjustment += 0.1;
+            }
+        }
+
+        for (String word : negativeWords) {
+            if (lower.contains(word)) {
+                keywordAdjustment -= 0.1;
+            }
+        }
+
+        double score = baseScore + keywordAdjustment;
+        return Math.max(0.0, Math.min(1.0, Math.round(score * 100.0) / 100.0));
+    }
+}
