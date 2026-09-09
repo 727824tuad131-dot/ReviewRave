@@ -1,14 +1,14 @@
-package com.example.demo.event;
+// package com.example.demo.event;
 
-public class TicketResolvedEvent {
+// public class TicketResolvedEvent {
 
-    private final Long ticketId;
+//     private final Long ticketId;
 
-    public TicketResolvedEvent(Long ticketId) {
-        this.ticketId = ticketId;
-    }
+//     public TicketResolvedEvent(Long ticketId) {
+//         this.ticketId = ticketId;
+//     }
 
-    public Long getTicketId() {
-        return ticketId;
-    }
-}
+//     public Long getTicketId() {
+//         return ticketId;
+//     }
+// }
