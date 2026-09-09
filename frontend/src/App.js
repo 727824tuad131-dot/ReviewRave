@@ -1,31 +1,25 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 
-// Authentication
 import Login from "./Login";
 import Register from "./Register";
 
-// Layout
 import Navbar from "./components/layout/Navbar";
 
-// Home
-import Home from "./Home";
-
-// Product
 import ProductList from "./components/product/ProductList";
-
-// Review
 import ReviewIngestForm from "./components/review/ReviewIngestForm";
-
-// Ticket
 import TicketList from "./components/ticket/TicketList";
 
-// Dashboard
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 
-// Common
 import NotificationStack from "./NotificationStack";
+
 
 /* =========================================================
    PROTECTED ROUTE
@@ -41,8 +35,9 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+
 /* =========================================================
-   ROLE BASED ROUTE
+   ROLE ROUTE
    ========================================================= */
 
 function RoleRoute({ allowedRoles, children }) {
@@ -55,6 +50,7 @@ function RoleRoute({ allowedRoles, children }) {
   return children;
 }
 
+
 /* =========================================================
    APP
    ========================================================= */
@@ -62,20 +58,29 @@ function RoleRoute({ allowedRoles, children }) {
 function App() {
   return (
     <BrowserRouter>
+
       <NotificationStack />
 
       <Routes>
+
         {/* =================================================
             PUBLIC ROUTES
-        ================================================= */}
+           ================================================= */}
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
 
         {/* =================================================
             HOME
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/"
@@ -83,16 +88,79 @@ function App() {
             <ProtectedRoute>
               <>
                 <Navbar />
-                <Home />
+
+                <div className="page-container">
+                  <div className="welcome-section">
+                    <h1>Welcome to ReviewRave</h1>
+
+                    <p>
+                      Monitor customer feedback, analyze sentiment,
+                      generate insights and resolve customer issues.
+                    </p>
+                  </div>
+
+                  <div className="dashboard-grid">
+
+                    <div
+                      className="dashboard-card"
+                      onClick={() =>
+                        (window.location.href = "/products")
+                      }
+                    >
+                      <h2>Products</h2>
+                      <p>
+                        Manage and monitor your tracked products.
+                      </p>
+                    </div>
+
+                    <div
+                      className="dashboard-card"
+                      onClick={() =>
+                        (window.location.href = "/reviews")
+                      }
+                    >
+                      <h2>Reviews</h2>
+                      <p>
+                        Ingest and monitor customer reviews.
+                      </p>
+                    </div>
+
+                    <div
+                      className="dashboard-card"
+                      onClick={() =>
+                        (window.location.href = "/insights")
+                      }
+                    >
+                      <h2>Insights</h2>
+                      <p>
+                        Analyze customer sentiment and insights.
+                      </p>
+                    </div>
+
+                    <div
+                      className="dashboard-card"
+                      onClick={() =>
+                        (window.location.href = "/tickets")
+                      }
+                    >
+                      <h2>Resolution Tickets</h2>
+                      <p>
+                        Track and resolve customer issues.
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
               </>
             </ProtectedRoute>
           }
         />
 
+
         {/* =================================================
             PRODUCTS
-            Brand Manager + Platform Admin
-        ================================================= */}
+            BRAND_MANAGER + PLATFORM_ADMIN
+           ================================================= */}
 
         <Route
           path="/products"
@@ -114,10 +182,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
             REVIEWS
-            Review Ingestion
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/reviews"
@@ -140,10 +208,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
             REVIEW INGEST
-            Explicit route for review ingestion
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/reviews/ingest"
@@ -165,9 +233,16 @@ function App() {
           }
         />
 
+
         {/* =================================================
             INSIGHTS
-        ================================================= */}
+           =================================================
+           
+           No separate Insights component currently exists
+           in your src structure, so ProductList is used
+           temporarily to keep this route functional.
+           
+           ================================================= */}
 
         <Route
           path="/insights"
@@ -189,10 +264,11 @@ function App() {
           }
         />
 
+
         {/* =================================================
             TICKETS
-            Resolution Agent + Platform Admin
-        ================================================= */}
+            RESOLUTION_AGENT + PLATFORM_ADMIN
+           ================================================= */}
 
         <Route
           path="/tickets"
@@ -214,9 +290,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
             RESOLUTION CENTER
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/resolution"
@@ -226,7 +303,9 @@ function App() {
                 <Navbar />
 
                 <RoleRoute
-                  allowedRoles={["RESOLUTION_AGENT"]}
+                  allowedRoles={[
+                    "RESOLUTION_AGENT",
+                  ]}
                 >
                   <TicketList />
                 </RoleRoute>
@@ -235,9 +314,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
             MY TASKS
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/tasks"
@@ -247,7 +327,9 @@ function App() {
                 <Navbar />
 
                 <RoleRoute
-                  allowedRoles={["RESOLUTION_AGENT"]}
+                  allowedRoles={[
+                    "RESOLUTION_AGENT",
+                  ]}
                 >
                   <TicketList />
                 </RoleRoute>
@@ -256,9 +338,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
-            ADMIN DASHBOARD
-        ================================================= */}
+            ADMIN
+           ================================================= */}
 
         <Route
           path="/admin"
@@ -268,7 +351,9 @@ function App() {
                 <Navbar />
 
                 <RoleRoute
-                  allowedRoles={["PLATFORM_ADMIN"]}
+                  allowedRoles={[
+                    "PLATFORM_ADMIN",
+                  ]}
                 >
                   <AdminDashboard />
                 </RoleRoute>
@@ -277,9 +362,10 @@ function App() {
           }
         />
 
+
         {/* =================================================
             ADMIN DASHBOARD ALIAS
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="/dashboard/admin"
@@ -289,7 +375,9 @@ function App() {
                 <Navbar />
 
                 <RoleRoute
-                  allowedRoles={["PLATFORM_ADMIN"]}
+                  allowedRoles={[
+                    "PLATFORM_ADMIN",
+                  ]}
                 >
                   <AdminDashboard />
                 </RoleRoute>
@@ -298,15 +386,23 @@ function App() {
           }
         />
 
+
         {/* =================================================
             FALLBACK
-        ================================================= */}
+           ================================================= */}
 
         <Route
           path="*"
-          element={<Navigate to="/" replace />}
+          element={
+            <Navigate
+              to="/"
+              replace
+            />
+          }
         />
+
       </Routes>
+
     </BrowserRouter>
   );
 }
