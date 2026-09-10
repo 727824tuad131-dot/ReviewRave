@@ -1,157 +1,101 @@
-/* =========================================
-   REVIEWRAVE PORTAL NAVBAR
-   UI ONLY - DOES NOT CHANGE FUNCTIONALITY
-========================================= */
 
 .navbar {
-  width: 100%;
-  height: 48px;
-
-  background: #26313d;
-
-  border: none;
-
-  position: relative;
-
-  box-shadow: none;
-
   display: flex;
+  justify-content: space-between;
   align-items: center;
-
-  padding: 0 25px;
+  padding: 0.875rem 2rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-
-
-/* =========================================
-   BRAND
-========================================= */
 
 .navbar-brand {
-  display: none;
-}
-
-
-/* =========================================
-   MAIN NAVIGATION
-========================================= */
-
-.navbar-content {
-  width: 100%;
-
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-primary-accent);
+  text-decoration: none;
+  letter-spacing: -0.025em;
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  position: relative;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
 }
 
-
-/* Navigation links */
+.navbar-brand:hover {
+  color: var(--color-primary-hover);
+}
 
 .navbar-links {
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  gap: 0;
-
-  margin: 0;
+  gap: 1.25rem;
 }
-
-
-/* Individual links */
 
 .nav-link {
-  display: flex;
-  align-items: center;
-
-  padding: 15px 14px;
-
-  color: #d6d9dd;
-
-  background: transparent;
-
-  border-radius: 0;
-
+  color: var(--text-muted);
   text-decoration: none;
-
-  font-size: 9px;
-
   font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
-
-
-/* Remove icons */
-
-.nav-icon {
-  display: none;
-}
-
-
-/* Hover */
 
 .nav-link:hover {
-  background: transparent;
-
-  color: white;
+  color: var(--color-primary-accent);
+  background-color: var(--bg-app);
 }
 
-
-/* Active link */
-
-.nav-link.active {
-  background: transparent;
-
-  color: white;
+.btn-logout {
+  padding: 0.45rem 0.95rem;
+  background-color: var(--color-sentiment-neg-bg);
+  color: var(--color-sentiment-neg-text);
+  border: 1px solid var(--color-sentiment-neg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
-/* =========================================
-   USER AREA
-========================================= */
-
-.navbar-user {
-  display: none;
+.btn-logout:hover {
+  background-color: var(--color-sentiment-neg);
+  color: #ffffff;
 }
 
-
-/* =========================================
-   MOBILE BUTTON
-========================================= */
-
-.mobile-menu-button {
-  display: none;
+.btn-login {
+  color: var(--color-primary-accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.85rem;
+  transition: color 0.2s ease;
 }
 
+.btn-login:hover {
+  color: var(--color-primary-hover);
+}
 
-/* =========================================
-   MOBILE
-========================================= */
+.btn-register {
+  padding: 0.45rem 1rem;
+  background-color: var(--color-primary-accent);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-@media (max-width: 700px) {
-
-  .navbar {
-    height: auto;
-
-    min-height: 48px;
-
-    padding: 0 10px;
-  }
-
-  .navbar-content {
-    justify-content: center;
-  }
-
-  .navbar-links {
-    flex-wrap: wrap;
-
-    justify-content: center;
-  }
-
-  .nav-link {
-    padding: 12px 8px;
-
-    font-size: 9px;
-  }
-
+.btn-register:hover {
+  background-color: var(--color-primary-hover);
 }
