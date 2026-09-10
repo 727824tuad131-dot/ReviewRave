@@ -29,3 +29,25 @@
 // };
 
 // export default ticketService;
+
+
+
+import api from './api';
+
+export const ticketService = {
+  getMyTickets: async () => {
+    const response = await api.get('/tickets/my');
+    return response.data;
+  },
+  assignTicket: async (id) => {
+    const response = await api.put(`/tickets/${id}/assign`);
+    return response.data;
+  },
+  resolveTicket: async (id, data) => {
+    const notes = typeof data === 'string' ? data : (data?.notes || '');
+    const response = await api.post(`/tickets/${id}/resolve?notes=${encodeURIComponent(notes)}`, data);
+    return response.data;
+  },
+};
+
+export default ticketService;

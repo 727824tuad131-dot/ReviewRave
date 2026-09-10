@@ -1,76 +1,78 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import insightService from "../../services/insightService";
+// import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+// import insightService from "../../services/insightService";
 
-/* =========================================================
-   FETCH INSIGHTS FOR A PRODUCT
-   ========================================================= */
+// /* =========================================================
+//    FETCH INSIGHTS FOR A PRODUCT
+//    ========================================================= */
 
-export const fetchInsights = createAsyncThunk(
-  "insights/fetchInsights",
-  async (productId, { rejectWithValue }) => {
-    try {
-      const response = await insightService.getInsights(productId);
+// export const fetchInsights = createAsyncThunk(
+//   "insights/fetchInsights",
+//   async (productId, { rejectWithValue }) => {
+//     try {
+//       const response = await insightService.getInsights(productId);
 
-      return response?.data || response;
-    } catch (error) {
-      return rejectWithValue(
-        error?.response?.data?.message ||
-          error?.response?.data ||
-          error?.message ||
-          "Failed to fetch insights"
-      );
-    }
-  }
-);
+//       return response?.data || response;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error?.response?.data?.message ||
+//           error?.response?.data ||
+//           error?.message ||
+//           "Failed to fetch insights"
+//       );
+//     }
+//   }
+// );
 
-/* =========================================================
-   INITIAL STATE
-   ========================================================= */
+// /* =========================================================
+//    INITIAL STATE
+//    ========================================================= */
 
-const initialState = {
-  items: [],
-  loading: false,
-  error: null,
-};
+// const initialState = {
+//   items: [],
+//   loading: false,
+//   error: null,
+// };
 
-/* =========================================================
-   SLICE
-   ========================================================= */
+// /* =========================================================
+//    SLICE
+//    ========================================================= */
 
-const insightSlice = createSlice({
-  name: "insights",
-  initialState,
+// const insightSlice = createSlice({
+//   name: "insights",
+//   initialState,
 
-  reducers: {
-    clearInsightError: (state) => {
-      state.error = null;
-    },
-  },
+//   reducers: {
+//     clearInsightError: (state) => {
+//       state.error = null;
+//     },
+//   },
 
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchInsights.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchInsights.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
 
-      .addCase(fetchInsights.fulfilled, (state, action) => {
-        state.loading = false;
-        state.error = null;
+//       .addCase(fetchInsights.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.error = null;
 
-        state.items = Array.isArray(action.payload)
-          ? action.payload
-          : action.payload?.content || [];
-      })
+//         state.items = Array.isArray(action.payload)
+//           ? action.payload
+//           : action.payload?.content || [];
+//       })
 
-      .addCase(fetchInsights.rejected, (state, action) => {
-        state.loading = false;
-        state.error =
-          action.payload || "Failed to fetch insights";
-      });
-  },
-});
+//       .addCase(fetchInsights.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error =
+//           action.payload || "Failed to fetch insights";
+//       });
+//   },
+// });
 
-export const { clearInsightError } = insightSlice.actions;
+// export const { clearInsightError } = insightSlice.actions;
 
-export default insightSlice.reducer;
+// export default insightSlice.reducer;
+
+
