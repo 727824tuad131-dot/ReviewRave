@@ -293,11 +293,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PlatformUser implements UserDetails {
 
-    public enum Role {
-        BRAND_MANAGER,
-        RESOLUTION_AGENT,
-        PLATFORM_ADMIN
-    }
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
