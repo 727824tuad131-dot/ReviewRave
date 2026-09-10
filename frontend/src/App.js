@@ -410,31 +410,255 @@
 // export default App;
 
 
+// import React from 'react';
+// import { Routes, Route, Navigate } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
+// import Navbar from './components/layout/Navbar';
+// import NotificationStack from './components/user/NotificationStack';
+// import Login from './components/user/Login';
+// import Register from './components/user/Register';
+// import UserList from './components/user/UserList';
+// import AdminDashboard from './components/dashboard/AdminDashboard';
+// import ProductList from './components/product/ProductList';
+// import ReviewList from './components/review/ReviewList';
+// import TicketList from './components/ticket/TicketList';
+// import InsightList from './components/insight/InsightList';
+// import './App.css';
+
+// export const ProtectedRoute = ({ children }) => {
+//   const { user, token } = useSelector((state) => state.auth || {});
+//   const isAuthenticated = Boolean(
+//     token ||
+//     user ||
+//     localStorage.getItem('token') ||
+//     localStorage.getItem('reviewrave_token') ||
+//     localStorage.getItem('t') ||
+//     localStorage.getItem('user')
+//   );
+
+//   if (!isAuthenticated) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   return children;
+// };
+
+// function App() {
+//   const { user, token } = useSelector((state) => state.auth || {});
+//   const isAuthenticated = Boolean(
+//     token ||
+//     user ||
+//     localStorage.getItem('token') ||
+//     localStorage.getItem('reviewrave_token') ||
+//     localStorage.getItem('t') ||
+//     localStorage.getItem('user')
+//   );
+
+//   return (
+//     <div className="App">
+//       <NotificationStack />
+//       <Navbar />
+//       <main className="main-content">
+//         <Routes>
+//           <Route
+//             path="/"
+//             element={
+//               isAuthenticated ? (
+//                 <AdminDashboard />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route path="/login" element={<Login />} />
+//           <Route path="/register" element={<Register />} />
+//           <Route
+//             path="/dashboard"
+//             element={
+//               isAuthenticated ? (
+//                 <AdminDashboard />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="/users"
+//             element={
+//               isAuthenticated ? (
+//                 <UserList />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="/products"
+//             element={
+//               isAuthenticated ? (
+//                 <ProductList />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="/reviews"
+//             element={
+//               isAuthenticated ? (
+//                 <ReviewList />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="/tickets"
+//             element={
+//               isAuthenticated ? (
+//                 <TicketList />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="/insights"
+//             element={
+//               isAuthenticated ? (
+//                 <InsightList />
+//               ) : (
+//                 <Navigate to="/login" replace />
+//               )
+//             }
+//           />
+//           <Route
+//             path="*"
+//             element={
+//               <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+//             }
+//           />
+//         </Routes>
+//       </main>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 import Navbar from './components/layout/Navbar';
 import NotificationStack from './components/user/NotificationStack';
+
 import Login from './components/user/Login';
 import Register from './components/user/Register';
 import UserList from './components/user/UserList';
+
 import AdminDashboard from './components/dashboard/AdminDashboard';
+
 import ProductList from './components/product/ProductList';
 import ReviewList from './components/review/ReviewList';
 import TicketList from './components/ticket/TicketList';
 import InsightList from './components/insight/InsightList';
+
 import './App.css';
 
-export const ProtectedRoute = ({ children }) => {
-  const { user, token } = useSelector((state) => state.auth || {});
-  const isAuthenticated = Boolean(
-    token ||
-    user ||
+/* =========================================================
+   AUTHENTICATION CHECK
+   ========================================================= */
+
+const getAuthentication = (auth) => {
+  return Boolean(
+    auth?.token ||
+    auth?.user ||
     localStorage.getItem('token') ||
     localStorage.getItem('reviewrave_token') ||
     localStorage.getItem('t') ||
     localStorage.getItem('user')
   );
+};
+
+/* =========================================================
+   GET USER ROLE
+   ========================================================= */
+
+const getUserRole = (auth) => {
+  const reduxRole = auth?.role;
+
+  if (reduxRole) {
+    return reduxRole.toUpperCase();
+  }
+
+  const storedRole = localStorage.getItem('role');
+
+  if (storedRole) {
+    return storedRole.toUpperCase();
+  }
+
+  return null;
+};
+
+/* =========================================================
+   ROLE BASED DASHBOARD
+   ========================================================= */
+
+const RoleDashboard = () => {
+  const auth = useSelector((state) => state.auth || {});
+
+  const role = getUserRole(auth);
+
+  /*
+   * PLATFORM ADMIN
+   * Keep your existing AdminDashboard exactly as it is.
+   */
+  if (role === 'PLATFORM_ADMIN') {
+    return <AdminDashboard />;
+  }
+
+  /*
+   * BRAND MANAGER
+   *
+   * Your existing AdminDashboard can continue to be used
+   * as the main Brand Manager dashboard.
+   *
+   * This keeps the current UI intact.
+   */
+  if (role === 'BRAND_MANAGER') {
+    return <AdminDashboard />;
+  }
+
+  /*
+   * RESOLUTION AGENT
+   *
+   * TicketList is the existing Resolution Center.
+   */
+  if (role === 'RESOLUTION_AGENT') {
+    return <TicketList />;
+  }
+
+  /*
+   * FALLBACK
+   *
+   * Important for existing tests or older sessions where
+   * token exists but role has not been stored yet.
+   *
+   * This prevents unnecessary breaking changes.
+   */
+  return <AdminDashboard />;
+};
+
+/* =========================================================
+   PROTECTED ROUTE
+   ========================================================= */
+
+export const ProtectedRoute = ({ children }) => {
+  const auth = useSelector((state) => state.auth || {});
+
+  const isAuthenticated = getAuthentication(auth);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -443,102 +667,161 @@ export const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+/* =========================================================
+   APP
+   ========================================================= */
+
 function App() {
-  const { user, token } = useSelector((state) => state.auth || {});
-  const isAuthenticated = Boolean(
-    token ||
-    user ||
-    localStorage.getItem('token') ||
-    localStorage.getItem('reviewrave_token') ||
-    localStorage.getItem('t') ||
-    localStorage.getItem('user')
-  );
+  const auth = useSelector((state) => state.auth || {});
+
+  const isAuthenticated = getAuthentication(auth);
 
   return (
     <div className="App">
+
+      {/* Global notifications */}
       <NotificationStack />
+
+      {/* Navigation */}
       <Navbar />
+
       <main className="main-content">
+
         <Routes>
+
+          {/* =================================================
+              ROOT / DASHBOARD
+              ================================================= */}
+
           <Route
             path="/"
             element={
-              isAuthenticated ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <RoleDashboard />
+              </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+
+          {/* =================================================
+              LOGIN
+              ================================================= */}
+
+          <Route
+            path="/login"
+            element={
+              isAuthenticated
+                ? <Navigate to="/" replace />
+                : <Login />
+            }
+          />
+
+          {/* =================================================
+              REGISTER
+              ================================================= */}
+
+          <Route
+            path="/register"
+            element={
+              isAuthenticated
+                ? <Navigate to="/" replace />
+                : <Register />
+            }
+          />
+
+          {/* =================================================
+              DASHBOARD
+              ================================================= */}
+
           <Route
             path="/dashboard"
             element={
-              isAuthenticated ? (
-                <AdminDashboard />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              <ProtectedRoute>
+                <RoleDashboard />
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              USERS
+              ================================================= */}
+
           <Route
             path="/users"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute>
                 <UserList />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              PRODUCTS
+              ================================================= */}
+
           <Route
             path="/products"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute>
                 <ProductList />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              REVIEWS
+              ================================================= */}
+
           <Route
             path="/reviews"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute>
                 <ReviewList />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              TICKETS
+              ================================================= */}
+
           <Route
             path="/tickets"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute>
                 <TicketList />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              INSIGHTS
+              ================================================= */}
+
           <Route
             path="/insights"
             element={
-              isAuthenticated ? (
+              <ProtectedRoute>
                 <InsightList />
-              ) : (
-                <Navigate to="/login" replace />
-              )
+              </ProtectedRoute>
             }
           />
+
+          {/* =================================================
+              UNKNOWN ROUTE
+              ================================================= */}
+
           <Route
             path="*"
             element={
-              <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+              <Navigate
+                to={isAuthenticated ? '/' : '/login'}
+                replace
+              />
             }
           />
+
         </Routes>
+
       </main>
     </div>
   );
