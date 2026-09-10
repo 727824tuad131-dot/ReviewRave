@@ -280,7 +280,7 @@
 
 // export default Login;
 
-loogin.jsx
+
 import Login from './user/Login';
 
 export default Login;
