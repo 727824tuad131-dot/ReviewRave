@@ -82,3 +82,38 @@
 
 // export default SearchFilterBar;
 
+import React from 'react';
+
+const SearchFilterBar = ({
+  searchTerm = '',
+  onSearchChange,
+  category = '',
+  onCategoryChange,
+  categories = ['ELECTRONICS', 'FASHION', 'SOFTWARE', 'FOOD'],
+}) => {
+  return (
+    <div className="search-filter-bar" data-testid="search-filter-bar">
+      <input
+        type="text"
+        placeholder="Search"
+        value={searchTerm}
+        onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+        data-testid="search-input"
+      />
+      <select
+        value={category}
+        onChange={(e) => onCategoryChange && onCategoryChange(e.target.value)}
+        data-testid="category-select"
+      >
+        <option value="">All Categories</option>
+        {categories.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+export default SearchFilterBar;
