@@ -76,3 +76,49 @@
 // export default insightSlice.reducer;
 
 
+
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import insightService from '../../services/insightService';
+
+export const getInsights = createAsyncThunk(
+  'insights/getInsights',
+  async (productId, { rejectWithValue }) => {
+    try {
+      return await insightService.getReviewInsights(productId);
+    } catch (error) {
+      return rejectWithValue(error.message || 'Failed to fetch insights');
+    }
+  }
+);
+
+export const getReviewInsights = getInsights;
+
+const initialState = {
+  insights: null,
+  items: [],
+  isLoading: false,
+  isError: false,
+};
+
+const insightSlice = createSlice({
+  name: 'insights',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getInsights.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getInsights.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.insights = action.payload;
+      })
+      .addCase(getInsights.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
+  },
+});
+
+export default insightSlice.reducer;
