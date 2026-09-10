@@ -161,7 +161,7 @@
 
 // export default reviewSlice.reducer;
 
-reviewslice
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import reviewService from '../../services/reviewService';
 
