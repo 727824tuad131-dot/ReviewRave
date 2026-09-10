@@ -100,7 +100,7 @@
 
 // export default ReviewList;
 
-t
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReviews } from '../../store/slices/reviewSlice';
