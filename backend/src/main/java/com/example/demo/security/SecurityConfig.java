@@ -71,6 +71,11 @@ public class SecurityConfig {
 
         return provider;
     }
+    @Bean
+public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration configuration) throws Exception {
+    return configuration.getAuthenticationManager();
+}
 
     // ==============================
     // SECURITY FILTER CHAIN
