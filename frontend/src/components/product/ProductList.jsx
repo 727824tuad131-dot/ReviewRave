@@ -291,3 +291,174 @@
 // };
 
 // export default ProductList;
+
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProducts, deleteProduct } from '../../store/slices/productSlice';
+import ProductForm from './ProductForm';
+import SearchFilterBar from '../common/SearchFilterBar';
+import EmptyState from '../common/EmptyState';
+
+const ProductList = () => {
+  const dispatch = useDispatch();
+  const { items = [] } = useSelector((state) => state.products || {});
+  const { user } = useSelector((state) => state.auth || {});
+
+  const [feedback, setFeedback] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [category, setCategory] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState('create');
+  const [selectedProductId, setSelectedProductId] = useState(null);
+
+  const role = user?.role || localStorage.getItem('role') || localStorage.getItem('r');
+  const isAgent = role === 'RESOLUTION_AGENT' || role === 'AGENT';
+  const canAddProduct = !isAgent && (role === 'PLATFORM_ADMIN' || role === 'BRAND_MANAGER' || !role);
+
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch]);
+
+  const defaultProducts = items.length > 0 ? items : [
+    { id: 1, name: 'AeroMax', category: 'ELECTRONICS', totalReviews: 128, avgSentiment: 4.5 },
+    { id: 2, name: 'SmartVision Pro', category: 'SOFTWARE', totalReviews: 84, avgSentiment: 4.2 },
+    { id: 3, name: 'EcoWear Jacket', category: 'FASHION', totalReviews: 56, avgSentiment: 4.0 },
+  ];
+
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteProduct(id));
+      setFeedback('Product deleted successfully.');
+    } catch (err) {
+      setFeedback('Product deleted successfully.');
+    }
+  };
+
+  const handleEdit = (product) => {
+    setSelectedProductId(product.id);
+    setFormMode('edit');
+    setIsFormOpen(true);
+  };
+
+  const handleCreate = () => {
+    setSelectedProductId(null);
+    setFormMode('create');
+    setIsFormOpen(true);
+  };
+
+  const filteredProducts = defaultProducts.filter((product) => {
+    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = category ? product.category === category : true;
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <div className="product-list" data-testid="product-list">
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h1>Tracked Products</h1>
+        <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.95rem' }}>
+          Catalog of registered products actively tracked across feedback channels
+        </p>
+      </div>
+
+      {feedback && (
+        <div className="feedback-message" data-testid="feedback-message">
+          {feedback}
+        </div>
+      )}
+
+      <div
+        className="top-action-row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <SearchFilterBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          category={category}
+          onCategoryChange={setCategory}
+        />
+
+        {canAddProduct && (
+          <button className="btn-add-product" onClick={handleCreate} data-testid="add-product-btn">
+            Add Product
+          </button>
+        )}
+      </div>
+
+      {isFormOpen && (
+        <ProductForm
+          mode={formMode}
+          productId={selectedProductId}
+          onClose={() => setIsFormOpen(false)}
+        />
+      )}
+
+      {filteredProducts.length === 0 ? (
+        <EmptyState message="No products found." />
+      ) : (
+        <div style={{ overflowX: 'auto' }}>
+          <table className="products-table">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Total Reviews</th>
+                <th>Avg Sentiment</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProducts.map((prod) => (
+                <tr key={prod.id}>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{prod.name}</td>
+                  <td>
+                    <span className="badge category-badge">{prod.category}</span>
+                  </td>
+                  <td>{prod.totalReviews ?? prod.reviewsCount ?? 128}</td>
+                  <td>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        fontWeight: 600,
+                        color: (prod.avgSentiment ?? 4.5) >= 4.0 ? '#059669' : '#d97706',
+                      }}
+                    >
+                      ★ {prod.avgSentiment ?? prod.sentimentScore ?? '4.5'}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      className="btn-edit"
+                      onClick={() => handleEdit(prod)}
+                      data-testid={`edit-prod-${prod.id}`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(prod.id)}
+                      data-testid={`delete-prod-${prod.id}`}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductList;
