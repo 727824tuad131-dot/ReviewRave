@@ -281,6 +281,3 @@
 // export default Login;
 
 
-import Login from './user/Login';
-
-export default Login;
