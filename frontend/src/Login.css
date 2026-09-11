@@ -1,188 +1,452 @@
-/* =========================================
-   ReviewRave Login Page
-   ========================================= */
+/* =========================================================
+   REVIEWRAVE AUTHENTICATION
+   Login + Register
+   ========================================================= */
 
-.login-page {
+* {
+  box-sizing: border-box;
+}
+
+.auth-page {
   min-height: 100vh;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  box-sizing: border-box;
-  background: linear-gradient(135deg, #eef4ff 0%, #f8fafc 50%, #eaf1ff 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  background: #f4f6f9;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Main Login Card */
-.login-card {
-  width: 100%;
-  max-width: 430px;
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 40px;
-  box-sizing: border-box;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.12);
-}
+/* =========================================================
+   LEFT BRAND PANEL
+   ========================================================= */
 
-/* Logo / Branding */
-.login-logo {
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-.login-logo h1 {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 800;
-  color: #172554;
-}
-
-.login-logo p {
-  margin: 7px 0 0;
-  font-size: 14px;
-  color: #64748b;
-}
-
-/* Heading */
-.login-card h2 {
-  margin: 0;
-  text-align: center;
-  font-size: 25px;
-  color: #1e293b;
-}
-
-.login-subtitle {
-  text-align: center;
-  margin: 8px 0 28px;
-  color: #64748b;
-  font-size: 14px;
-}
-
-/* Form */
-.login-form {
-  width: 100%;
-}
-
-.login-form-group {
-  margin-bottom: 20px;
-}
-
-.login-form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
-}
-
-.login-form-group input {
-  width: 100%;
-  height: 48px;
-  padding: 0 14px;
-  box-sizing: border-box;
-  border: 1px solid #cbd5e1;
-  border-radius: 9px;
-  outline: none;
-  font-size: 15px;
-  color: #1e293b;
-  background: #ffffff;
-  transition: 0.2s ease;
-}
-
-.login-form-group input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-/* Login Button */
-.login-button {
-  width: 100%;
-  height: 48px;
-  border: none;
-  border-radius: 9px;
-  background: #2563eb;
+.auth-brand-panel {
+  background: #27313c;
   color: #ffffff;
-  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+  padding: 42px 58px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-brand-content {
+  max-width: 570px;
+  margin: auto 0;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 70px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.auth-logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+  background: #5b4dde;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.auth-logo-name {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.auth-logo-subtitle {
+  display: block;
+  font-size: 10px;
+  color: #b3bcc6;
+}
+
+.auth-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #9eacba;
+  font-weight: 800;
+}
+
+.auth-hero h1 {
+  font-size: 46px;
+  line-height: 1.08;
+  margin: 12px 0 18px;
+  max-width: 530px;
+  color: #ffffff;
+}
+
+.auth-hero h1 span {
+  color: #7e73ee;
+}
+
+.auth-hero p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #b8c1ca;
+  max-width: 500px;
+}
+
+.auth-features {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.auth-feature {
+  display: flex;
+  gap: 13px;
+}
+
+.feature-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: #36414d;
+  color: #8f86f2;
+  display: grid;
+  place-items: center;
+}
+
+.auth-feature strong {
+  display: block;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.auth-feature span {
+  display: block;
+  color: #aab4bf;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.auth-brand-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #8793a0;
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   RIGHT FORM PANEL
+   ========================================================= */
+
+.auth-form-panel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 35px;
+  background: #f4f6f9;
+}
+
+.login-card,
+.register-card {
+  width: min(490px, 100%);
+  background: #ffffff;
+  border: 1px solid #e0e5eb;
+  border-radius: 8px;
+  padding: 35px 38px;
+  box-shadow: 0 8px 30px rgba(30, 45, 65, 0.08);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.mobile-auth-logo {
+  display: none;
+}
+
+.login-welcome {
+  display: block;
+  color: #788697;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-header h2 {
+  font-size: 27px;
+  margin: 5px 0;
+  color: #2b394c;
+}
+
+.login-header p {
+  font-size: 12px;
+  color: #7d8997;
+  margin: 8px 0 0;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.auth-form {
+  width: 100%;
+}
+
+.auth-form .form-group {
+  margin-bottom: 16px;
+}
+
+.auth-form label {
+  display: block;
+  font-size: 11px;
   font-weight: 700;
+  color: #4c5b6d;
+  margin-bottom: 6px;
+}
+
+.input-wrapper,
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper input,
+.select-wrapper select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d5dce4;
+  border-radius: 4px;
+  padding: 0 38px;
+  font-size: 12px;
+  outline: none;
+  background: #ffffff;
+  color: #2b394c;
+}
+
+.input-wrapper input:focus,
+.select-wrapper select:focus {
+  border-color: #6c9ed0;
+  box-shadow: 0 0 0 2px #eef5fb;
+}
+
+.input-wrapper input::placeholder {
+  color: #a3adb8;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8997a6;
+  font-size: 13px;
+  z-index: 1;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #7f8d9b;
   cursor: pointer;
-  transition: 0.2s ease;
+  padding: 4px;
 }
 
-.login-button:hover {
-  background: #1d4ed8;
+.password-toggle:hover {
+  color: #4389cc;
 }
 
-.login-button:disabled {
+.input-hint {
+  font-size: 9px;
+  color: #8b96a3;
+  margin-top: 4px;
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+   ========================================================= */
+
+.auth-submit-button {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-radius: 4px;
+  background: #4389cc;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.auth-submit-button:hover {
+  background: #3478b7;
+}
+
+.auth-submit-button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
 
-/* Error Message */
-.login-error {
-  margin-bottom: 18px;
-  padding: 11px 13px;
-  border-radius: 8px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-  font-size: 14px;
+.button-arrow {
+  margin-left: 8px;
 }
 
-/* Register Link */
-.login-register {
-  margin-top: 24px;
+.button-spinner {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   REGISTER LINK
+   ========================================================= */
+
+.auth-divider {
   text-align: center;
-  font-size: 14px;
-  color: #64748b;
+  margin: 22px 0 8px;
+  color: #8a95a2;
+  font-size: 11px;
 }
 
-.login-register a {
-  color: #2563eb;
+.register-link-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #4384bd;
+  font-size: 11px;
   font-weight: 700;
   text-decoration: none;
 }
 
-.login-register a:hover {
-  text-decoration: underline;
-}
-
-/* Footer */
-.login-footer {
-  margin-top: 22px;
-  text-align: center;
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-/* Enterprise Text */
-.enterprise-text {
-  text-align: center;
-  margin-top: 12px;
-  font-size: 12px;
-  color: #94a3b8;
+.register-link-button:hover {
+  color: #3478b7;
 }
 
 
-/* =========================================
-   Responsive
-   ========================================= */
+/* =========================================================
+   SECURITY NOTE
+   ========================================================= */
+
+.security-note {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f7f9fb;
+  border: 1px solid #edf0f3;
+  border-radius: 4px;
+  color: #82909e;
+  font-size: 9px;
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  align-items: center;
+}
+
+.security-icon {
+  color: #5d8fbd;
+}
+
+
+/* =========================================================
+   REGISTER FORM
+   ========================================================= */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.register-form .form-group {
+  margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-brand-panel {
+    display: none;
+  }
+
+  .auth-form-panel {
+    min-height: 100vh;
+    padding: 25px;
+  }
+
+  .mobile-auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-bottom: 20px;
+    color: #2b394c;
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .mobile-auth-logo .auth-logo-mark {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 @media (max-width: 600px) {
-  .login-page {
-    padding: 18px;
+  .auth-form-panel {
+    padding: 15px;
   }
 
-  .login-card {
+  .login-card,
+  .register-card {
     padding: 28px 22px;
-    border-radius: 14px;
   }
 
-  .login-logo h1 {
-    font-size: 26px;
+  .login-header h2 {
+    font-size: 23px;
   }
 
-  .login-card h2 {
-    font-size: 22px;
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
