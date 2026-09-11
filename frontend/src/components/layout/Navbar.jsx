@@ -271,3 +271,156 @@
 
 // export default Navbar;
 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+
+const Navbar = () => {
+
+  const navigate = useNavigate();
+
+  const role =
+    localStorage.getItem("role");
+
+  const email =
+    localStorage.getItem("email") ||
+    "user@reviewrave.com";
+
+
+  /* ===============================
+     ROLE NAME
+     =============================== */
+
+  const getRoleName = () => {
+
+    if (role === "PLATFORM_ADMIN") {
+      return "Platform Admin";
+    }
+
+    if (role === "RESOLUTION_AGENT") {
+      return "Resolution Agent";
+    }
+
+    return "Brand Manager";
+  };
+
+
+  /* ===============================
+     LOGOUT
+     =============================== */
+
+  const handleLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+
+    navigate(
+      "/login",
+      { replace: true }
+    );
+  };
+
+
+  return (
+
+    <header className="rr-topbar">
+
+
+      {/* ===============================
+          REVIEWRAVE BRAND
+          =============================== */}
+
+      <div className="rr-brand">
+
+        <div className="rr-logo-mark">
+          R
+        </div>
+
+
+        <div>
+
+          <div className="rr-brand-name">
+            ReviewRave
+          </div>
+
+          <div className="rr-brand-subtitle">
+            SOCIAL SENTIMENT PLATFORM
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* ===============================
+          USER AREA
+          =============================== */}
+
+      <div className="rr-user-area">
+
+
+        {/* NOTIFICATION */}
+
+        <button
+          type="button"
+          className="rr-notification"
+          aria-label="Notifications"
+        >
+
+          ♧
+
+          <span className="notification-dot"></span>
+
+        </button>
+
+
+        {/* AVATAR */}
+
+        <div className="rr-avatar">
+
+          {email
+            .charAt(0)
+            .toUpperCase()}
+
+        </div>
+
+
+        {/* USER DETAILS */}
+
+        <div className="rr-user-details">
+
+          <strong>
+            {email.split("@")[0]}
+          </strong>
+
+          <span>
+            {getRoleName()}
+          </span>
+
+        </div>
+
+
+        {/* LOGOUT */}
+
+        <button
+          type="button"
+          className="rr-user-arrow"
+          onClick={handleLogout}
+          title="Logout"
+          aria-label="Logout"
+        >
+
+          ⌄
+
+        </button>
+
+      </div>
+
+    </header>
+
+  );
+};
+
+
+export default Navbar;

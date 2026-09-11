@@ -466,12 +466,14 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 
 import ProductForm from "./ProductForm";
 import {
   getProducts,
   deleteProduct,
 } from "../../store/slices/productSlice";
+
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -498,9 +500,19 @@ const ProductList = () => {
     role === "BRAND_MANAGER" ||
     role === "PLATFORM_ADMIN";
 
+
+  /* ===============================
+     GET PRODUCTS
+     =============================== */
+
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
+
+
+  /* ===============================
+     CATEGORIES
+     =============================== */
 
   const categories = [
     "ALL",
@@ -509,6 +521,11 @@ const ProductList = () => {
     "SOFTWARE",
     "FOOD",
   ];
+
+
+  /* ===============================
+     FILTER PRODUCTS
+     =============================== */
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === "ALL") {
@@ -523,15 +540,30 @@ const ProductList = () => {
     });
   }, [products, selectedCategory]);
 
+
+  /* ===============================
+     ADD PRODUCT
+     =============================== */
+
   const handleAddProduct = () => {
     setSelectedProduct(null);
     setShowForm(true);
   };
 
+
+  /* ===============================
+     EDIT PRODUCT
+     =============================== */
+
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setShowForm(true);
   };
+
+
+  /* ===============================
+     DELETE PRODUCT
+     =============================== */
 
   const handleDeleteProduct = (id) => {
     const confirmed = window.confirm(
@@ -543,10 +575,20 @@ const ProductList = () => {
     }
   };
 
+
+  /* ===============================
+     CLOSE FORM
+     =============================== */
+
   const handleCloseForm = () => {
     setShowForm(false);
     setSelectedProduct(null);
   };
+
+
+  /* ===============================
+     SENTIMENT
+     =============================== */
 
   const getSentimentValue = (product) => {
     const raw =
@@ -576,50 +618,90 @@ const ProductList = () => {
     return value;
   };
 
+
+  /* ===============================
+     CATEGORY CLASS
+     =============================== */
+
   const getCategoryClass = (category) => {
     return `category-${String(category || "GENERAL")
       .toLowerCase()
       .replace(/\s+/g, "-")}`;
   };
 
+
+  /* ===============================
+     LOADING
+     =============================== */
+
   if (loading && products.length === 0) {
     return (
       <div className="rr-dashboard">
+
         <aside className="rr-sidebar">
           <SidebarContent />
         </aside>
 
         <main className="rr-dashboard-main">
+
           <div className="rr-loading">
             <div className="rr-spinner"></div>
-            <p>Loading products...</p>
+
+            <p>
+              Loading products...
+            </p>
           </div>
+
         </main>
+
       </div>
     );
   }
 
+
+  /* ===============================
+     MAIN UI
+     =============================== */
+
   return (
     <div className="rr-dashboard">
 
-      {/* LEFT SIDEBAR */}
+      {/* ===============================
+          LEFT SIDEBAR
+          =============================== */}
+
       <aside className="rr-sidebar">
+
         <SidebarContent />
+
       </aside>
 
-      {/* MAIN CONTENT */}
+
+      {/* ===============================
+          MAIN CONTENT
+          =============================== */}
+
       <main className="rr-dashboard-main">
 
         {/* Decorative shapes */}
+
         <div className="rr-shape rr-shape-one"></div>
+
         <div className="rr-shape rr-shape-two"></div>
+
         <div className="rr-shape rr-shape-three"></div>
+
         <div className="rr-shape rr-shape-four"></div>
 
-        {/* PAGE HEADER */}
+
+        {/* ===============================
+            PAGE HEADER
+            =============================== */}
+
         <div className="rr-page-header">
 
           <div>
+
             <div className="rr-eyebrow">
               CUSTOMER INTELLIGENCE
             </div>
@@ -629,10 +711,12 @@ const ProductList = () => {
             </h1>
 
             <p>
-              Catalog of registered products actively tracked
-              across feedback channels
+              Catalog of registered products actively
+              tracked across feedback channels
             </p>
+
           </div>
+
 
           {canManageProducts && (
             <button
@@ -641,27 +725,44 @@ const ProductList = () => {
               onClick={handleAddProduct}
             >
               <span>+</span>
+
               Add Product
             </button>
           )}
 
         </div>
 
-        {/* ERROR */}
+
+        {/* ===============================
+            ERROR
+            =============================== */}
+
         {error && (
-          <div className="rr-error">
-            <span>!</span>
+          <div
+            className="rr-error"
+            role="alert"
+          >
+
+            <span>
+              !
+            </span>
 
             {typeof error === "string"
               ? error
               : "Unable to load products"}
+
           </div>
         )}
 
-        {/* CATEGORY FILTER */}
+
+        {/* ===============================
+            CATEGORY FILTER
+            =============================== */}
+
         <div className="rr-category-filter">
 
           {categories.map((category) => (
+
             <button
               key={category}
               type="button"
@@ -674,15 +775,22 @@ const ProductList = () => {
                 setSelectedCategory(category)
               }
             >
+
               {category === "ALL"
                 ? "All Categories"
                 : category}
+
             </button>
+
           ))}
 
         </div>
 
-        {/* PRODUCT TABLE */}
+
+        {/* ===============================
+            EMPTY STATE
+            =============================== */}
+
         {filteredProducts.length === 0 ? (
 
           <div className="rr-empty-card">
@@ -700,14 +808,20 @@ const ProductList = () => {
               customer reviews and sentiment.
             </p>
 
+
             {canManageProducts && (
               <button
                 type="button"
                 className="rr-add-product"
                 onClick={handleAddProduct}
               >
-                <span>+</span>
+
+                <span>
+                  +
+                </span>
+
                 Add Product
+
               </button>
             )}
 
@@ -715,24 +829,42 @@ const ProductList = () => {
 
         ) : (
 
+          /* ===============================
+             PRODUCT TABLE
+             =============================== */
+
           <div className="rr-product-card">
 
+
             {/* TABLE HEADER */}
+
             <div className="rr-table-header">
 
-              <div>Product Name</div>
+              <div>
+                Product Name
+              </div>
 
-              <div>Category</div>
+              <div>
+                Category
+              </div>
 
-              <div>Total Reviews</div>
+              <div>
+                Total Reviews
+              </div>
 
-              <div>Avg Sentiment</div>
+              <div>
+                Avg Sentiment
+              </div>
 
-              <div>Action</div>
+              <div>
+                Action
+              </div>
 
             </div>
 
-            {/* TABLE ROWS */}
+
+            {/* TABLE BODY */}
+
             <div className="rr-table-body">
 
               {filteredProducts.map((product) => {
@@ -743,6 +875,7 @@ const ProductList = () => {
                 const category =
                   product.category || "GENERAL";
 
+
                 const sentimentClass =
                   sentiment === null
                     ? "neutral"
@@ -752,13 +885,17 @@ const ProductList = () => {
                     ? "medium"
                     : "negative";
 
+
                 return (
+
                   <div
                     className="rr-product-row"
                     key={product.id}
                   >
 
-                    {/* PRODUCT */}
+
+                    {/* PRODUCT NAME */}
+
                     <div className="rr-product-name">
 
                       <div
@@ -766,6 +903,7 @@ const ProductList = () => {
                           category
                         )}`}
                       >
+
                         {String(category)
                           .toUpperCase()
                           .includes("ELECTRONICS")
@@ -779,7 +917,9 @@ const ProductList = () => {
                               .includes("FASHION")
                           ? "◇"
                           : "✦"}
+
                       </div>
+
 
                       <strong>
                         {product.name ||
@@ -788,7 +928,9 @@ const ProductList = () => {
 
                     </div>
 
+
                     {/* CATEGORY */}
+
                     <div>
 
                       <span
@@ -796,19 +938,27 @@ const ProductList = () => {
                           category
                         )}`}
                       >
+
                         {category}
+
                       </span>
 
                     </div>
 
-                    {/* REVIEWS */}
+
+                    {/* TOTAL REVIEWS */}
+
                     <div className="rr-review-count">
+
                       {product.totalReviews ??
                         product.reviewCount ??
                         0}
+
                     </div>
 
+
                     {/* SENTIMENT */}
+
                     <div className="rr-sentiment">
 
                       <span className="rr-star">
@@ -818,18 +968,23 @@ const ProductList = () => {
                       <span
                         className={`sentiment-${sentimentClass}`}
                       >
+
                         {sentiment !== null
                           ? sentiment.toFixed(1)
                           : "—"}
+
                       </span>
 
                     </div>
 
+
                     {/* ACTION */}
+
                     <div className="rr-actions">
 
                       {canManageProducts && (
                         <>
+
                           <button
                             type="button"
                             className="rr-edit"
@@ -837,8 +992,11 @@ const ProductList = () => {
                               handleEditProduct(product)
                             }
                           >
+
                             ✎ Edit
+
                           </button>
+
 
                           <button
                             type="button"
@@ -849,48 +1007,70 @@ const ProductList = () => {
                               )
                             }
                           >
-                            ♙ Delete
+
+                            × Delete
+
                           </button>
+
                         </>
                       )}
 
                     </div>
 
                   </div>
+
                 );
               })}
 
             </div>
+
           </div>
+
         )}
 
-        {/* FORM */}
+
+        {/* ===============================
+            PRODUCT FORM
+            =============================== */}
+
         {showForm && (
+
           <ProductForm
             product={selectedProduct}
             onClose={handleCloseForm}
           />
+
         )}
 
       </main>
+
     </div>
   );
 };
 
 
-/* SIDEBAR */
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
 const SidebarContent = () => {
+
   const role = localStorage.getItem("role");
 
   return (
     <>
+
+      {/* LOGO */}
+
       <div className="rr-side-logo">
 
         <div className="rr-side-logo-mark">
           R
         </div>
 
+
         <div>
+
           <strong>
             ReviewRave
           </strong>
@@ -898,17 +1078,24 @@ const SidebarContent = () => {
           <span>
             SOCIAL SENTIMENT PLATFORM
           </span>
+
         </div>
 
       </div>
 
+
+      {/* NAVIGATION */}
+
       <nav className="rr-sidebar-nav">
+
 
         <NavItem
           to="/"
           icon="⌂"
           text="Dashboard"
+          end
         />
+
 
         <NavItem
           to="/insights"
@@ -916,26 +1103,32 @@ const SidebarContent = () => {
           text="Sentiment Analysis"
         />
 
+
         <NavItem
           to="/reviews"
           icon="▢"
           text="Reviews"
         />
 
+
         {(role === "BRAND_MANAGER" ||
           role === "PLATFORM_ADMIN") && (
+
           <NavItem
             to="/products"
             icon="◇"
             text="Tracked Products"
           />
+
         )}
+
 
         <NavItem
           to="/tickets"
           icon="▤"
           text="Reports"
         />
+
 
         <NavItem
           to="/settings"
@@ -944,21 +1137,35 @@ const SidebarContent = () => {
         />
 
       </nav>
+
     </>
   );
 };
 
 
-const NavItem = ({ to, icon, text }) => {
+/* =========================================================
+   NAV ITEM
+   ========================================================= */
+
+const NavItem = ({
+  to,
+  icon,
+  text,
+  end = false,
+}) => {
+
   return (
+
     <NavLink
       to={to}
+      end={end}
       className={({ isActive }) =>
         isActive
           ? "rr-nav-item active"
           : "rr-nav-item"
       }
     >
+
       <span className="rr-nav-icon">
         {icon}
       </span>
@@ -966,8 +1173,11 @@ const NavItem = ({ to, icon, text }) => {
       <span>
         {text}
       </span>
+
     </NavLink>
+
   );
 };
+
 
 export default ProductList;
