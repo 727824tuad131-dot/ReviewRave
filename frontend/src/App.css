@@ -4,14 +4,21 @@
 
 * {
   box-sizing: border-box;
+}
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f8fa;
+  color: #263238;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f4f7fb;
-  color: #26364a;
+  min-width: 320px;
 }
 
 button,
@@ -25,130 +32,112 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
 
 /* =========================================================
-   LOGIN / REGISTER BACKGROUND
+   AUTH PAGES
    ========================================================= */
 
 .auth-page {
   min-height: 100vh;
-  width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background:
-    linear-gradient(
-      135deg,
-      #eef4fb 0%,
-      #f8fafc 50%,
-      #eaf1f8 100%
-    );
-  padding: 30px;
+  justify-content: center;
+  background: #f4f7f9;
+  padding: 30px 20px;
 }
-
-
-/* =========================================================
-   AUTH CARD
-   ========================================================= */
 
 .auth-card {
   width: 100%;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(31, 55, 79, 0.12);
-  border: 1px solid #e7edf4;
+  border: 1px solid #e4e9ed;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(30, 50, 65, 0.08);
 }
-
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
 
 .login-card {
-  max-width: 470px;
-  padding: 42px 44px;
+  max-width: 450px;
+  padding: 38px 42px;
 }
 
-.login-card h2 {
-  font-size: 28px;
-  color: #27384c;
-  margin-bottom: 8px;
-  text-align: left;
+.register-card {
+  max-width: 650px;
+  padding: 36px 42px;
 }
+
+/* Logo */
 
 .auth-logo {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 34px;
-}
-
-.auth-logo h1 {
-  font-size: 22px;
-  color: #26384d;
-  margin-bottom: 3px;
-}
-
-.auth-logo span {
-  font-size: 13px;
-  color: #718096;
+  margin-bottom: 30px;
 }
 
 .logo-box {
   width: 42px;
   height: 42px;
-  background: #2d6cdf;
+  border-radius: 8px;
+  background: #4389b9;
   color: white;
-  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  font-weight: bold;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.auth-logo h1 {
+  margin: 0;
+  font-size: 21px;
+  color: #263238;
+}
+
+.auth-logo span {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #8b969d;
+}
+
+.auth-card h1 {
+  margin-top: 0;
+}
+
+.login-card h2 {
+  margin: 0;
+  font-size: 25px;
+  color: #263238;
+}
+
+.register-card > h1 {
+  font-size: 27px;
+  margin-bottom: 7px;
+  color: #263238;
 }
 
 .auth-subtitle {
-  color: #7a8797;
+  margin: 8px 0 25px;
+  color: #7c878e;
   font-size: 14px;
-  margin-bottom: 28px;
 }
 
-
-/* =========================================================
-   MESSAGE
-   ========================================================= */
-
-.message-box {
-  background: #edf6ff;
-  border: 1px solid #c8e0f8;
-  color: #286090;
-  padding: 11px 13px;
-  border-radius: 7px;
-  margin-bottom: 18px;
-  font-size: 13px;
-}
-
-
-/* =========================================================
-   FORM
-   ========================================================= */
+/* Form */
 
 .auth-card form {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-card label,
 .form-panel label {
-  display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #37475a;
-  margin-bottom: 8px;
-  margin-top: 18px;
-}
-
-.auth-card label:first-child {
-  margin-top: 0;
+  color: #45545d;
+  margin-bottom: 7px;
+  margin-top: 15px;
 }
 
 .auth-card input,
@@ -156,17 +145,15 @@ button {
 .form-panel input,
 .form-panel select,
 .form-panel textarea {
-  display: block;
   width: 100%;
-  height: 46px;
-  border: 1px solid #d7dfe8;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #344256;
-  padding: 0 14px;
+  min-height: 43px;
+  padding: 10px 12px;
+  border: 1px solid #d7dfe4;
+  border-radius: 6px;
+  background: #fff;
+  color: #263238;
   font-size: 14px;
   outline: none;
-  transition: 0.2s;
 }
 
 .auth-card input:focus,
@@ -174,67 +161,50 @@ button {
 .form-panel input:focus,
 .form-panel select:focus,
 .form-panel textarea:focus {
-  border-color: #4c91df;
-  box-shadow: 0 0 0 3px rgba(76, 145, 223, 0.1);
+  border-color: #4389b9;
+  box-shadow: 0 0 0 2px rgba(67, 137, 185, 0.1);
 }
-
-.auth-card input::placeholder,
-.form-panel input::placeholder {
-  color: #9aa6b5;
-}
-
-
-/* =========================================================
-   PRIMARY BUTTON
-   ========================================================= */
 
 .primary-button {
-  display: block;
-  width: 100%;
-  min-height: 46px;
   border: none;
-  border-radius: 7px;
-  background: #347fd0;
-  color: #ffffff;
-  font-size: 14px;
+  background: #3986b9;
+  color: #fff;
+  border-radius: 5px;
+  min-height: 43px;
+  padding: 0 22px;
+  font-size: 13px;
   font-weight: 600;
-  margin-top: 25px;
   transition: 0.2s;
 }
 
 .primary-button:hover {
-  background: #286db8;
+  background: #3076a4;
 }
 
-.primary-button:active {
-  transform: translateY(1px);
+.auth-card .primary-button {
+  width: 100%;
+  margin-top: 23px;
 }
 
 .primary-button.small {
-  width: auto;
-  padding: 0 22px;
-  margin-top: 0;
+  min-height: 38px;
+  padding: 0 18px;
 }
-
-
-/* =========================================================
-   AUTH LINKS
-   ========================================================= */
 
 .switch-text {
   text-align: center;
-  color: #7a8797;
-  font-size: 14px;
-  margin-top: 26px;
+  color: #7c878e;
+  font-size: 13px;
+  margin: 22px 0 0;
 }
 
 .link-button {
   border: none;
   background: transparent;
-  color: #347fd0;
-  font-size: 14px;
+  color: #3986b9;
   font-weight: 600;
   padding: 0;
+  font-size: inherit;
 }
 
 .link-button:hover {
@@ -242,37 +212,23 @@ button {
 }
 
 .security-text {
-  text-align: center;
-  color: #9aa5b2;
-  font-size: 12px;
   margin-top: 25px;
-}
-
-
-/* =========================================================
-   REGISTER
-   ========================================================= */
-
-.register-page {
-  align-items: center;
-}
-
-.register-card {
-  max-width: 520px;
-  padding: 40px 44px;
-}
-
-.register-card h1 {
   text-align: center;
-  font-size: 27px;
-  color: #27384c;
-  margin-bottom: 8px;
+  color: #9aa4aa;
+  font-size: 11px;
 }
 
-.register-card .auth-subtitle {
-  text-align: center;
-  margin-bottom: 25px;
+.message-box {
+  background: #eef7fb;
+  border: 1px solid #cce5f1;
+  color: #39718f;
+  padding: 10px 12px;
+  border-radius: 5px;
+  font-size: 13px;
+  margin-bottom: 15px;
 }
+
+/* Register */
 
 .two-column {
   display: grid;
@@ -281,222 +237,255 @@ button {
 }
 
 .two-column label {
-  margin-top: 0;
+  display: block;
 }
 
-
 /* =========================================================
-   DASHBOARD MAIN
+   MAIN APPLICATION
    ========================================================= */
 
 .app-container {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #f7f9fa;
 }
 
-
 /* =========================================================
-   HEADER
+   TOP HEADER
    ========================================================= */
 
 .top-header {
-  height: 74px;
+  height: 70px;
   background: #ffffff;
-  border-bottom: 1px solid #e3e8ee;
+  border-bottom: 1px solid #e1e6e9;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 38px;
+  padding: 0 34px;
 }
 
 .brand-area {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
 }
 
 .small-logo {
-  width: 38px;
-  height: 38px;
-  font-size: 19px;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  font-size: 17px;
 }
 
 .brand-area h2 {
-  color: #27384c;
-  font-size: 18px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #34434c;
 }
 
 .brand-area span {
-  color: #8a96a5;
-  font-size: 11px;
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  color: #9aa3a8;
 }
 
 .user-area {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
 }
 
 .user-avatar {
-  width: 38px;
-  height: 38px;
-  background: #e8f1fb;
-  color: #347fd0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  background: #eef2f4;
+  color: #64727a;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-weight: bold;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  margin-right: 15px;
+  min-width: 115px;
 }
 
 .user-details strong {
-  color: #334155;
-  font-size: 13px;
+  font-size: 11px;
+  color: #4d5960;
 }
 
 .user-details span {
-  color: #8995a4;
-  font-size: 11px;
+  font-size: 9px;
+  color: #9aa2a7;
+  margin-top: 2px;
 }
 
 .logout-button {
-  border: 1px solid #d6dee7;
-  background: white;
-  color: #566577;
-  padding: 8px 15px;
-  border-radius: 6px;
-  font-size: 12px;
+  border: none;
+  background: transparent;
+  color: #7b858b;
+  font-size: 11px;
+  margin-left: 8px;
 }
 
 .logout-button:hover {
-  background: #f4f7fa;
+  color: #3986b9;
 }
-
 
 /* =========================================================
    NAVIGATION
    ========================================================= */
 
 .main-nav {
-  height: 48px;
-  background: #29323d;
+  height: 50px;
+  background: #202b31;
   display: flex;
   align-items: center;
-  padding-left: 38px;
+  padding: 0 34px;
   gap: 4px;
 }
 
 .main-nav button {
-  height: 48px;
+  height: 50px;
   border: none;
+  border-bottom: 3px solid transparent;
   background: transparent;
-  color: #cbd2da;
-  padding: 0 19px;
-  font-size: 13px;
+  color: #c4cbd0;
+  padding: 0 17px;
+  font-size: 12px;
 }
 
 .main-nav button:hover {
-  background: #36414d;
-  color: white;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .main-nav button.active {
-  background: #394653;
-  color: white;
-  border-bottom: 3px solid #4d94dc;
+  color: #ffffff;
+  border-bottom-color: #4a96c5;
 }
 
+/* =========================================================
+   GLOBAL MESSAGE
+   ========================================================= */
+
+.global-message {
+  width: min(1100px, calc(100% - 50px));
+  margin: 15px auto 0;
+  padding: 10px 14px;
+  background: #eef7fb;
+  border: 1px solid #cfe6f1;
+  color: #46758d;
+  border-radius: 5px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.global-message button {
+  border: none;
+  background: transparent;
+  color: #6d7b82;
+  font-size: 18px;
+}
 
 /* =========================================================
-   DASHBOARD
+   DASHBOARD COMMON
    ========================================================= */
 
 .dashboard {
-  max-width: 1250px;
+  width: min(1100px, calc(100% - 50px));
   margin: 0 auto;
-  padding: 35px 38px 60px;
+  padding: 34px 0 60px;
 }
 
 .page-title {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 27px;
+  gap: 25px;
+  margin-bottom: 28px;
 }
 
-.page-title h1 {
-  font-size: 25px;
-  color: #2b3b4f;
-  margin-top: 4px;
-}
-
-.page-title p {
-  color: #8995a4;
-  font-size: 13px;
-  margin-top: 7px;
+.page-title > div {
+  flex: 1;
 }
 
 .eyebrow {
-  font-size: 11px;
-  color: #4789ca;
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.4px;
   font-weight: 700;
-  letter-spacing: 1px;
+  color: #5f899f;
+  margin-bottom: 5px;
 }
 
+.page-title h1 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.1;
+  color: #29373f;
+}
+
+.page-title p {
+  margin: 7px 0 0;
+  font-size: 12px;
+  color: #879198;
+}
 
 /* =========================================================
-   STATS
+   STAT CARDS
    ========================================================= */
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 26px;
 }
 
 .stat-card {
-  min-height: 105px;
+  min-height: 82px;
   background: #ffffff;
-  border: 1px solid #e4e9ef;
-  border-radius: 8px;
-  padding: 20px;
+  border: 1px solid #e3e8eb;
+  border-radius: 7px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 13px;
+  padding: 17px 18px;
 }
 
 .stat-icon {
-  width: 42px;
-  height: 42px;
-  background: #edf4fb;
-  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #f1f4f5;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 19px;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .stat-card span {
   display: block;
-  color: #8995a4;
-  font-size: 12px;
-  margin-bottom: 6px;
+  font-size: 10px;
+  color: #879197;
+  margin-bottom: 4px;
 }
 
 .stat-card strong {
   display: block;
-  color: #2d3e52;
-  font-size: 23px;
+  font-size: 20px;
+  color: #354149;
 }
-
 
 /* =========================================================
    PANELS
@@ -504,16 +493,20 @@ button {
 
 .panel {
   background: #ffffff;
-  border: 1px solid #e4e9ef;
-  border-radius: 8px;
+  border: 1px solid #e2e7ea;
+  border-radius: 7px;
   padding: 24px;
 }
 
 .panel h3 {
-  font-size: 15px;
-  color: #344458;
-  margin-bottom: 20px;
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: #39474f;
 }
+
+/* =========================================================
+   DASHBOARD GRID
+   ========================================================= */
 
 .dashboard-grid {
   display: grid;
@@ -521,145 +514,9 @@ button {
   gap: 20px;
 }
 
-
 /* =========================================================
-   ADMIN ROLE CHART
+   BRAND MANAGER - PRODUCT
    ========================================================= */
-
-.role-chart {
-  display: flex;
-  align-items: center;
-  gap: 45px;
-}
-
-.donut {
-  width: 125px;
-  height: 125px;
-  border-radius: 50%;
-  background:
-    conic-gradient(
-      #64a986 0 47%,
-      #4d91ca 47% 78%,
-      #cf7a78 78% 100%
-    );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.donut::after {
-  content: "";
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: white;
-  position: absolute;
-}
-
-.donut span {
-  z-index: 1;
-  font-weight: bold;
-  color: #334155;
-  font-size: 18px;
-}
-
-.legend p {
-  color: #687789;
-  font-size: 12px;
-  margin: 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot.admin {
-  background: #cf7a78;
-}
-
-.dot.manager {
-  background: #4d91ca;
-}
-
-.dot.agent {
-  background: #64a986;
-}
-
-
-/* =========================================================
-   TIMELINE
-   ========================================================= */
-
-.timeline-item {
-  display: flex;
-  gap: 13px;
-  margin-bottom: 20px;
-}
-
-.timeline-dot {
-  width: 9px;
-  height: 9px;
-  min-width: 9px;
-  border-radius: 50%;
-  background: #5797d0;
-  margin-top: 4px;
-}
-
-.timeline-item strong {
-  display: block;
-  color: #4b5a6b;
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
-.timeline-item span {
-  color: #98a3af;
-  font-size: 11px;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-   ========================================================= */
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.quick-actions button {
-  background: white;
-  border: 1px solid #e1e7ed;
-  border-radius: 7px;
-  padding: 14px;
-  color: #536477;
-  font-size: 13px;
-}
-
-.quick-actions button:hover {
-  border-color: #6ea4d8;
-  background: #f7fbff;
-}
-
-
-/* =========================================================
-   PRODUCTS
-   ========================================================= */
-
-.product-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
 
 .product-section {
   display: grid;
@@ -667,405 +524,572 @@ button {
   gap: 20px;
 }
 
+.product-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
 .product-card {
-  min-height: 200px;
+  min-height: 195px;
 }
 
 .product-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  padding-bottom: 20px;
 }
 
 .product-header h3 {
-  margin-bottom: 5px;
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #3a474e;
 }
 
-.product-header span {
-  color: #8a96a4;
-  font-size: 12px;
+.product-header span:not(.status-badge) {
+  font-size: 10px;
+  color: #9aa3a8;
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 5px 9px;
-  background: #e9f6ef;
-  color: #39805b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f3f4;
+  color: #69767c;
   border-radius: 20px;
-  font-size: 10px;
-  font-weight: 700;
+  padding: 5px 9px;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .product-info {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin: 24px 0;
-  border-top: 1px solid #edf0f3;
-  border-bottom: 1px solid #edf0f3;
-  padding: 16px 0;
+  border-top: 1px solid #eef1f2;
+  border-bottom: 1px solid #eef1f2;
+  padding: 17px 0;
 }
 
-.product-info div {
+.product-info > div {
   text-align: center;
 }
 
 .product-info strong {
   display: block;
-  font-size: 19px;
-  color: #34465a;
+  font-size: 17px;
+  color: #3a474e;
 }
 
 .product-info span {
   display: block;
-  color: #919ca9;
-  font-size: 11px;
   margin-top: 4px;
+  font-size: 9px;
+  color: #929ca2;
 }
 
 .card-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .card-actions button,
+.table-button,
 .secondary-button {
-  border: 1px solid #d6dee7;
-  background: white;
-  color: #4b6680;
-  border-radius: 6px;
-  padding: 9px 13px;
-  font-size: 12px;
+  border: 1px solid #dfe5e8;
+  background: #ffffff;
+  color: #66737a;
+  border-radius: 4px;
+  min-height: 31px;
+  padding: 0 11px;
+  font-size: 10px;
 }
 
 .card-actions button:hover,
+.table-button:hover,
 .secondary-button:hover {
-  background: #f1f6fb;
+  border-color: #aebdc5;
+  color: #3986b9;
 }
 
 .empty-product {
+  min-height: 195px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
 .empty-icon {
-  width: 45px;
-  height: 45px;
-  border: 1px dashed #b9c6d3;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #dce3e6;
   border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: #7891a9;
-  font-size: 25px;
-  margin-bottom: 14px;
+  justify-content: center;
+  color: #8d999f;
+  margin-bottom: 12px;
 }
 
 .empty-product h3 {
-  margin-bottom: 7px;
+  margin: 0 0 5px;
+  font-size: 13px;
 }
 
 .empty-product p {
-  color: #8a96a4;
-  font-size: 12px;
-  max-width: 230px;
+  margin: 0 0 18px;
+  font-size: 10px;
   line-height: 1.5;
+  color: #949ea4;
+  max-width: 220px;
 }
 
+.empty-product .primary-button {
+  width: 80%;
+}
 
 /* =========================================================
    FORM PANEL
    ========================================================= */
 
 .form-panel {
-  max-width: 650px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
+}
+
+.form-panel form {
+  max-width: 550px;
+}
+
+.form-panel label {
+  display: block;
 }
 
 .form-panel textarea {
-  height: auto;
-  padding: 12px;
   resize: vertical;
 }
 
 .form-actions {
   display: flex;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .form-actions .primary-button {
   width: auto;
-  padding: 0 22px;
 }
-
-.form-actions .secondary-button {
-  margin-top: 25px;
-}
-
-
-/* =========================================================
-   TABLE
-   ========================================================= */
-
-.table-panel {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-  color: #8995a4;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 13px 15px;
-  border-bottom: 1px solid #e7ebef;
-}
-
-td {
-  padding: 16px 15px;
-  border-bottom: 1px solid #eef1f4;
-  color: #596879;
-  font-size: 12px;
-}
-
-td strong {
-  color: #39495c;
-}
-
-.table-button {
-  border: none;
-  background: transparent;
-  color: #397fc1;
-  font-size: 12px;
-  margin-right: 12px;
-}
-
-.table-button:hover {
-  text-decoration: underline;
-}
-
-.resolve-button {
-  border: none;
-  background: #e8f6ee;
-  color: #37815a;
-  padding: 7px 10px;
-  border-radius: 5px;
-  font-size: 11px;
-  margin-right: 8px;
-}
-
-
-/* =========================================================
-   TICKETS
-   ========================================================= */
-
-.ticket-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #edf0f3;
-}
-
-.ticket-row strong {
-  display: block;
-  color: #455568;
-  font-size: 13px;
-  margin-bottom: 5px;
-}
-
-.ticket-row div span {
-  color: #a0a9b3;
-  font-size: 10px;
-}
-
-.priority {
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.priority.high {
-  color: #d05e5e;
-}
-
-.priority.medium {
-  color: #c58a34;
-}
-
-.priority.low {
-  color: #4d9a70;
-}
-
 
 /* =========================================================
    REVIEWS
    ========================================================= */
 
+.dashboard-grid .panel form {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-grid .panel form label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #59666d;
+  margin-bottom: 6px;
+  margin-top: 10px;
+}
+
+.dashboard-grid .panel form select,
+.dashboard-grid .panel form textarea {
+  width: 100%;
+  border: 1px solid #dce2e5;
+  border-radius: 4px;
+  padding: 9px;
+  font-size: 11px;
+  background: white;
+  color: #4b585f;
+}
+
+.dashboard-grid .panel form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.dashboard-grid .panel form .primary-button {
+  margin-top: 17px;
+}
+
 .review-item {
-  padding: 15px 0;
-  border-bottom: 1px solid #edf0f3;
+  border-bottom: 1px solid #edf0f1;
+  padding: 12px 0;
+}
+
+.review-item:last-child {
+  border-bottom: none;
 }
 
 .review-rating {
-  color: #e2a331;
-  font-size: 14px;
-  margin-bottom: 7px;
+  color: #b08d57;
+  font-size: 11px;
+  letter-spacing: 1px;
 }
 
 .review-item p {
-  color: #617083;
-  font-size: 12px;
+  font-size: 11px;
+  color: #657178;
+  margin: 7px 0;
   line-height: 1.5;
-  margin-bottom: 8px;
 }
 
 .sentiment {
-  background: #e9f6ef;
-  color: #39805b;
-  padding: 4px 8px;
+  display: inline-block;
+  font-size: 9px;
+  color: #6e858f;
+  background: #f2f5f6;
   border-radius: 12px;
-  font-size: 10px;
+  padding: 4px 7px;
 }
-
 
 /* =========================================================
    INSIGHTS
    ========================================================= */
 
 .progress-item {
-  margin-bottom: 23px;
+  margin-bottom: 17px;
 }
 
 .progress-item > div:first-child {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 7px;
 }
 
 .progress-item span {
-  color: #667587;
-  font-size: 12px;
+  font-size: 10px;
+  color: #67747a;
 }
 
 .progress-item strong {
-  color: #405267;
-  font-size: 12px;
+  font-size: 10px;
+  color: #5b676d;
 }
 
 .progress {
   width: 100%;
-  height: 9px;
-  background: #edf0f3;
-  border-radius: 20px;
+  height: 7px;
+  background: #edf1f2;
+  border-radius: 10px;
   overflow: hidden;
 }
 
-.progress-positive {
+.progress-positive,
+.progress-neutral,
+.progress-negative {
   height: 100%;
-  background: #63a986;
+  border-radius: 10px;
+}
+
+.progress-positive {
+  background: #5b967d;
 }
 
 .progress-neutral {
-  height: 100%;
-  background: #7fa4c4;
+  background: #6e91a3;
 }
 
 .progress-negative {
-  height: 100%;
-  background: #cf7a78;
+  background: #b17c70;
 }
 
 .insight-list {
+  padding: 0;
+  margin: 0;
   list-style: none;
 }
 
 .insight-list li {
-  padding: 12px 0;
-  border-bottom: 1px solid #edf0f3;
-  color: #647386;
-  font-size: 12px;
+  position: relative;
+  padding-left: 15px;
+  margin-bottom: 13px;
+  font-size: 11px;
+  color: #6b777d;
 }
 
 .insight-list li::before {
   content: "•";
-  color: #4c91d2;
-  margin-right: 9px;
+  position: absolute;
+  left: 0;
+  color: #8d999f;
 }
-
 
 /* =========================================================
-   GLOBAL MESSAGE
+   TICKETS
    ========================================================= */
 
-.global-message {
-  position: fixed;
-  right: 25px;
-  top: 90px;
-  z-index: 1000;
-  background: #ffffff;
-  border: 1px solid #dce4ec;
-  box-shadow: 0 5px 20px rgba(30, 50, 70, 0.12);
-  border-radius: 7px;
-  padding: 12px 15px;
-  color: #526274;
-  font-size: 12px;
+.table-panel {
+  overflow-x: auto;
 }
 
-.global-message button {
+.table-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-panel th {
+  text-align: left;
+  padding: 14px 10px;
+  border-bottom: 1px solid #e6eaec;
+  color: #849097;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.table-panel td {
+  padding: 17px 10px;
+  border-bottom: 1px solid #eef1f2;
+  font-size: 11px;
+  color: #657178;
+}
+
+.table-panel tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-panel td strong {
+  color: #4a575e;
+  font-size: 11px;
+}
+
+.priority {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.priority.high {
+  color: #b26d61;
+}
+
+.priority.medium {
+  color: #aa8c59;
+}
+
+.priority.low {
+  color: #668d76;
+}
+
+.resolve-button {
   border: none;
-  background: transparent;
-  color: #8995a4;
-  margin-left: 15px;
-  font-size: 16px;
+  background: #eef5f8;
+  color: #4b829d;
+  border-radius: 4px;
+  padding: 6px 9px;
+  font-size: 9px;
+  margin-right: 6px;
 }
 
+.resolve-button:hover {
+  background: #dcecf2;
+}
+
+.ticket-row {
+  min-height: 57px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #edf0f1;
+}
+
+.ticket-row:last-of-type {
+  border-bottom: none;
+}
+
+.ticket-row strong {
+  display: block;
+  font-size: 11px;
+  color: #59666d;
+}
+
+.ticket-row div span {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  color: #a0805d;
+}
+
+.secondary-button {
+  margin-top: 18px;
+}
+
+/* =========================================================
+   ADMIN DASHBOARD
+   ========================================================= */
+
+.role-chart {
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+}
+
+.donut {
+  width: 125px;
+  height: 125px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4b8db7 0deg 45deg,
+    #6e9e82 45deg 225deg,
+    #b49365 225deg 360deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.donut::after {
+  content: "";
+  width: 82px;
+  height: 82px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.donut span {
+  position: relative;
+  z-index: 2;
+  font-size: 22px;
+  font-weight: 700;
+  color: #44525a;
+}
+
+.legend p {
+  margin: 12px 0;
+  font-size: 10px;
+  color: #68757b;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.dot.admin {
+  background: #4b8db7;
+}
+
+.dot.manager {
+  background: #6e9e82;
+}
+
+.dot.agent {
+  background: #b49365;
+}
+
+.timeline-item {
+  min-height: 58px;
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 15px;
+  width: 1px;
+  height: 42px;
+  background: #e2e7e9;
+}
+
+.timeline-dot {
+  width: 9px;
+  height: 9px;
+  background: #4389b9;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-item strong {
+  display: block;
+  font-size: 10px;
+  color: #5d6970;
+  margin-bottom: 4px;
+}
+
+.timeline-item span {
+  font-size: 9px;
+  color: #9aa3a8;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.quick-actions button {
+  min-height: 55px;
+  border: 1px solid #e0e6e9;
+  border-radius: 6px;
+  background: white;
+  color: #5e6c73;
+  font-size: 11px;
+}
+
+.quick-actions button:hover {
+  border-color: #4389b9;
+  color: #4389b9;
+}
+
+/* =========================================================
+   USERS
+   ========================================================= */
+
+.table-button {
+  margin-right: 5px;
+}
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 900px) {
-
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .dashboard-grid,
   .product-section,
-  .product-list {
+  .product-list,
+  .dashboard-grid {
     grid-template-columns: 1fr;
   }
 
   .quick-actions {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
+  .dashboard {
+    width: min(100% - 30px, 850px);
+  }
 }
 
 @media (max-width: 650px) {
-
-  .auth-page {
-    padding: 15px;
-  }
-
-  .login-card,
-  .register-card {
-    padding: 30px 25px;
-  }
-
-  .two-column {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
   .top-header {
-    padding: 0 15px;
+    height: auto;
+    min-height: 70px;
+    padding: 12px 15px;
   }
 
   .user-details {
@@ -1073,7 +1097,7 @@ td strong {
   }
 
   .main-nav {
-    padding-left: 5px;
+    padding: 0 10px;
     overflow-x: auto;
   }
 
@@ -1083,16 +1107,24 @@ td strong {
   }
 
   .dashboard {
-    padding: 25px 15px;
+    width: calc(100% - 24px);
+    padding-top: 25px;
   }
 
   .page-title {
-    align-items: flex-start;
     flex-direction: column;
-    gap: 15px;
+    align-items: stretch;
+  }
+
+  .page-title .primary-button {
+    width: 100%;
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .two-column {
     grid-template-columns: 1fr;
   }
 
@@ -1101,7 +1133,12 @@ td strong {
   }
 
   .role-chart {
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
   }
 
+  .login-card,
+  .register-card {
+    padding: 28px 22px;
+  }
 }
