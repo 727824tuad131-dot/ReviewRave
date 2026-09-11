@@ -1236,3 +1236,176 @@ a {
     flex-direction: column;
   }
 }
+/* =========================================================
+   REVIEWRAVE AUTH FINAL FIX
+   FORCE LOGIN / REGISTER LEFT + RIGHT LAYOUT
+   ========================================================= */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-page {
+  width: 100vw !important;
+  min-height: 100vh !important;
+
+  display: grid !important;
+
+  grid-template-columns: 50% 50% !important;
+  grid-template-rows: 100vh !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+}
+
+/* LEFT */
+
+.auth-page > .auth-brand-panel {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  width: 100% !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  overflow: hidden !important;
+}
+
+/* RIGHT */
+
+.auth-page > .auth-form-panel {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  width: 100% !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  box-sizing: border-box !important;
+
+  padding: 40px !important;
+
+  position: relative !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* LOGIN CARD */
+
+.auth-page .login-card {
+  width: 100% !important;
+  max-width: 440px !important;
+
+  margin: 0 auto !important;
+
+  box-sizing: border-box !important;
+}
+
+/* REGISTER CARD */
+
+.auth-page .register-card {
+  width: 100% !important;
+  max-width: 500px !important;
+
+  margin: 0 auto !important;
+
+  box-sizing: border-box !important;
+
+  position: relative !important;
+}
+
+/* =========================================================
+   REGISTER PAGE
+   ========================================================= */
+
+.register-page {
+  display: grid !important;
+
+  grid-template-columns: 50% 50% !important;
+  grid-template-rows: 100vh !important;
+}
+
+/* =========================================================
+   DESKTOP FORCE
+   ========================================================= */
+
+@media (min-width: 851px) {
+
+  .auth-page {
+    display: grid !important;
+
+    grid-template-columns: 50% 50% !important;
+    grid-template-rows: 100vh !important;
+
+    height: 100vh !important;
+  }
+
+  .auth-page > .auth-brand-panel {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .auth-page > .auth-form-panel {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .auth-page {
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    width: 100% !important;
+
+    min-height: 100vh !important;
+
+    overflow-y: auto !important;
+  }
+
+  .auth-page > .auth-brand-panel {
+    width: 100% !important;
+
+    height: auto !important;
+
+    min-height: 300px !important;
+
+    flex: none !important;
+  }
+
+  .auth-page > .auth-form-panel {
+    width: 100% !important;
+
+    height: auto !important;
+
+    min-height: auto !important;
+
+    flex: none !important;
+  }
+}
