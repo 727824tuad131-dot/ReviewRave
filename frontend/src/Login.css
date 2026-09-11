@@ -450,3 +450,41 @@
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   FINAL AUTH PAGE SIZE FIX
+   ========================================================= */
+
+.auth-page {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.auth-brand-panel {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.auth-form-panel {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card,
+.register-card {
+  width: min(490px, calc(100% - 40px));
+  min-height: auto;
+  transform: none;
+  zoom: 1;
+}
+
+.auth-brand-panel,
+.auth-form-panel,
+.login-card,
+.register-card {
+  transform: none;
+}
