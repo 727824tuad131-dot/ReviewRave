@@ -468,49 +468,25 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import ProductForm from "./ProductForm";
-
 import {
   getProducts,
   deleteProduct,
 } from "../../store/slices/productSlice";
 
-
 const ProductList = () => {
-
   const dispatch = useDispatch();
-
-
-  /* =====================================================
-     PRODUCT STATE
-     ===================================================== */
 
   const productsState = useSelector(
     (state) => state.products || {}
   );
 
-  const items = productsState.items || [];
-
+  const products = productsState.items || [];
   const loading = productsState.loading || false;
-
   const error = productsState.error || null;
 
-
-  /* =====================================================
-     LOCAL STATE
-     ===================================================== */
-
   const [showForm, setShowForm] = useState(false);
-
-  const [selectedProduct, setSelectedProduct] =
-    useState(null);
-
-  const [selectedCategory, setSelectedCategory] =
-    useState("ALL");
-
-
-  /* =====================================================
-     USER ROLE
-     ===================================================== */
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
 
   const role = localStorage.getItem("role");
 
@@ -518,84 +494,12 @@ const ProductList = () => {
     role === "BRAND_MANAGER" ||
     role === "PLATFORM_ADMIN";
 
-
-  /* =====================================================
-     GET PRODUCTS
-     
-     IMPORTANT:
-     Your productSlice exports getProducts,
-     NOT fetchProducts.
-     ===================================================== */
-
+  /* Load products */
   useEffect(() => {
-
     dispatch(getProducts());
-
   }, [dispatch]);
 
-
-  /* =====================================================
-     ADD PRODUCT
-     ===================================================== */
-
-  const handleAddProduct = () => {
-
-    setSelectedProduct(null);
-
-    setShowForm(true);
-
-  };
-
-
-  /* =====================================================
-     EDIT PRODUCT
-     ===================================================== */
-
-  const handleEditProduct = (product) => {
-
-    setSelectedProduct(product);
-
-    setShowForm(true);
-
-  };
-
-
-  /* =====================================================
-     DELETE PRODUCT
-     ===================================================== */
-
-  const handleDeleteProduct = (id) => {
-
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this product?"
-    );
-
-    if (confirmed) {
-
-      dispatch(deleteProduct(id));
-
-    }
-
-  };
-
-
-  /* =====================================================
-     CLOSE FORM
-     ===================================================== */
-
-  const handleCloseForm = () => {
-
-    setShowForm(false);
-
-    setSelectedProduct(null);
-
-  };
-
-
-  /* =====================================================
-     CATEGORIES
-     ===================================================== */
-
+  /* Categories */
   const categories = [
     "ALL",
     "ELECTRONICS",
@@ -604,179 +508,123 @@ const ProductList = () => {
     "FOOD",
   ];
 
-
-  /* =====================================================
-     FILTER PRODUCTS
-     ===================================================== */
-
+  /* Filter products */
   const filteredProducts = useMemo(() => {
-
     if (selectedCategory === "ALL") {
-
-      return items;
-
+      return products;
     }
 
-
-    return items.filter((product) => {
-
+    return products.filter((product) => {
       return (
-        String(product.category || "")
-          .toUpperCase() === selectedCategory
+        String(product.category || "").toUpperCase() ===
+        selectedCategory
       );
-
     });
+  }, [products, selectedCategory]);
 
-  }, [items, selectedCategory]);
+  /* Add */
+  const handleAddProduct = () => {
+    setSelectedProduct(null);
+    setShowForm(true);
+  };
 
+  /* Edit */
+  const handleEditProduct = (product) => {
+    setSelectedProduct(product);
+    setShowForm(true);
+  };
 
-  /* =====================================================
-     SENTIMENT VALUE
-     ===================================================== */
+  /* Delete */
+  const handleDeleteProduct = (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
 
+    if (confirmed) {
+      dispatch(deleteProduct(id));
+    }
+  };
+
+  /* Close form */
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setSelectedProduct(null);
+  };
+
+  /* Sentiment */
   const getSentimentValue = (product) => {
-
-    const rawValue =
+    const raw =
       product.averageSentiment ??
       product.sentimentScore ??
       product.sentiment ??
       null;
 
-
     if (
-      rawValue === null ||
-      rawValue === undefined ||
-      rawValue === ""
+      raw === null ||
+      raw === undefined ||
+      raw === ""
     ) {
-
       return null;
-
     }
 
-
-    const value = Number(rawValue);
-
+    const value = Number(raw);
 
     if (Number.isNaN(value)) {
-
       return null;
-
     }
-
-
-    /*
-      If backend gives 0 - 1,
-      convert to 0 - 5.
-    */
 
     if (value <= 1) {
-
       return value * 5;
-
     }
-
 
     return value;
-
   };
-
-
-  /* =====================================================
-     SENTIMENT CLASS
-     ===================================================== */
 
   const getSentimentClass = (value) => {
-
     if (value === null) {
-
       return "sentiment-neutral";
-
     }
-
 
     if (value >= 4) {
-
       return "sentiment-positive";
-
     }
-
 
     if (value >= 3) {
-
       return "sentiment-medium";
-
     }
 
-
     return "sentiment-negative";
-
   };
 
-
-  /* =====================================================
-     CATEGORY CLASS
-     ===================================================== */
-
   const getCategoryClass = (category) => {
-
     return `category-${String(category || "GENERAL")
       .toLowerCase()
       .replace(/\s+/g, "-")}`;
-
   };
 
-
-  /* =====================================================
-     LOADING
-     ===================================================== */
-
-  if (loading && items.length === 0) {
-
+  /* Loading */
+  if (loading && products.length === 0) {
     return (
-
       <div className="page-container product-page">
-
         <div className="products-loading">
-
           <div className="loading-spinner"></div>
 
-          <p>
-            Loading products...
-          </p>
-
+          <p>Loading products...</p>
         </div>
-
       </div>
-
     );
-
   }
 
-
-  /* =====================================================
-     MAIN UI
-     ===================================================== */
-
   return (
-
     <div className="page-container product-page">
 
-
-      {/* BACKGROUND DECORATIONS */}
-
+      {/* Background decorations */}
       <div className="dashboard-decoration decoration-one"></div>
-
       <div className="dashboard-decoration decoration-two"></div>
-
       <div className="dashboard-decoration decoration-three"></div>
 
-
-      {/* =================================================
-          HEADER
-          ================================================= */}
-
+      {/* Header */}
       <div className="product-page-header">
-
 
         <div className="product-title-area">
 
@@ -784,11 +632,7 @@ const ProductList = () => {
             CUSTOMER INTELLIGENCE
           </span>
 
-
-          <h1>
-            Tracked Products
-          </h1>
-
+          <h1>Tracked Products</h1>
 
           <p>
             Catalog of registered products actively
@@ -797,67 +641,40 @@ const ProductList = () => {
 
         </div>
 
-
         {canManageProducts && (
-
           <button
             type="button"
             className="bright-add-product-button"
             onClick={handleAddProduct}
           >
-
-            <span className="add-icon">
-              +
-            </span>
-
+            <span className="add-icon">+</span>
             Add Product
-
           </button>
-
         )}
 
       </div>
 
-
-
-      {/* =================================================
-          ERROR
-          ================================================= */}
-
+      {/* Error */}
       {error && (
-
-        <div
-          className="inline-error"
-          role="alert"
-        >
+        <div className="inline-error" role="alert">
 
           <span className="inline-error-icon">
             !
           </span>
 
-
           <span>
-
             {typeof error === "string"
               ? error
               : "Unable to load products"}
-
           </span>
 
         </div>
-
       )}
 
-
-
-      {/* =================================================
-          CATEGORY FILTER
-          ================================================= */}
-
+      {/* Category filter */}
       <div className="product-filter-bar">
 
         {categories.map((category) => (
-
           <button
             key={category}
             type="button"
@@ -866,27 +683,17 @@ const ProductList = () => {
                 ? "category-filter active"
                 : "category-filter"
             }
-            onClick={() =>
-              setSelectedCategory(category)
-            }
+            onClick={() => setSelectedCategory(category)}
           >
-
             {category === "ALL"
               ? "All Categories"
               : category}
-
           </button>
-
         ))}
 
       </div>
 
-
-
-      {/* =================================================
-          PRODUCT TABLE
-          ================================================= */}
-
+      {/* Empty */}
       {filteredProducts.length === 0 ? (
 
         <div className="bright-empty-products">
@@ -895,34 +702,24 @@ const ProductList = () => {
             ▦
           </div>
 
-
           <h2>
             No tracked products yet
           </h2>
-
 
           <p>
             Add your first product to start monitoring
             customer reviews and sentiment.
           </p>
 
-
           {canManageProducts && (
-
             <button
               type="button"
               className="bright-add-product-button"
               onClick={handleAddProduct}
             >
-
-              <span className="add-icon">
-                +
-              </span>
-
+              <span className="add-icon">+</span>
               Add Product
-
             </button>
-
           )}
 
         </div>
@@ -931,37 +728,22 @@ const ProductList = () => {
 
         <div className="bright-product-table-card">
 
-
-          {/* TABLE HEADER */}
-
+          {/* Table header */}
           <div className="bright-product-table-head">
 
-            <div>
-              Product Name
-            </div>
+            <div>Product Name</div>
 
-            <div>
-              Category
-            </div>
+            <div>Category</div>
 
-            <div>
-              Total Reviews
-            </div>
+            <div>Total Reviews</div>
 
-            <div>
-              Avg Sentiment
-            </div>
+            <div>Avg Sentiment</div>
 
-            <div>
-              Action
-            </div>
+            <div>Action</div>
 
           </div>
 
-
-
-          {/* TABLE ROWS */}
-
+          {/* Product rows */}
           <div className="bright-product-table-body">
 
             {filteredProducts.map((product) => {
@@ -969,25 +751,19 @@ const ProductList = () => {
               const sentiment =
                 getSentimentValue(product);
 
-
               const sentimentClass =
                 getSentimentClass(sentiment);
-
 
               const category =
                 product.category || "GENERAL";
 
-
               return (
-
                 <div
                   className="bright-product-row"
                   key={product.id}
                 >
 
-
-                  {/* PRODUCT NAME */}
-
+                  {/* Product */}
                   <div className="bright-product-name-cell">
 
                     <div
@@ -995,7 +771,6 @@ const ProductList = () => {
                         category
                       )}`}
                     >
-
                       {String(category)
                         .toUpperCase()
                         .includes("ELECTRONICS")
@@ -1009,20 +784,15 @@ const ProductList = () => {
                             .includes("FASHION")
                         ? "◇"
                         : "✦"}
-
                     </div>
 
-
                     <strong>
-                      {product.name}
+                      {product.name || "Unnamed Product"}
                     </strong>
 
                   </div>
 
-
-
-                  {/* CATEGORY */}
-
+                  {/* Category */}
                   <div>
 
                     <span
@@ -1030,17 +800,12 @@ const ProductList = () => {
                         category
                       )}`}
                     >
-
                       {category}
-
                     </span>
 
                   </div>
 
-
-
-                  {/* TOTAL REVIEWS */}
-
+                  {/* Reviews */}
                   <div className="review-number">
 
                     {product.totalReviews ??
@@ -1049,59 +814,36 @@ const ProductList = () => {
 
                   </div>
 
-
-
-                  {/* SENTIMENT */}
-
+                  {/* Sentiment */}
                   <div className="bright-sentiment">
 
                     <span className="star-icon">
                       ★
                     </span>
 
-
-                    <span
-                      className={
-                        sentimentClass
-                      }
-                    >
-
+                    <span className={sentimentClass}>
                       {sentiment !== null
                         ? sentiment.toFixed(1)
                         : "—"}
-
                     </span>
 
                   </div>
 
-
-
-                  {/* ACTION */}
-
+                  {/* Actions */}
                   <div className="bright-action-buttons">
 
                     {canManageProducts && (
-
                       <>
-
                         <button
                           type="button"
                           className="bright-edit-button"
                           onClick={() =>
-                            handleEditProduct(
-                              product
-                            )
+                            handleEditProduct(product)
                           }
                         >
-
-                          <span>
-                            ✎
-                          </span>
-
+                          <span>✎</span>
                           Edit
-
                         </button>
-
 
                         <button
                           type="button"
@@ -1112,54 +854,33 @@ const ProductList = () => {
                             )
                           }
                         >
-
-                          <span>
-                            ×
-                          </span>
-
+                          <span>×</span>
                           Delete
-
                         </button>
-
                       </>
-
                     )}
 
                   </div>
 
-
                 </div>
-
               );
-
             })}
 
           </div>
 
         </div>
-
       )}
 
-
-
-      {/* =================================================
-          PRODUCT FORM
-          ================================================= */}
-
+      {/* Product form */}
       {showForm && (
-
         <ProductForm
           product={selectedProduct}
           onClose={handleCloseForm}
         />
-
       )}
 
     </div>
-
   );
-
 };
-
 
 export default ProductList;
