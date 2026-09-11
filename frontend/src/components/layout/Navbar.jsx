@@ -185,87 +185,166 @@
 // export default Navbar;
 
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../store/slices/authSlice';
-import './Navbar.css';
+// import React from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { logout } from '../../store/slices/authSlice';
+// import './Navbar.css';
+
+// const Navbar = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const { user, token } = useSelector((state) => state.auth || {});
+//   const isAuthenticated = !!token || !!user || !!localStorage.getItem('token') || !!localStorage.getItem('reviewrave_token');
+//   const role = user?.role || localStorage.getItem('role') || localStorage.getItem('r');
+
+//   const handleLogout = () => {
+//     localStorage.clear();
+//     dispatch(logout());
+//     navigate('/login');
+//   };
+
+//   return (
+//     <nav className="navbar" role="navigation" data-testid="navbar">
+//       <Link to="/" className="navbar-brand">
+//         ReviewRave
+//       </Link>
+
+//       <div className="navbar-links">
+//         {role === 'BRAND_MANAGER' && (
+//           <>
+//             <Link to="/products" className="nav-link">
+//               My Products
+//             </Link>
+//             <Link to="/insights" className="nav-link">
+//               Insights
+//             </Link>
+//           </>
+//         )}
+
+//         {role === 'RESOLUTION_AGENT' && (
+//           <>
+//             <Link to="/tickets" className="nav-link">
+//               Resolution Center
+//             </Link>
+//             <Link to="/tickets" className="nav-link">
+//               My Tasks
+//             </Link>
+//           </>
+//         )}
+
+//         {role === 'PLATFORM_ADMIN' && (
+//           <>
+//             <Link to="/dashboard" className="nav-link">
+//               Dashboard
+//             </Link>
+//             <Link to="/products" className="nav-link">
+//               Products
+//             </Link>
+//             <Link to="/tickets" className="nav-link">
+//               Tickets
+//             </Link>
+//             <Link to="/users" className="nav-link">
+//               Users
+//             </Link>
+//           </>
+//         )}
+
+//         {isAuthenticated ? (
+//           <button onClick={handleLogout} className="btn-logout" data-testid="logout-button">
+//             Logout
+//           </button>
+//         ) : (
+//           <>
+//             <Link to="/login" className="btn-login">
+//               Login
+//             </Link>
+//             <Link to="/register" className="btn-register">
+//               Register
+//             </Link>
+//           </>
+//         )}
+//       </div>
+//     </nav>
+//   );
+// };
+
+// export default Navbar;
+
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, token } = useSelector((state) => state.auth || {});
-  const isAuthenticated = !!token || !!user || !!localStorage.getItem('token') || !!localStorage.getItem('reviewrave_token');
-  const role = user?.role || localStorage.getItem('role') || localStorage.getItem('r');
+
+  const role = localStorage.getItem("role");
+  const email = localStorage.getItem("email") || "user@reviewrave.com";
+
+  const getRoleName = () => {
+    if (role === "PLATFORM_ADMIN") return "Platform Admin";
+    if (role === "RESOLUTION_AGENT") return "Resolution Agent";
+    return "Brand Manager";
+  };
 
   const handleLogout = () => {
-    localStorage.clear();
-    dispatch(logout());
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+    navigate("/login", { replace: true });
   };
 
   return (
-    <nav className="navbar" role="navigation" data-testid="navbar">
-      <Link to="/" className="navbar-brand">
-        ReviewRave
-      </Link>
+    <header className="rr-topbar">
 
-      <div className="navbar-links">
-        {role === 'BRAND_MANAGER' && (
-          <>
-            <Link to="/products" className="nav-link">
-              My Products
-            </Link>
-            <Link to="/insights" className="nav-link">
-              Insights
-            </Link>
-          </>
-        )}
+      {/* Logo */}
+      <div className="rr-brand">
+        <div className="rr-logo-mark">
+          R
+        </div>
 
-        {role === 'RESOLUTION_AGENT' && (
-          <>
-            <Link to="/tickets" className="nav-link">
-              Resolution Center
-            </Link>
-            <Link to="/tickets" className="nav-link">
-              My Tasks
-            </Link>
-          </>
-        )}
+        <div>
+          <div className="rr-brand-name">
+            ReviewRave
+          </div>
 
-        {role === 'PLATFORM_ADMIN' && (
-          <>
-            <Link to="/dashboard" className="nav-link">
-              Dashboard
-            </Link>
-            <Link to="/products" className="nav-link">
-              Products
-            </Link>
-            <Link to="/tickets" className="nav-link">
-              Tickets
-            </Link>
-            <Link to="/users" className="nav-link">
-              Users
-            </Link>
-          </>
-        )}
-
-        {isAuthenticated ? (
-          <button onClick={handleLogout} className="btn-logout" data-testid="logout-button">
-            Logout
-          </button>
-        ) : (
-          <>
-            <Link to="/login" className="btn-login">
-              Login
-            </Link>
-            <Link to="/register" className="btn-register">
-              Register
-            </Link>
-          </>
-        )}
+          <div className="rr-brand-subtitle">
+            SOCIAL SENTIMENT PLATFORM
+          </div>
+        </div>
       </div>
-    </nav>
+
+      {/* User */}
+      <div className="rr-user-area">
+
+        <button className="rr-notification">
+          ♧
+          <span className="notification-dot"></span>
+        </button>
+
+        <div className="rr-avatar">
+          {email.charAt(0).toUpperCase()}
+        </div>
+
+        <div className="rr-user-details">
+          <strong>
+            {email.split("@")[0]}
+          </strong>
+
+          <span>
+            {getRoleName()}
+          </span>
+        </div>
+
+        <button
+          className="rr-user-arrow"
+          onClick={handleLogout}
+          title="Logout"
+        >
+         ⌄
+        </button>
+
+      </div>
+    </header>
   );
 };
 

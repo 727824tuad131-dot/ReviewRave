@@ -480,7 +480,11 @@ const ProductList = () => {
     (state) => state.products || {}
   );
 
-  const products = productsState.items || [];
+  const products = useMemo(
+    () => productsState.items || [],
+    [productsState.items]
+  );
+
   const loading = productsState.loading || false;
   const error = productsState.error || null;
 
@@ -494,12 +498,10 @@ const ProductList = () => {
     role === "BRAND_MANAGER" ||
     role === "PLATFORM_ADMIN";
 
-  /* Load products */
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
 
-  /* Categories */
   const categories = [
     "ALL",
     "ELECTRONICS",
@@ -508,7 +510,6 @@ const ProductList = () => {
     "FOOD",
   ];
 
-  /* Filter products */
   const filteredProducts = useMemo(() => {
     if (selectedCategory === "ALL") {
       return products;
@@ -522,19 +523,16 @@ const ProductList = () => {
     });
   }, [products, selectedCategory]);
 
-  /* Add */
   const handleAddProduct = () => {
     setSelectedProduct(null);
     setShowForm(true);
   };
 
-  /* Edit */
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setShowForm(true);
   };
 
-  /* Delete */
   const handleDeleteProduct = (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this product?"
@@ -545,13 +543,11 @@ const ProductList = () => {
     }
   };
 
-  /* Close form */
   const handleCloseForm = () => {
     setShowForm(false);
     setSelectedProduct(null);
   };
 
-  /* Sentiment */
   const getSentimentValue = (product) => {
     const raw =
       product.averageSentiment ??
@@ -580,306 +576,397 @@ const ProductList = () => {
     return value;
   };
 
-  const getSentimentClass = (value) => {
-    if (value === null) {
-      return "sentiment-neutral";
-    }
-
-    if (value >= 4) {
-      return "sentiment-positive";
-    }
-
-    if (value >= 3) {
-      return "sentiment-medium";
-    }
-
-    return "sentiment-negative";
-  };
-
   const getCategoryClass = (category) => {
     return `category-${String(category || "GENERAL")
       .toLowerCase()
       .replace(/\s+/g, "-")}`;
   };
 
-  /* Loading */
   if (loading && products.length === 0) {
     return (
-      <div className="page-container product-page">
-        <div className="products-loading">
-          <div className="loading-spinner"></div>
+      <div className="rr-dashboard">
+        <aside className="rr-sidebar">
+          <SidebarContent />
+        </aside>
 
-          <p>Loading products...</p>
-        </div>
+        <main className="rr-dashboard-main">
+          <div className="rr-loading">
+            <div className="rr-spinner"></div>
+            <p>Loading products...</p>
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="page-container product-page">
+    <div className="rr-dashboard">
 
-      {/* Background decorations */}
-      <div className="dashboard-decoration decoration-one"></div>
-      <div className="dashboard-decoration decoration-two"></div>
-      <div className="dashboard-decoration decoration-three"></div>
+      {/* LEFT SIDEBAR */}
+      <aside className="rr-sidebar">
+        <SidebarContent />
+      </aside>
 
-      {/* Header */}
-      <div className="product-page-header">
+      {/* MAIN CONTENT */}
+      <main className="rr-dashboard-main">
 
-        <div className="product-title-area">
+        {/* Decorative shapes */}
+        <div className="rr-shape rr-shape-one"></div>
+        <div className="rr-shape rr-shape-two"></div>
+        <div className="rr-shape rr-shape-three"></div>
+        <div className="rr-shape rr-shape-four"></div>
 
-          <span className="page-eyebrow">
-            CUSTOMER INTELLIGENCE
-          </span>
+        {/* PAGE HEADER */}
+        <div className="rr-page-header">
 
-          <h1>Tracked Products</h1>
+          <div>
+            <div className="rr-eyebrow">
+              CUSTOMER INTELLIGENCE
+            </div>
 
-          <p>
-            Catalog of registered products actively
-            tracked across feedback channels
-          </p>
+            <h1>
+              Tracked Products
+            </h1>
 
-        </div>
-
-        {canManageProducts && (
-          <button
-            type="button"
-            className="bright-add-product-button"
-            onClick={handleAddProduct}
-          >
-            <span className="add-icon">+</span>
-            Add Product
-          </button>
-        )}
-
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="inline-error" role="alert">
-
-          <span className="inline-error-icon">
-            !
-          </span>
-
-          <span>
-            {typeof error === "string"
-              ? error
-              : "Unable to load products"}
-          </span>
-
-        </div>
-      )}
-
-      {/* Category filter */}
-      <div className="product-filter-bar">
-
-        {categories.map((category) => (
-          <button
-            key={category}
-            type="button"
-            className={
-              selectedCategory === category
-                ? "category-filter active"
-                : "category-filter"
-            }
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category === "ALL"
-              ? "All Categories"
-              : category}
-          </button>
-        ))}
-
-      </div>
-
-      {/* Empty */}
-      {filteredProducts.length === 0 ? (
-
-        <div className="bright-empty-products">
-
-          <div className="empty-product-icon">
-            ▦
+            <p>
+              Catalog of registered products actively tracked
+              across feedback channels
+            </p>
           </div>
-
-          <h2>
-            No tracked products yet
-          </h2>
-
-          <p>
-            Add your first product to start monitoring
-            customer reviews and sentiment.
-          </p>
 
           {canManageProducts && (
             <button
               type="button"
-              className="bright-add-product-button"
+              className="rr-add-product"
               onClick={handleAddProduct}
             >
-              <span className="add-icon">+</span>
+              <span>+</span>
               Add Product
             </button>
           )}
 
         </div>
 
-      ) : (
+        {/* ERROR */}
+        {error && (
+          <div className="rr-error">
+            <span>!</span>
 
-        <div className="bright-product-table-card">
-
-          {/* Table header */}
-          <div className="bright-product-table-head">
-
-            <div>Product Name</div>
-
-            <div>Category</div>
-
-            <div>Total Reviews</div>
-
-            <div>Avg Sentiment</div>
-
-            <div>Action</div>
-
+            {typeof error === "string"
+              ? error
+              : "Unable to load products"}
           </div>
+        )}
 
-          {/* Product rows */}
-          <div className="bright-product-table-body">
+        {/* CATEGORY FILTER */}
+        <div className="rr-category-filter">
 
-            {filteredProducts.map((product) => {
-
-              const sentiment =
-                getSentimentValue(product);
-
-              const sentimentClass =
-                getSentimentClass(sentiment);
-
-              const category =
-                product.category || "GENERAL";
-
-              return (
-                <div
-                  className="bright-product-row"
-                  key={product.id}
-                >
-
-                  {/* Product */}
-                  <div className="bright-product-name-cell">
-
-                    <div
-                      className={`bright-product-image ${getCategoryClass(
-                        category
-                      )}`}
-                    >
-                      {String(category)
-                        .toUpperCase()
-                        .includes("ELECTRONICS")
-                        ? "◉"
-                        : String(category)
-                            .toUpperCase()
-                            .includes("SOFTWARE")
-                        ? "▣"
-                        : String(category)
-                            .toUpperCase()
-                            .includes("FASHION")
-                        ? "◇"
-                        : "✦"}
-                    </div>
-
-                    <strong>
-                      {product.name || "Unnamed Product"}
-                    </strong>
-
-                  </div>
-
-                  {/* Category */}
-                  <div>
-
-                    <span
-                      className={`bright-category-badge ${getCategoryClass(
-                        category
-                      )}`}
-                    >
-                      {category}
-                    </span>
-
-                  </div>
-
-                  {/* Reviews */}
-                  <div className="review-number">
-
-                    {product.totalReviews ??
-                      product.reviewCount ??
-                      0}
-
-                  </div>
-
-                  {/* Sentiment */}
-                  <div className="bright-sentiment">
-
-                    <span className="star-icon">
-                      ★
-                    </span>
-
-                    <span className={sentimentClass}>
-                      {sentiment !== null
-                        ? sentiment.toFixed(1)
-                        : "—"}
-                    </span>
-
-                  </div>
-
-                  {/* Actions */}
-                  <div className="bright-action-buttons">
-
-                    {canManageProducts && (
-                      <>
-                        <button
-                          type="button"
-                          className="bright-edit-button"
-                          onClick={() =>
-                            handleEditProduct(product)
-                          }
-                        >
-                          <span>✎</span>
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          className="bright-delete-button"
-                          onClick={() =>
-                            handleDeleteProduct(
-                              product.id
-                            )
-                          }
-                        >
-                          <span>×</span>
-                          Delete
-                        </button>
-                      </>
-                    )}
-
-                  </div>
-
-                </div>
-              );
-            })}
-
-          </div>
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={
+                selectedCategory === category
+                  ? "rr-category active"
+                  : "rr-category"
+              }
+              onClick={() =>
+                setSelectedCategory(category)
+              }
+            >
+              {category === "ALL"
+                ? "All Categories"
+                : category}
+            </button>
+          ))}
 
         </div>
-      )}
 
-      {/* Product form */}
-      {showForm && (
-        <ProductForm
-          product={selectedProduct}
-          onClose={handleCloseForm}
-        />
-      )}
+        {/* PRODUCT TABLE */}
+        {filteredProducts.length === 0 ? (
 
+          <div className="rr-empty-card">
+
+            <div className="rr-empty-icon">
+              ▣
+            </div>
+
+            <h2>
+              No tracked products yet
+            </h2>
+
+            <p>
+              Add your first product to start monitoring
+              customer reviews and sentiment.
+            </p>
+
+            {canManageProducts && (
+              <button
+                type="button"
+                className="rr-add-product"
+                onClick={handleAddProduct}
+              >
+                <span>+</span>
+                Add Product
+              </button>
+            )}
+
+          </div>
+
+        ) : (
+
+          <div className="rr-product-card">
+
+            {/* TABLE HEADER */}
+            <div className="rr-table-header">
+
+              <div>Product Name</div>
+
+              <div>Category</div>
+
+              <div>Total Reviews</div>
+
+              <div>Avg Sentiment</div>
+
+              <div>Action</div>
+
+            </div>
+
+            {/* TABLE ROWS */}
+            <div className="rr-table-body">
+
+              {filteredProducts.map((product) => {
+
+                const sentiment =
+                  getSentimentValue(product);
+
+                const category =
+                  product.category || "GENERAL";
+
+                const sentimentClass =
+                  sentiment === null
+                    ? "neutral"
+                    : sentiment >= 4
+                    ? "positive"
+                    : sentiment >= 3
+                    ? "medium"
+                    : "negative";
+
+                return (
+                  <div
+                    className="rr-product-row"
+                    key={product.id}
+                  >
+
+                    {/* PRODUCT */}
+                    <div className="rr-product-name">
+
+                      <div
+                        className={`rr-product-image ${getCategoryClass(
+                          category
+                        )}`}
+                      >
+                        {String(category)
+                          .toUpperCase()
+                          .includes("ELECTRONICS")
+                          ? "◉"
+                          : String(category)
+                              .toUpperCase()
+                              .includes("SOFTWARE")
+                          ? "▣"
+                          : String(category)
+                              .toUpperCase()
+                              .includes("FASHION")
+                          ? "◇"
+                          : "✦"}
+                      </div>
+
+                      <strong>
+                        {product.name ||
+                          "Unnamed Product"}
+                      </strong>
+
+                    </div>
+
+                    {/* CATEGORY */}
+                    <div>
+
+                      <span
+                        className={`rr-category-badge ${getCategoryClass(
+                          category
+                        )}`}
+                      >
+                        {category}
+                      </span>
+
+                    </div>
+
+                    {/* REVIEWS */}
+                    <div className="rr-review-count">
+                      {product.totalReviews ??
+                        product.reviewCount ??
+                        0}
+                    </div>
+
+                    {/* SENTIMENT */}
+                    <div className="rr-sentiment">
+
+                      <span className="rr-star">
+                        ★
+                      </span>
+
+                      <span
+                        className={`sentiment-${sentimentClass}`}
+                      >
+                        {sentiment !== null
+                          ? sentiment.toFixed(1)
+                          : "—"}
+                      </span>
+
+                    </div>
+
+                    {/* ACTION */}
+                    <div className="rr-actions">
+
+                      {canManageProducts && (
+                        <>
+                          <button
+                            type="button"
+                            className="rr-edit"
+                            onClick={() =>
+                              handleEditProduct(product)
+                            }
+                          >
+                            ✎ Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            className="rr-delete"
+                            onClick={() =>
+                              handleDeleteProduct(
+                                product.id
+                              )
+                            }
+                          >
+                            ♙ Delete
+                          </button>
+                        </>
+                      )}
+
+                    </div>
+
+                  </div>
+                );
+              })}
+
+            </div>
+          </div>
+        )}
+
+        {/* FORM */}
+        {showForm && (
+          <ProductForm
+            product={selectedProduct}
+            onClose={handleCloseForm}
+          />
+        )}
+
+      </main>
     </div>
+  );
+};
+
+
+/* SIDEBAR */
+const SidebarContent = () => {
+  const role = localStorage.getItem("role");
+
+  return (
+    <>
+      <div className="rr-side-logo">
+
+        <div className="rr-side-logo-mark">
+          R
+        </div>
+
+        <div>
+          <strong>
+            ReviewRave
+          </strong>
+
+          <span>
+            SOCIAL SENTIMENT PLATFORM
+          </span>
+        </div>
+
+      </div>
+
+      <nav className="rr-sidebar-nav">
+
+        <NavItem
+          to="/"
+          icon="⌂"
+          text="Dashboard"
+        />
+
+        <NavItem
+          to="/insights"
+          icon="⌁"
+          text="Sentiment Analysis"
+        />
+
+        <NavItem
+          to="/reviews"
+          icon="▢"
+          text="Reviews"
+        />
+
+        {(role === "BRAND_MANAGER" ||
+          role === "PLATFORM_ADMIN") && (
+          <NavItem
+            to="/products"
+            icon="◇"
+            text="Tracked Products"
+          />
+        )}
+
+        <NavItem
+          to="/tickets"
+          icon="▤"
+          text="Reports"
+        />
+
+        <NavItem
+          to="/settings"
+          icon="⚙"
+          text="Settings"
+        />
+
+      </nav>
+    </>
+  );
+};
+
+
+const NavItem = ({ to, icon, text }) => {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        isActive
+          ? "rr-nav-item active"
+          : "rr-nav-item"
+      }
+    >
+      <span className="rr-nav-icon">
+        {icon}
+      </span>
+
+      <span>
+        {text}
+      </span>
+    </NavLink>
   );
 };
 
