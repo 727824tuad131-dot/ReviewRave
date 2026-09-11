@@ -1,11 +1,188 @@
+/* =========================================
+   ReviewRave Login Page
+   ========================================= */
 
-@import './user/Login.css';
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #eef4ff 0%, #f8fafc 50%, #eaf1ff 100%);
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-/* Login & Register Containers */
-.login-container,
-.register-container {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
+/* Main Login Card */
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 40px;
+  box-sizing: border-box;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.12);
+}
+
+/* Logo / Branding */
+.login-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-logo h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  color: #172554;
+}
+
+.login-logo p {
+  margin: 7px 0 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Heading */
+.login-card h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 25px;
+  color: #1e293b;
+}
+
+.login-subtitle {
+  text-align: center;
+  margin: 8px 0 28px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Form */
+.login-form {
+  width: 100%;
+}
+
+.login-form-group {
+  margin-bottom: 20px;
+}
+
+.login-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.login-form-group input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+  font-size: 15px;
+  color: #1e293b;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.login-form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Login Button */
+.login-button {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.login-button:hover {
+  background: #1d4ed8;
+}
+
+.login-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.login-error {
+  margin-bottom: 18px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+/* Register Link */
+.login-register {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.login-register a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-register a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+.login-footer {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Enterprise Text */
+.enterprise-text {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+
+/* =========================================
+   Responsive
+   ========================================= */
+
+@media (max-width: 600px) {
+  .login-page {
+    padding: 18px;
+  }
+
+  .login-card {
+    padding: 28px 22px;
+    border-radius: 14px;
+  }
+
+  .login-logo h1 {
+    font-size: 26px;
+  }
+
+  .login-card h2 {
+    font-size: 22px;
+  }
 }
