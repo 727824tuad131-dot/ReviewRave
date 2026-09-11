@@ -1410,3 +1410,257 @@ body,
   }
 }
 
+/* =====================================================
+   REVIEWRAVE AUTH PAGE - DESIGNED BACKGROUND
+   ===================================================== */
+
+.auth-page {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+
+/* LEFT DARK BACKGROUND */
+.auth-page .auth-brand-panel {
+  position: relative !important;
+  overflow: hidden !important;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(91, 77, 222, 0.30),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(67, 137, 204, 0.22),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #202a35 0%,
+      #27313c 50%,
+      #1e2731 100%
+    ) !important;
+}
+
+
+/* TOP RIGHT BIG CIRCLE */
+.auth-page .auth-brand-panel::before {
+  content: "";
+
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  top: -180px;
+  right: -150px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 0 0 45px rgba(255, 255, 255, 0.018),
+    0 0 0 90px rgba(255, 255, 255, 0.012);
+
+  pointer-events: none;
+}
+
+
+/* BOTTOM LEFT PURPLE CIRCLE */
+.auth-page .auth-brand-panel::after {
+  content: "";
+
+  position: absolute;
+
+  width: 330px;
+  height: 330px;
+
+  border-radius: 50%;
+
+  bottom: -190px;
+  left: -130px;
+
+  background: rgba(91, 77, 222, 0.10);
+
+  border: 1px solid rgba(126, 115, 238, 0.15);
+
+  pointer-events: none;
+}
+
+
+/* KEEP CONTENT ABOVE DESIGN */
+.auth-page .auth-brand-content,
+.auth-page .auth-brand-footer {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+
+/* DOT PATTERN */
+.auth-page .auth-brand-panel .auth-brand-content::before {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  top: 20px;
+  right: -20px;
+
+  background-image:
+    radial-gradient(
+      rgba(255, 255, 255, 0.16) 1px,
+      transparent 1px
+    );
+
+  background-size: 18px 18px;
+
+  opacity: 0.25;
+
+  pointer-events: none;
+}
+
+
+/* RIGHT SIDE BACKGROUND */
+.auth-page .auth-form-panel {
+  position: relative !important;
+  overflow: hidden !important;
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(81, 70, 217, 0.09),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(67, 137, 204, 0.08),
+      transparent 30%
+    ),
+    #f4f6f9 !important;
+}
+
+
+/* RIGHT TOP CIRCLE */
+.auth-page .auth-form-panel::before {
+  content: "";
+
+  position: absolute;
+
+  width: 300px;
+  height: 300px;
+
+  border-radius: 50%;
+
+  top: -170px;
+  right: -120px;
+
+  border: 1px solid rgba(81, 70, 217, 0.10);
+
+  box-shadow:
+    0 0 0 35px rgba(81, 70, 217, 0.025),
+    0 0 0 70px rgba(81, 70, 217, 0.015);
+
+  pointer-events: none;
+}
+
+
+/* RIGHT BOTTOM CIRCLE */
+.auth-page .auth-form-panel::after {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  border-radius: 50%;
+
+  bottom: -140px;
+  left: -100px;
+
+  background: rgba(67, 137, 204, 0.06);
+
+  pointer-events: none;
+}
+
+
+/* REGISTER / LOGIN CARD ABOVE BACKGROUND */
+.auth-page .login-card,
+.auth-page .register-card {
+  position: relative !important;
+  z-index: 5 !important;
+
+  box-shadow:
+    0 20px 55px rgba(30, 45, 65, 0.12),
+    0 3px 12px rgba(30, 45, 65, 0.05) !important;
+}
+
+
+/* LOGO GLOW */
+.auth-page .auth-logo-mark {
+  box-shadow:
+    0 8px 22px rgba(91, 77, 222, 0.28);
+}
+
+
+/* FEATURE ICON DESIGN */
+.auth-page .auth-feature .feature-icon {
+  border: 1px solid rgba(143, 134, 242, 0.12);
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.10);
+}
+
+
+/* REGISTER ERROR */
+.register-error {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+  margin-bottom: 15px;
+
+  border-radius: 5px;
+
+  background: #fff1f1;
+  border: 1px solid #f0cccc;
+
+  color: #c0392b;
+
+  font-size: 11px;
+}
+
+
+/* PASSWORD HELP */
+.password-help {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #8a95a2;
+
+  font-size: 9px;
+}
+
+
+/* MOBILE */
+@media (max-width: 850px) {
+
+  .auth-page {
+    overflow-y: auto !important;
+  }
+
+  .auth-page .auth-brand-panel {
+    min-height: 360px !important;
+  }
+
+  .auth-page .auth-form-panel {
+    min-height: 600px !important;
+  }
+
+}

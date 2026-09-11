@@ -533,25 +533,21 @@
 // export default Register;
 
 import React, { useEffect, useState } from "react";
-import "./Login.css";
+import "./Register.css";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  registerUser,
+  register,
   clearError,
 } from "./store/slices/authSlice";
-
-import { addNotification } from "./store/slices/notificationSlice";
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // IMPORTANT:
-  // authSlice.js uses isLoading, isError and message
-  const { isLoading, isError, message } = useSelector(
+  const { user, isLoading, isError, message } = useSelector(
     (state) => state.auth
   );
 
@@ -564,294 +560,436 @@ const Register = () => {
     role: "BRAND_MANAGER",
   });
 
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const [error, setError] = useState("");
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Show registration errors
   useEffect(() => {
-    if (isError && message) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message: message,
-        })
-      );
+    if (user) {
+      navigate("/login", { replace: true });
+    }
+  }, [user, navigate]);
 
+  useEffect(() => {
+    if (isError) {
+      setError(message || "Registration failed");
       dispatch(clearError());
     }
   }, [isError, message, dispatch]);
 
-  // Register account
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    setError("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.companyName.trim() ||
-      !formData.email.trim() ||
-      !formData.password.trim()
-    ) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message: "Please fill all required fields.",
-        })
-      );
-
-      return;
-    }
-
     if (formData.password.length < 6) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message: "Password must contain at least 6 characters.",
-        })
-      );
-
+      setError("Password must be at least 6 characters.");
       return;
     }
 
     try {
-      await dispatch(registerUser(formData)).unwrap();
-
-      // Registration successful
-      dispatch(
-        addNotification({
-          type: "success",
-          message: "Account created successfully! Please login.",
-        })
-      );
-
-      // IMPORTANT:
-      // Registration should NOT directly open dashboard.
-      // It should go to Login page.
+      await dispatch(register(formData)).unwrap();
       navigate("/login", { replace: true });
-    } catch (error) {
-      console.log("Registration failed:", error);
+    } catch (err) {
+      setError(err || "Registration failed");
     }
   };
 
   return (
     <div className="auth-page register-page">
 
-      {/* ================= LEFT SIDE ================= */}
-      <div className="auth-left">
+      {/* LEFT SIDE */}
+      <section className="auth-brand-panel">
 
-        <div className="auth-brand">
-          <div className="brand-logo">R</div>
+        <div className="auth-brand-content">
 
-          <div>
-            <h1>ReviewRave</h1>
-            <span>SOCIAL SENTIMENT PLATFORM</span>
+          <Link to="/login" className="auth-logo">
+            <div className="auth-logo-mark">R</div>
+
+            <div>
+              <span className="auth-logo-name">
+                ReviewRave
+              </span>
+
+              <span className="auth-logo-subtitle">
+                Customer Intelligence
+              </span>
+            </div>
+          </Link>
+
+          <div className="auth-hero">
+
+            <span className="auth-eyebrow">
+              SOCIAL SENTIMENT PLATFORM
+            </span>
+
+            <h1>
+              Build better
+              <br />
+              customer experiences.
+            </h1>
+
+            <p>
+              Turn customer feedback into actionable
+              insights, resolve issues faster, and create
+              experiences your customers love.
+            </p>
+
           </div>
-        </div>
-
-        <div className="auth-left-content">
-          <h2>JOIN REVIEWRAVE</h2>
-
-          <h3>Build better customer experiences.</h3>
-
-          <p>
-            Turn customer feedback into actionable insights,
-            resolve issues faster, and create experiences
-            your customers love.
-          </p>
 
           <div className="auth-features">
 
             <div className="auth-feature">
-              <span className="feature-icon">✓</span>
+
+              <div className="feature-icon">
+                ✓
+              </div>
+
               <div>
-                <strong>Monitor sentiment</strong>
-                <small>
+                <strong>
+                  Monitor sentiment
+                </strong>
+
+                <span>
                   Understand how customers feel
-                </small>
+                </span>
               </div>
+
             </div>
 
             <div className="auth-feature">
-              <span className="feature-icon">✓</span>
+
+              <div className="feature-icon">
+                ✓
+              </div>
+
               <div>
-                <strong>Track reviews</strong>
-                <small>
+                <strong>
+                  Track reviews
+                </strong>
+
+                <span>
                   Keep every customer voice visible
-                </small>
+                </span>
               </div>
+
             </div>
 
             <div className="auth-feature">
-              <span className="feature-icon">✓</span>
-              <div>
-                <strong>Resolve issues faster</strong>
-                <small>
-                  Turn problems into opportunities
-                </small>
+
+              <div className="feature-icon">
+                ✓
               </div>
+
+              <div>
+                <strong>
+                  Resolve issues faster
+                </strong>
+
+                <span>
+                  Turn problems into opportunities
+                </span>
+              </div>
+
             </div>
 
           </div>
+
         </div>
 
-        <div className="auth-footer">
-          © 2026 ReviewRave Social Sentiment Analysis
+        <div className="auth-brand-footer">
+
+          <span>
+            © 2026 ReviewRave
+            <br />
+            Social Sentiment Analysis
+          </span>
+
+          <span>
+            Secure
+            <br />
+            Role-based access
+          </span>
+
         </div>
-      </div>
 
-      {/* ================= RIGHT SIDE ================= */}
-      <div className="auth-right">
+      </section>
 
-        <div className="auth-card">
 
-          <div className="auth-card-header">
-            <h2>GET STARTED</h2>
+      {/* RIGHT SIDE */}
+      <section className="auth-form-panel">
 
-            <h1>Register Account</h1>
+        <div className="register-card">
+
+          <div className="login-header">
+
+            <div className="mobile-auth-logo">
+
+              <div className="auth-logo-mark">
+                R
+              </div>
+
+              <span>
+                ReviewRave
+              </span>
+
+            </div>
+
+            <span className="login-welcome">
+              GET STARTED
+            </span>
+
+            <h2>
+              Register Account
+            </h2>
 
             <p>
               Create your ReviewRave account to get started.
             </p>
+
           </div>
 
-          <form onSubmit={handleSubmit}>
 
-            {/* FIRST NAME + LAST NAME */}
+          <form
+            className="auth-form"
+            onSubmit={handleSubmit}
+          >
+
+            {error && (
+              <div className="register-error">
+                {error}
+              </div>
+            )}
+
+
+            {/* FIRST + LAST NAME */}
             <div className="form-row">
 
               <div className="form-group">
-                <label>First Name</label>
 
-                <input
-                  type="text"
-                  name="firstName"
-                  placeholder="Enter first name"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
+                <label htmlFor="firstName">
+                  First Name
+                </label>
+
+                <div className="input-wrapper">
+
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="First name"
+                    required
+                    disabled={isLoading}
+                  />
+
+                </div>
+
               </div>
 
-              <div className="form-group">
-                <label>Last Name</label>
 
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Enter last name"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
+              <div className="form-group">
+
+                <label htmlFor="lastName">
+                  Last Name
+                </label>
+
+                <div className="input-wrapper">
+
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Last name"
+                    required
+                    disabled={isLoading}
+                  />
+
+                </div>
+
               </div>
 
             </div>
+
 
             {/* COMPANY */}
             <div className="form-group">
-              <label>Company Name</label>
 
-              <input
-                type="text"
-                name="companyName"
-                placeholder="Enter company name"
-                value={formData.companyName}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
+              <label htmlFor="companyName">
+                Company Name
+              </label>
+
+              <div className="input-wrapper">
+
+                <input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  placeholder="Enter company name"
+                  required
+                  disabled={isLoading}
+                />
+
+              </div>
+
             </div>
+
 
             {/* EMAIL */}
             <div className="form-group">
-              <label>Email Address</label>
 
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter email address"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
+              <label htmlFor="email">
+                Email Address
+              </label>
+
+              <div className="input-wrapper">
+
+                <span className="input-icon">
+                  @
+                </span>
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                  disabled={isLoading}
+                />
+
+              </div>
+
             </div>
+
 
             {/* PASSWORD */}
             <div className="form-group">
-              <label>Password</label>
 
-              <input
-                type="password"
-                name="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={isLoading}
-              />
+              <label htmlFor="password">
+                Password
+              </label>
 
-              <small className="input-hint">
+              <div className="input-wrapper">
+
+                <span className="input-icon">
+                  •
+                </span>
+
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  minLength="6"
+                  required
+                  disabled={isLoading}
+                />
+
+              </div>
+
+              <small className="password-help">
                 Password must be at least 6 characters.
               </small>
+
             </div>
+
 
             {/* ROLE */}
             <div className="form-group">
-              <label>Select Role</label>
 
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                disabled={isLoading}
-              >
-                <option value="BRAND_MANAGER">
-                  Brand Manager
-                </option>
+              <label htmlFor="role">
+                Select Role
+              </label>
 
-                <option value="RESOLUTION_AGENT">
-                  Resolution Agent
-                </option>
+              <div className="select-wrapper">
 
-                <option value="PLATFORM_ADMIN">
-                  Platform Admin
-                </option>
-              </select>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                >
+
+                  <option value="BRAND_MANAGER">
+                    Brand Manager
+                  </option>
+
+                  <option value="RESOLUTION_AGENT">
+                    Resolution Agent
+                  </option>
+
+                  <option value="PLATFORM_ADMIN">
+                    Platform Admin
+                  </option>
+
+                </select>
+
+              </div>
+
             </div>
 
-            {/* REGISTER BUTTON */}
+
+            {/* BUTTON */}
             <button
               type="submit"
-              className="auth-button"
+              className="auth-submit-button"
               disabled={isLoading}
             >
-              {isLoading ? "Creating Account..." : "Create Account"}
+              {isLoading
+                ? "Creating Account..."
+                : "Create Account"}
             </button>
+
+
+            {/* LOGIN */}
+            <div className="auth-divider">
+              OR
+            </div>
+
+            <Link
+              to="/login"
+              className="register-link-button"
+            >
+              Already have an account?
+              <span>
+                Login
+              </span>
+            </Link>
+
+
+            {/* SECURITY */}
+            <div className="security-note">
+
+              <span className="security-icon">
+                🔒
+              </span>
+
+              <span>
+                Your account information is protected.
+              </span>
+
+            </div>
 
           </form>
 
-          {/* LOGIN LINK */}
-          <div className="auth-switch">
-            Already have an account?{" "}
-            <Link to="/login">
-              Login
-            </Link>
-          </div>
-
-          {/* SECURITY NOTE */}
-          <div className="security-note">
-            🔒 Your account information is protected.
-          </div>
-
         </div>
 
-      </div>
+      </section>
 
     </div>
   );
