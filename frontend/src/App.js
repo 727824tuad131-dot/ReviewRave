@@ -558,6 +558,7 @@ import {
 
 import Login from "./Login";
 import Register from "./Register";
+
 import Navbar from "./components/layout/Navbar";
 import NotificationStack from "./NotificationStack";
 
@@ -565,6 +566,7 @@ import ProductList from "./components/product/ProductList";
 import ReviewIngestForm from "./components/review/ReviewIngestForm";
 import TicketList from "./components/ticket/TicketList";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
+
 
 /* =========================================================
    PROTECTED ROUTE
@@ -590,6 +592,7 @@ const ProtectedRoute = () => {
   );
 };
 
+
 /* =========================================================
    ROLE ROUTE
    ========================================================= */
@@ -612,6 +615,7 @@ const RoleRoute = ({ allowedRoles, children }) => {
   return children;
 };
 
+
 /* =========================================================
    HOME
    ========================================================= */
@@ -619,19 +623,17 @@ const RoleRoute = ({ allowedRoles, children }) => {
 const Home = () => {
   const role = localStorage.getItem("role");
 
-  /* PLATFORM ADMIN */
   if (role === "PLATFORM_ADMIN") {
     return <AdminDashboard />;
   }
 
-  /* RESOLUTION AGENT */
   if (role === "RESOLUTION_AGENT") {
     return <TicketList />;
   }
 
-  /* BRAND MANAGER */
   return <ProductList />;
 };
+
 
 /* =========================================================
    APP
@@ -640,12 +642,9 @@ const Home = () => {
 function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
-        {/* =================================================
-            PUBLIC ROUTES
-        ================================================= */}
+        {/* ================= AUTH ================= */}
 
         <Route
           path="/login"
@@ -657,21 +656,20 @@ function App() {
           element={<Register />}
         />
 
-        {/* =================================================
-            PROTECTED ROUTES
-        ================================================= */}
+
+        {/* ================= PROTECTED ================= */}
 
         <Route element={<ProtectedRoute />}>
 
           {/* HOME */}
+
           <Route
             path="/"
             element={<Home />}
           />
 
-          {/* =================================================
-              PRODUCTS
-          ================================================= */}
+
+          {/* PRODUCTS */}
 
           <Route
             path="/products"
@@ -687,9 +685,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              REVIEWS
-          ================================================= */}
+
+          {/* REVIEWS */}
 
           <Route
             path="/reviews"
@@ -704,9 +701,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              INSIGHTS
-          ================================================= */}
+
+          {/* INSIGHTS */}
 
           <Route
             path="/insights"
@@ -722,9 +718,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              TICKETS
-          ================================================= */}
+
+          {/* TICKETS */}
 
           <Route
             path="/tickets"
@@ -741,9 +736,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              RESOLUTION AGENT TASKS
-          ================================================= */}
+
+          {/* RESOLUTION AGENT TASKS */}
 
           <Route
             path="/tasks"
@@ -758,9 +752,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              RESOLUTION CENTER
-          ================================================= */}
+
+          {/* RESOLUTION CENTER */}
 
           <Route
             path="/resolution-center"
@@ -775,9 +768,8 @@ function App() {
             }
           />
 
-          {/* =================================================
-              ADMIN
-          ================================================= */}
+
+          {/* ADMIN */}
 
           <Route
             path="/admin"
@@ -794,9 +786,8 @@ function App() {
 
         </Route>
 
-        {/* =================================================
-            UNKNOWN URL
-        ================================================= */}
+
+        {/* ================= UNKNOWN URL ================= */}
 
         <Route
           path="*"
@@ -809,7 +800,6 @@ function App() {
         />
 
       </Routes>
-
     </BrowserRouter>
   );
 }
