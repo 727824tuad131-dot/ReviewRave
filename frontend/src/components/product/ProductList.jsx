@@ -292,173 +292,836 @@
 
 // export default ProductList;
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getProducts, deleteProduct } from '../../store/slices/productSlice';
-import ProductForm from './ProductForm';
-import SearchFilterBar from '../common/SearchFilterBar';
-import EmptyState from '../common/EmptyState';
+// import React, { useEffect, useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { getProducts, deleteProduct } from '../../store/slices/productSlice';
+// import ProductForm from './ProductForm';
+// import SearchFilterBar from '../common/SearchFilterBar';
+// import EmptyState from '../common/EmptyState';
+
+// const ProductList = () => {
+//   const dispatch = useDispatch();
+//   const { items = [] } = useSelector((state) => state.products || {});
+//   const { user } = useSelector((state) => state.auth || {});
+
+//   const [feedback, setFeedback] = useState('');
+//   const [searchTerm, setSearchTerm] = useState('');
+//   const [category, setCategory] = useState('');
+//   const [isFormOpen, setIsFormOpen] = useState(false);
+//   const [formMode, setFormMode] = useState('create');
+//   const [selectedProductId, setSelectedProductId] = useState(null);
+
+//   const role = user?.role || localStorage.getItem('role') || localStorage.getItem('r');
+//   const isAgent = role === 'RESOLUTION_AGENT' || role === 'AGENT';
+//   const canAddProduct = !isAgent && (role === 'PLATFORM_ADMIN' || role === 'BRAND_MANAGER' || !role);
+
+//   useEffect(() => {
+//     dispatch(getProducts());
+//   }, [dispatch]);
+
+//   const defaultProducts = items.length > 0 ? items : [
+//     { id: 1, name: 'AeroMax', category: 'ELECTRONICS', totalReviews: 128, avgSentiment: 4.5 },
+//     { id: 2, name: 'SmartVision Pro', category: 'SOFTWARE', totalReviews: 84, avgSentiment: 4.2 },
+//     { id: 3, name: 'EcoWear Jacket', category: 'FASHION', totalReviews: 56, avgSentiment: 4.0 },
+//   ];
+
+//   const handleDelete = async (id) => {
+//     try {
+//       await dispatch(deleteProduct(id));
+//       setFeedback('Product deleted successfully.');
+//     } catch (err) {
+//       setFeedback('Product deleted successfully.');
+//     }
+//   };
+
+//   const handleEdit = (product) => {
+//     setSelectedProductId(product.id);
+//     setFormMode('edit');
+//     setIsFormOpen(true);
+//   };
+
+//   const handleCreate = () => {
+//     setSelectedProductId(null);
+//     setFormMode('create');
+//     setIsFormOpen(true);
+//   };
+
+//   const filteredProducts = defaultProducts.filter((product) => {
+//     const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase());
+//     const matchesCategory = category ? product.category === category : true;
+//     return matchesSearch && matchesCategory;
+//   });
+
+//   return (
+//     <div className="product-list" data-testid="product-list">
+//       <div style={{ marginBottom: '1.5rem' }}>
+//         <h1>Tracked Products</h1>
+//         <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.95rem' }}>
+//           Catalog of registered products actively tracked across feedback channels
+//         </p>
+//       </div>
+
+//       {feedback && (
+//         <div className="feedback-message" data-testid="feedback-message">
+//           {feedback}
+//         </div>
+//       )}
+
+//       <div
+//         className="top-action-row"
+//         style={{
+//           display: 'flex',
+//           justifyContent: 'space-between',
+//           alignItems: 'center',
+//           gap: '1rem',
+//           flexWrap: 'wrap',
+//           marginBottom: '1.5rem',
+//         }}
+//       >
+//         <SearchFilterBar
+//           searchTerm={searchTerm}
+//           onSearchChange={setSearchTerm}
+//           category={category}
+//           onCategoryChange={setCategory}
+//         />
+
+//         {canAddProduct && (
+//           <button className="btn-add-product" onClick={handleCreate} data-testid="add-product-btn">
+//             Add Product
+//           </button>
+//         )}
+//       </div>
+
+//       {isFormOpen && (
+//         <ProductForm
+//           mode={formMode}
+//           productId={selectedProductId}
+//           onClose={() => setIsFormOpen(false)}
+//         />
+//       )}
+
+//       {filteredProducts.length === 0 ? (
+//         <EmptyState message="No products found." />
+//       ) : (
+//         <div style={{ overflowX: 'auto' }}>
+//           <table className="products-table">
+//             <thead>
+//               <tr>
+//                 <th>Product Name</th>
+//                 <th>Category</th>
+//                 <th>Total Reviews</th>
+//                 <th>Avg Sentiment</th>
+//                 <th>Action</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {filteredProducts.map((prod) => (
+//                 <tr key={prod.id}>
+//                   <td style={{ fontWeight: 600, color: '#0f172a' }}>{prod.name}</td>
+//                   <td>
+//                     <span className="badge category-badge">{prod.category}</span>
+//                   </td>
+//                   <td>{prod.totalReviews ?? prod.reviewsCount ?? 128}</td>
+//                   <td>
+//                     <span
+//                       style={{
+//                         display: 'inline-flex',
+//                         alignItems: 'center',
+//                         gap: '0.25rem',
+//                         fontWeight: 600,
+//                         color: (prod.avgSentiment ?? 4.5) >= 4.0 ? '#059669' : '#d97706',
+//                       }}
+//                     >
+//                       ★ {prod.avgSentiment ?? prod.sentimentScore ?? '4.5'}
+//                     </span>
+//                   </td>
+//                   <td>
+//                     <button
+//                       className="btn-edit"
+//                       onClick={() => handleEdit(prod)}
+//                       data-testid={`edit-prod-${prod.id}`}
+//                     >
+//                       Edit
+//                     </button>
+//                     <button
+//                       className="btn-delete"
+//                       onClick={() => handleDelete(prod.id)}
+//                       data-testid={`delete-prod-${prod.id}`}
+//                     >
+//                       Delete
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ProductList;
+
+
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import ProductForm from "./ProductForm";
+
+import {
+  fetchProducts,
+  deleteProduct,
+} from "../../store/slices/productSlice";
+
 
 const ProductList = () => {
+
   const dispatch = useDispatch();
-  const { items = [] } = useSelector((state) => state.products || {});
-  const { user } = useSelector((state) => state.auth || {});
 
-  const [feedback, setFeedback] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState('');
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState('create');
-  const [selectedProductId, setSelectedProductId] = useState(null);
 
-  const role = user?.role || localStorage.getItem('role') || localStorage.getItem('r');
-  const isAgent = role === 'RESOLUTION_AGENT' || role === 'AGENT';
-  const canAddProduct = !isAgent && (role === 'PLATFORM_ADMIN' || role === 'BRAND_MANAGER' || !role);
+  /* =====================================================
+     REDUX DATA
+     ===================================================== */
+
+  const {
+    items = [],
+    loading,
+    error,
+  } = useSelector(
+    (state) => state.products || state.product || {}
+  );
+
+
+  /* =====================================================
+     LOCAL STATE
+     ===================================================== */
+
+  const [showForm, setShowForm] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] =
+    useState(null);
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("ALL");
+
+
+  /* =====================================================
+     ROLE
+     ===================================================== */
+
+  const role = localStorage.getItem("role");
+
+  const canManageProducts =
+    role === "BRAND_MANAGER" ||
+    role === "PLATFORM_ADMIN";
+
+
+  /* =====================================================
+     FETCH PRODUCTS
+     ===================================================== */
 
   useEffect(() => {
-    dispatch(getProducts());
+
+    dispatch(fetchProducts());
+
   }, [dispatch]);
 
-  const defaultProducts = items.length > 0 ? items : [
-    { id: 1, name: 'AeroMax', category: 'ELECTRONICS', totalReviews: 128, avgSentiment: 4.5 },
-    { id: 2, name: 'SmartVision Pro', category: 'SOFTWARE', totalReviews: 84, avgSentiment: 4.2 },
-    { id: 3, name: 'EcoWear Jacket', category: 'FASHION', totalReviews: 56, avgSentiment: 4.0 },
+
+  /* =====================================================
+     ADD PRODUCT
+     ===================================================== */
+
+  const handleAddProduct = () => {
+
+    setSelectedProduct(null);
+
+    setShowForm(true);
+
+  };
+
+
+  /* =====================================================
+     EDIT PRODUCT
+     ===================================================== */
+
+  const handleEditProduct = (product) => {
+
+    setSelectedProduct(product);
+
+    setShowForm(true);
+
+  };
+
+
+  /* =====================================================
+     DELETE PRODUCT
+     ===================================================== */
+
+  const handleDeleteProduct = (id) => {
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (confirmed) {
+
+      dispatch(deleteProduct(id));
+
+    }
+
+  };
+
+
+  /* =====================================================
+     CLOSE PRODUCT FORM
+     ===================================================== */
+
+  const handleCloseForm = () => {
+
+    setShowForm(false);
+
+    setSelectedProduct(null);
+
+  };
+
+
+  /* =====================================================
+     CATEGORY FILTER
+     ===================================================== */
+
+  const categories = [
+    "ALL",
+    "ELECTRONICS",
+    "FASHION",
+    "SOFTWARE",
+    "FOOD",
   ];
 
-  const handleDelete = async (id) => {
-    try {
-      await dispatch(deleteProduct(id));
-      setFeedback('Product deleted successfully.');
-    } catch (err) {
-      setFeedback('Product deleted successfully.');
+
+  const filteredProducts = useMemo(() => {
+
+    if (selectedCategory === "ALL") {
+      return items;
     }
+
+    return items.filter(
+      (product) =>
+        String(product.category || "").toUpperCase() ===
+        selectedCategory
+    );
+
+  }, [items, selectedCategory]);
+
+
+  /* =====================================================
+     SENTIMENT
+     ===================================================== */
+
+  const getSentimentValue = (product) => {
+
+    const raw =
+      product.averageSentiment ??
+      product.sentimentScore ??
+      product.sentiment ??
+      null;
+
+
+    if (
+      raw === null ||
+      raw === undefined ||
+      raw === ""
+    ) {
+      return null;
+    }
+
+
+    const value = Number(raw);
+
+
+    if (Number.isNaN(value)) {
+      return null;
+    }
+
+
+    /*
+      Backend sentiment is normally 0 - 1.
+      Convert it to a 5-point display.
+
+      If the value is already greater than 1,
+      keep it as it is.
+    */
+
+    if (value <= 1) {
+
+      return value * 5;
+
+    }
+
+
+    return value;
+
   };
 
-  const handleEdit = (product) => {
-    setSelectedProductId(product.id);
-    setFormMode('edit');
-    setIsFormOpen(true);
+
+  const getSentimentClass = (value) => {
+
+    if (value === null) {
+      return "sentiment-neutral";
+    }
+
+    if (value >= 4) {
+      return "sentiment-positive";
+    }
+
+    if (value >= 3) {
+      return "sentiment-medium";
+    }
+
+    return "sentiment-negative";
+
   };
 
-  const handleCreate = () => {
-    setSelectedProductId(null);
-    setFormMode('create');
-    setIsFormOpen(true);
+
+  const getCategoryClass = (category) => {
+
+    const value =
+      String(category || "GENERAL")
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+
+
+    return `category-${value}`;
+
   };
 
-  const filteredProducts = defaultProducts.filter((product) => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = category ? product.category === category : true;
-    return matchesSearch && matchesCategory;
-  });
+
+  /* =====================================================
+     LOADING
+     ===================================================== */
+
+  if (loading && items.length === 0) {
+
+    return (
+
+      <div className="page-container product-page">
+
+        <div className="products-loading">
+
+          <div className="loading-spinner"></div>
+
+          <p>
+            Loading products...
+          </p>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
+
+  /* =====================================================
+     MAIN PAGE
+     ===================================================== */
 
   return (
-    <div className="product-list" data-testid="product-list">
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1>Tracked Products</h1>
-        <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.95rem' }}>
-          Catalog of registered products actively tracked across feedback channels
-        </p>
-      </div>
 
-      {feedback && (
-        <div className="feedback-message" data-testid="feedback-message">
-          {feedback}
+    <div className="page-container product-page">
+
+
+      {/* =================================================
+          DECORATIVE BACKGROUND
+          ================================================= */}
+
+      <div className="dashboard-decoration decoration-one"></div>
+
+      <div className="dashboard-decoration decoration-two"></div>
+
+      <div className="dashboard-decoration decoration-three"></div>
+
+
+      {/* =================================================
+          PAGE HEADER
+          ================================================= */}
+
+      <div className="product-page-header">
+
+        <div className="product-title-area">
+
+          <span className="page-eyebrow">
+            CUSTOMER INTELLIGENCE
+          </span>
+
+
+          <h1>
+            Tracked Products
+          </h1>
+
+
+          <p>
+            Catalog of registered products actively
+            tracked across feedback channels
+          </p>
+
         </div>
-      )}
 
-      <div
-        className="top-action-row"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '1rem',
-          flexWrap: 'wrap',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <SearchFilterBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          category={category}
-          onCategoryChange={setCategory}
-        />
 
-        {canAddProduct && (
-          <button className="btn-add-product" onClick={handleCreate} data-testid="add-product-btn">
-            Add Product
+        {canManageProducts && (
+
+          <button
+            type="button"
+            className="bright-add-product-button"
+            onClick={handleAddProduct}
+          >
+
+            <span className="add-icon">
+              +
+            </span>
+
+            <span>
+              Add Product
+            </span>
+
           </button>
+
         )}
+
       </div>
 
-      {isFormOpen && (
-        <ProductForm
-          mode={formMode}
-          productId={selectedProductId}
-          onClose={() => setIsFormOpen(false)}
-        />
+
+      {/* =================================================
+          ERROR
+          ================================================= */}
+
+      {error && (
+
+        <div
+          className="inline-error"
+          role="alert"
+        >
+
+          <span className="inline-error-icon">
+            !
+          </span>
+
+          <span>
+
+            {typeof error === "string"
+              ? error
+              : "Unable to load products"}
+
+          </span>
+
+        </div>
+
       )}
+
+
+      {/* =================================================
+          CATEGORY FILTER
+          ================================================= */}
+
+      <div className="product-filter-bar">
+
+        {categories.map((category) => (
+
+          <button
+            key={category}
+            type="button"
+            className={
+              selectedCategory === category
+                ? "category-filter active"
+                : "category-filter"
+            }
+            onClick={() =>
+              setSelectedCategory(category)
+            }
+          >
+
+            {category === "ALL"
+              ? "All Categories"
+              : category}
+
+          </button>
+
+        ))}
+
+      </div>
+
+
+      {/* =================================================
+          PRODUCT TABLE CARD
+          ================================================= */}
 
       {filteredProducts.length === 0 ? (
-        <EmptyState message="No products found." />
-      ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Product Name</th>
-                <th>Category</th>
-                <th>Total Reviews</th>
-                <th>Avg Sentiment</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((prod) => (
-                <tr key={prod.id}>
-                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{prod.name}</td>
-                  <td>
-                    <span className="badge category-badge">{prod.category}</span>
-                  </td>
-                  <td>{prod.totalReviews ?? prod.reviewsCount ?? 128}</td>
-                  <td>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        fontWeight: 600,
-                        color: (prod.avgSentiment ?? 4.5) >= 4.0 ? '#059669' : '#d97706',
-                      }}
-                    >
-                      ★ {prod.avgSentiment ?? prod.sentimentScore ?? '4.5'}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className="btn-edit"
-                      onClick={() => handleEdit(prod)}
-                      data-testid={`edit-prod-${prod.id}`}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn-delete"
-                      onClick={() => handleDelete(prod.id)}
-                      data-testid={`delete-prod-${prod.id}`}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        <div className="bright-empty-products">
+
+          <div className="empty-product-icon">
+            ▦
+          </div>
+
+
+          <h2>
+            No tracked products yet
+          </h2>
+
+
+          <p>
+            Add your first product to start monitoring
+            customer reviews and sentiment.
+          </p>
+
+
+          {canManageProducts && (
+
+            <button
+              type="button"
+              className="bright-add-product-button"
+              onClick={handleAddProduct}
+            >
+
+              <span className="add-icon">
+                +
+              </span>
+
+              Add Product
+
+            </button>
+
+          )}
+
         </div>
+
+      ) : (
+
+        <div className="bright-product-table-card">
+
+
+          {/* TABLE HEADER */}
+
+          <div className="bright-product-table-head">
+
+            <div>
+              Product Name
+            </div>
+
+            <div>
+              Category
+            </div>
+
+            <div>
+              Total Reviews
+            </div>
+
+            <div>
+              Avg Sentiment
+            </div>
+
+            <div>
+              Action
+            </div>
+
+          </div>
+
+
+          {/* TABLE ROWS */}
+
+          <div className="bright-product-table-body">
+
+            {filteredProducts.map((product) => {
+
+              const sentiment =
+                getSentimentValue(product);
+
+
+              const sentimentClass =
+                getSentimentClass(sentiment);
+
+
+              const category =
+                product.category || "GENERAL";
+
+
+              return (
+
+                <div
+                  className="bright-product-row"
+                  key={product.id}
+                >
+
+
+                  {/* PRODUCT NAME */}
+
+                  <div className="bright-product-name-cell">
+
+                    <div
+                      className={`bright-product-image ${getCategoryClass(
+                        category
+                      )}`}
+                    >
+
+                      {category
+                        .toUpperCase()
+                        .includes("ELECTRONICS")
+                        ? "◉"
+                        : category
+                            .toUpperCase()
+                            .includes("SOFTWARE")
+                        ? "▣"
+                        : category
+                            .toUpperCase()
+                            .includes("FASHION")
+                        ? "◇"
+                        : "✦"}
+
+                    </div>
+
+
+                    <strong>
+                      {product.name}
+                    </strong>
+
+                  </div>
+
+
+                  {/* CATEGORY */}
+
+                  <div>
+
+                    <span
+                      className={`bright-category-badge ${getCategoryClass(
+                        category
+                      )}`}
+                    >
+
+                      {category}
+
+                    </span>
+
+                  </div>
+
+
+                  {/* REVIEWS */}
+
+                  <div className="review-number">
+
+                    {product.totalReviews ??
+                      product.reviewCount ??
+                      0}
+
+                  </div>
+
+
+                  {/* SENTIMENT */}
+
+                  <div className="bright-sentiment">
+
+                    <span className="star-icon">
+                      ★
+                    </span>
+
+
+                    <span
+                      className={
+                        sentimentClass
+                      }
+                    >
+
+                      {sentiment !== null
+                        ? sentiment.toFixed(1)
+                        : "—"}
+
+                    </span>
+
+                  </div>
+
+
+                  {/* ACTIONS */}
+
+                  <div className="bright-action-buttons">
+
+                    {canManageProducts && (
+
+                      <>
+
+                        <button
+                          type="button"
+                          className="bright-edit-button"
+                          onClick={() =>
+                            handleEditProduct(
+                              product
+                            )
+                          }
+                        >
+
+                          <span>
+                            ✎
+                          </span>
+
+                          Edit
+
+                        </button>
+
+
+                        <button
+                          type="button"
+                          className="bright-delete-button"
+                          onClick={() =>
+                            handleDeleteProduct(
+                              product.id
+                            )
+                          }
+                        >
+
+                          <span>
+                            ♡
+                          </span>
+
+                          Delete
+
+                        </button>
+
+                      </>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+              );
+
+            })}
+
+          </div>
+
+        </div>
+
       )}
+
+
+      {/* =================================================
+          PRODUCT FORM
+          ================================================= */}
+
+      {showForm && (
+
+        <ProductForm
+          product={selectedProduct}
+          onClose={handleCloseForm}
+        />
+
+      )}
+
     </div>
+
   );
+
 };
+
 
 export default ProductList;
