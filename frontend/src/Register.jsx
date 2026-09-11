@@ -533,8 +533,6 @@
 // export default Register;
 
 import React, { useEffect, useState } from "react";
-import "./Login.css";
-
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -545,11 +543,13 @@ import {
 
 import { addNotification } from "./store/slices/notificationSlice";
 
+import "./Register.css";
+
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, loading, error } = useSelector(
+  const { loading, error } = useSelector(
     (state) => state.auth
   );
 
@@ -565,197 +565,250 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(
-        addNotification({
-          type: "error",
-          message: error,
-        })
-      );
-
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
+    dispatch(clearError());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((previous) => ({
-      ...previous,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    dispatch(registerUser(formData));
+    // Basic validation
+    if (!formData.firstName.trim()) {
+      alert("Please enter First Name");
+      return;
+    }
+
+    if (!formData.lastName.trim()) {
+      alert("Please enter Last Name");
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      alert("Please enter Email Address");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters");
+      return;
+    }
+
+    console.log("REGISTER DATA:", formData);
+
+    try {
+      // Wait until backend registration finishes
+      const result = await dispatch(
+        registerUser(formData)
+      ).unwrap();
+
+      console.log("REGISTER RESPONSE:", result);
+
+      /*
+       * Role priority:
+       * 1. Backend response
+       * 2. localStorage
+       * 3. Selected role
+       */
+      const role =
+        result?.role ||
+        localStorage.getItem("role") ||
+        formData.role;
+
+      console.log("REGISTERED ROLE:", role);
+      console.log(
+        "TOKEN:",
+        localStorage.getItem("token")
+      );
+
+      dispatch(
+        addNotification({
+          type: "success",
+          message: "Account created successfully!",
+        })
+      );
+
+      // Navigate according to role
+      if (role === "PLATFORM_ADMIN") {
+        navigate("/admin", { replace: true });
+      } else if (role === "RESOLUTION_AGENT") {
+        navigate("/resolution-center", {
+          replace: true,
+        });
+      } else {
+        // BRAND_MANAGER
+        navigate("/", { replace: true });
+      }
+    } catch (err) {
+      console.error("REGISTRATION ERROR:", err);
+
+      let message = "Registration failed.";
+
+      if (typeof err === "string") {
+        message = err;
+      } else if (err?.message) {
+        message = err.message;
+      }
+
+      dispatch(
+        addNotification({
+          type: "error",
+          message: message,
+        })
+      );
+    }
   };
 
   return (
-    <div className="auth-page register-page">
+    <div className="register-page">
 
-      {/* =====================================================
-          LEFT SIDE
-      ===================================================== */}
+      {/* ================= LEFT SIDE ================= */}
 
-      <section className="auth-brand-panel">
+      <section className="register-brand-panel">
 
-        <div className="auth-brand-content">
+        <div className="brand-content">
 
-          <Link to="/register" className="auth-logo">
+          <div className="brand-logo">
 
-            <div className="auth-logo-mark">
+            <div className="brand-logo-icon">
               R
             </div>
 
             <div>
-              <span className="auth-logo-name">
-                ReviewRave
-              </span>
+              <h1>ReviewRave</h1>
 
-              <span className="auth-logo-subtitle">
-                Customer Intelligence
+              <span>
+                SOCIAL SENTIMENT PLATFORM
               </span>
             </div>
 
-          </Link>
+          </div>
 
+          <div className="brand-main">
 
-          <div className="auth-hero">
-
-            <span className="auth-eyebrow">
+            <p className="brand-label">
               JOIN REVIEWRAVE
-            </span>
-
-            <h1>
-              Build better
-              <br />
-              customer
-              <br />
-              experiences.
-            </h1>
-
-            <p>
-              Create your ReviewRave account and turn
-              customer feedback into meaningful action.
             </p>
 
+            <h2>
+              Build better
+              <br />
+              customer experiences.
+            </h2>
+
+            <p className="brand-description">
+              Create your ReviewRave account and
+              turn customer feedback into meaningful
+              action.
+            </p>
+
+            <div className="register-features">
+
+              <div className="register-feature">
+
+                <div className="feature-check">
+                  ✓
+                </div>
+
+                <div>
+                  <strong>
+                    Monitor sentiment
+                  </strong>
+
+                  <p>
+                    Understand what customers
+                    really think.
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="register-feature">
+
+                <div className="feature-check">
+                  ✓
+                </div>
+
+                <div>
+                  <strong>
+                    Track reviews
+                  </strong>
+
+                  <p>
+                    Bring customer feedback
+                    into one place.
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="register-feature">
+
+                <div className="feature-check">
+                  ✓
+                </div>
+
+                <div>
+                  <strong>
+                    Resolve issues faster
+                  </strong>
+
+                  <p>
+                    Turn negative feedback
+                    into action.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
+          <div className="brand-bottom">
 
-          <div className="auth-features">
+            <div>
+              <strong>
+                One platform
+              </strong>
 
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ✓
-              </div>
-
-              <div>
-                <strong>
-                  Monitor sentiment
-                </strong>
-
-                <span>
-                  Understand what customers really think.
-                </span>
-              </div>
-
+              <span>
+                For smarter feedback
+              </span>
             </div>
 
+            <div>
+              <strong>
+                Secure
+              </strong>
 
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ✓
-              </div>
-
-              <div>
-                <strong>
-                  Track reviews
-                </strong>
-
-                <span>
-                  Bring customer feedback into one place.
-                </span>
-              </div>
-
-            </div>
-
-
-            <div className="auth-feature">
-
-              <div className="feature-icon">
-                ✓
-              </div>
-
-              <div>
-                <strong>
-                  Resolve issues faster
-                </strong>
-
-                <span>
-                  Turn negative feedback into action.
-                </span>
-              </div>
-
+              <span>
+                Role-based access
+              </span>
             </div>
 
           </div>
-
-        </div>
-
-
-        <div className="auth-brand-footer">
-
-          <span>
-            One platform
-            <br />
-            For smarter feedback
-          </span>
-
-          <span>
-            Secure
-            <br />
-            Role-based access
-          </span>
 
         </div>
 
       </section>
 
+      {/* ================= RIGHT SIDE ================= */}
 
-      {/* =====================================================
-          RIGHT SIDE - REGISTER
-      ===================================================== */}
-
-      <section className="auth-form-panel register-form-panel">
+      <section className="register-form-panel">
 
         <div className="register-card">
 
-          <div className="login-header">
+          <div className="register-heading">
 
-            <div className="mobile-auth-logo">
-
-              <div className="auth-logo-mark">
-                R
-              </div>
-
-              <span>
-                ReviewRave
-              </span>
-
-            </div>
-
-
-            <span className="login-welcome">
+            <span>
               GET STARTED
             </span>
 
@@ -764,20 +817,25 @@ const Register = () => {
             </h2>
 
             <p>
-              Create your account to start using ReviewRave.
+              Create your account to start
+              using ReviewRave.
             </p>
 
           </div>
 
+          {error && (
+            <div className="register-error">
+              {typeof error === "string"
+                ? error
+                : "Registration failed. Please try again."}
+            </div>
+          )}
 
-          <form
-            className="auth-form register-form"
-            onSubmit={handleSubmit}
-          >
+          <form onSubmit={handleSubmit}>
 
-            {/* FIRST NAME + LAST NAME */}
+            {/* NAME */}
 
-            <div className="form-row">
+            <div className="name-row">
 
               <div className="form-group">
 
@@ -785,27 +843,18 @@ const Register = () => {
                   First Name
                 </label>
 
-                <div className="input-wrapper">
-
-                  <span className="input-icon">
-                    ◉
-                  </span>
-
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="First Name"
-                    required
-                    disabled={loading}
-                  />
-
-                </div>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="Enter first name"
+                  required
+                  disabled={loading}
+                />
 
               </div>
-
 
               <div className="form-group">
 
@@ -813,54 +862,14 @@ const Register = () => {
                   Last Name
                 </label>
 
-                <div className="input-wrapper">
-
-                  <span className="input-icon">
-                    ◉
-                  </span>
-
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Last Name"
-                    required
-                    disabled={loading}
-                  />
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            {/* COMPANY */}
-
-            <div className="form-group">
-
-              <label htmlFor="companyName">
-                Company Name
-                <span className="optional-text">
-                  {" "}Optional
-                </span>
-              </label>
-
-              <div className="input-wrapper">
-
-                <span className="input-icon">
-                  ▣
-                </span>
-
                 <input
-                  id="companyName"
-                  name="companyName"
+                  id="lastName"
+                  name="lastName"
                   type="text"
-                  value={formData.companyName}
+                  value={formData.lastName}
                   onChange={handleChange}
-                  placeholder="Enter company name"
+                  placeholder="Enter last name"
+                  required
                   disabled={loading}
                 />
 
@@ -868,6 +877,28 @@ const Register = () => {
 
             </div>
 
+            {/* COMPANY */}
+
+            <div className="form-group">
+
+              <label htmlFor="companyName">
+                Company Name
+                <span className="optional">
+                  Optional
+                </span>
+              </label>
+
+              <input
+                id="companyName"
+                name="companyName"
+                type="text"
+                value={formData.companyName}
+                onChange={handleChange}
+                placeholder="Enter company name"
+                disabled={loading}
+              />
+
+            </div>
 
             {/* EMAIL */}
 
@@ -877,28 +908,18 @@ const Register = () => {
                 Email Address
               </label>
 
-              <div className="input-wrapper">
-
-                <span className="input-icon">
-                  @
-                </span>
-
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter email address"
-                  autoComplete="email"
-                  required
-                  disabled={loading}
-                />
-
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@company.com"
+                required
+                disabled={loading}
+              />
 
             </div>
-
 
             {/* PASSWORD */}
 
@@ -906,44 +927,47 @@ const Register = () => {
 
               <label htmlFor="password">
                 Password
-                <span className="optional-text">
-                  {" "}Minimum 8 characters
-                </span>
               </label>
 
-              <div className="input-wrapper">
-
-                <span className="input-icon">
-                  •
-                </span>
+              <div className="password-wrapper">
 
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter password"
-                  minLength={8}
-                  autoComplete="new-password"
+                  placeholder="Minimum 8 characters"
                   required
+                  minLength={8}
                   disabled={loading}
                 />
 
                 <button
                   type="button"
-                  className="password-toggle"
+                  className="show-password"
                   onClick={() =>
-                    setShowPassword(!showPassword)
+                    setShowPassword(
+                      !showPassword
+                    )
                   }
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword
+                    ? "Hide"
+                    : "Show"}
                 </button>
 
               </div>
 
-            </div>
+              <small className="password-hint">
+                Minimum 8 characters
+              </small>
 
+            </div>
 
             {/* ROLE */}
 
@@ -953,80 +977,72 @@ const Register = () => {
                 Select Role
               </label>
 
-              <div className="select-wrapper">
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                disabled={loading}
+              >
 
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  disabled={loading}
-                >
+                <option value="BRAND_MANAGER">
+                  Brand Manager
+                </option>
 
-                  <option value="BRAND_MANAGER">
-                    Brand Manager
-                  </option>
+                <option value="RESOLUTION_AGENT">
+                  Resolution Agent
+                </option>
 
-                  <option value="RESOLUTION_AGENT">
-                    Resolution Agent
-                  </option>
+                <option value="PLATFORM_ADMIN">
+                  Platform Admin
+                </option>
 
-                  <option value="PLATFORM_ADMIN">
-                    Platform Admin
-                  </option>
-
-                </select>
-
-              </div>
+              </select>
 
             </div>
 
-
-            {/* SUBMIT */}
+            {/* CREATE ACCOUNT */}
 
             <button
               type="submit"
-              className="auth-submit-button"
+              className="create-account-btn"
               disabled={loading}
             >
-
               {loading
                 ? "Creating Account..."
                 : "Create Account"}
-
             </button>
 
-
-            {/* LOGIN */}
-
-            <div className="auth-divider">
-              ALREADY REGISTERED?
-            </div>
-
-            <Link
-              to="/login"
-              className="register-link-button"
-            >
-              Already have an account?
-              <span>Login here</span>
-            </Link>
-
-
-            {/* SECURITY */}
-
-            <div className="security-note">
-
-              <span className="security-icon">
-                🔒
-              </span>
-
-              <span>
-                Your information is securely protected
-              </span>
-
-            </div>
-
           </form>
+
+          {/* LOGIN */}
+
+          <div className="login-existing">
+
+            <span>
+              ALREADY REGISTERED?
+            </span>
+
+            <p>
+              Already have an account?{" "}
+              <Link to="/login">
+                Login here
+              </Link>
+            </p>
+
+          </div>
+
+          {/* SECURITY */}
+
+          <div className="security-note">
+
+            <span>🔒</span>
+
+            <p>
+              Your information is securely protected
+            </p>
+
+          </div>
 
         </div>
 
@@ -1037,5 +1053,3 @@ const Register = () => {
 };
 
 export default Register;
-
-
