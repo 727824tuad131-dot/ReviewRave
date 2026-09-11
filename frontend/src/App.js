@@ -550,41 +550,40 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
-/* =========================================================
-   REVIEWRAVE - CUSTOMER INTELLIGENCE PLATFORM
-   ========================================================= */
-
 const API_URL = "http://localhost:8080";
 
 /* =========================================================
    MAIN APP
-   ========================================================= */
+========================================================= */
 
 function App() {
   const [page, setPage] = useState("login");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
 
-  /* -------------------------------------------------------
-     Check existing login
-     ------------------------------------------------------- */
+  /* Check existing session */
   useEffect(() => {
     const savedUser = localStorage.getItem("reviewraveUser");
 
     if (savedUser) {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        setPage("dashboard");
-      } catch (error) {
+        const parsed = JSON.parse(savedUser);
+
+        if (parsed && parsed.email) {
+          setUser(parsed);
+          setPage("dashboard");
+        }
+      } catch {
         localStorage.removeItem("reviewraveUser");
+        localStorage.removeItem("token");
       }
     }
   }, []);
 
-  /* -------------------------------------------------------
-     Login
-     ------------------------------------------------------- */
+  /* =======================================================
+     LOGIN
+  ======================================================= */
+
   const handleLogin = async (email, password) => {
     setMessage("");
 
@@ -600,126 +599,124 @@ function App() {
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-        const loggedUser = {
-          email: data.email || email,
-          role:
-            data.role ||
-            data.roles?.[0] ||
-            data.authority ||
-            "BRAND_MANAGER",
-          token: data.token || data.accessToken || "",
-          name: data.name || data.fullName || "ReviewRave User",
-        };
-
-        localStorage.setItem(
-          "reviewraveUser",
-          JSON.stringify(loggedUser)
+      if (!response.ok) {
+        setMessage(
+          data.message ||
+            data.error ||
+            "Invalid email or password."
         );
-
-        if (loggedUser.token) {
-          localStorage.setItem("token", loggedUser.token);
-        }
-
-        setUser(loggedUser);
-        setPage("dashboard");
         return;
       }
 
-      /* Demo fallback */
-      const demoUser = {
-        email,
-        role: "BRAND_MANAGER",
-        name: "ReviewRave User",
+      const loggedUser = {
+        id: data.id,
+        email: data.email || email,
+        name:
+          data.name ||
+          data.fullName ||
+          data.username ||
+          "ReviewRave User",
+        role:
+          data.role ||
+          data.roles?.[0] ||
+          data.authority ||
+          "BRAND_MANAGER",
+        token:
+          data.token ||
+          data.accessToken ||
+          "",
+        companyName:
+          data.companyName ||
+          data.company ||
+          "",
       };
 
       localStorage.setItem(
         "reviewraveUser",
-        JSON.stringify(demoUser)
+        JSON.stringify(loggedUser)
       );
 
-      setUser(demoUser);
+      if (loggedUser.token) {
+        localStorage.setItem("token", loggedUser.token);
+      }
+
+      setUser(loggedUser);
       setPage("dashboard");
-      setMessage("Demo login successful");
+      setMessage("");
     } catch (error) {
-      /*
-       * This fallback allows the UI to work even if
-       * Spring Boot is temporarily not running.
-       */
-      const demoUser = {
-        email,
-        role: "BRAND_MANAGER",
-        name: "ReviewRave User",
-      };
-
-      localStorage.setItem(
-        "reviewraveUser",
-        JSON.stringify(demoUser)
+      setMessage(
+        "Unable to connect to server. Please start Spring Boot."
       );
-
-      setUser(demoUser);
-      setPage("dashboard");
-      setMessage("Backend unavailable - demo mode");
     }
   };
 
-  /* -------------------------------------------------------
-     Register
-     ------------------------------------------------------- */
+  /* =======================================================
+     REGISTER
+  ======================================================= */
+
   const handleRegister = async (formData) => {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${API_URL}/api/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      if (response.ok) {
-        setMessage("Account created successfully. Please login.");
-        setPage("login");
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setMessage(
+          data.message ||
+            data.error ||
+            "Registration failed."
+        );
         return;
       }
 
-      const errorText = await response.text();
-
-      if (errorText) {
-        setMessage(errorText);
-      } else {
-        setMessage("Registration failed.");
-      }
-    } catch (error) {
       /*
-       * Demo registration so the UI can still be tested.
+       * Very important:
+       * Do NOT automatically login after registration.
        */
-      setMessage(
-        "Backend unavailable. Account created in demo mode."
-      );
+      localStorage.removeItem("reviewraveUser");
+      localStorage.removeItem("token");
 
+      setUser(null);
       setPage("login");
+      setMessage(
+        "Account created successfully. Please login."
+      );
+    } catch (error) {
+      setMessage(
+        "Unable to connect to server. Please start Spring Boot."
+      );
     }
   };
 
-  /* -------------------------------------------------------
-     Logout
-     ------------------------------------------------------- */
+  /* =======================================================
+     LOGOUT
+  ======================================================= */
+
   const handleLogout = () => {
     localStorage.removeItem("reviewraveUser");
     localStorage.removeItem("token");
 
     setUser(null);
     setPage("login");
-    setMessage("Logged out successfully.");
+    setMessage("");
   };
 
   /* =======================================================
-     AUTH PAGES
-     ======================================================= */
+     AUTH
+  ======================================================= */
 
   if (!user) {
     if (page === "register") {
@@ -747,10 +744,6 @@ function App() {
     );
   }
 
-  /* =======================================================
-     DASHBOARD
-     ======================================================= */
-
   return (
     <Dashboard
       user={user}
@@ -765,16 +758,17 @@ function App() {
 
 /* =========================================================
    LOGIN PAGE
-   ========================================================= */
+========================================================= */
 
 function LoginPage({ onLogin, onRegister, message }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submitLogin = (e) => {
+  const submit = (e) => {
     e.preventDefault();
 
     if (!email || !password) {
+      setMessage("Please enter email and password.");
       return;
     }
 
@@ -784,18 +778,11 @@ function LoginPage({ onLogin, onRegister, message }) {
   return (
     <div className="auth-page login-page">
       <div className="auth-card login-card">
-        <div className="auth-logo">
-          <div className="logo-box">R</div>
-          <div>
-            <h1>ReviewRave</h1>
-            <span>Customer Intelligence Platform</span>
-          </div>
-        </div>
 
-        <h2>Login to ReviewRave</h2>
+        <h1>Login to ReviewRave</h1>
 
         <p className="auth-subtitle">
-          Sign in to your account
+          Customer Intelligence Platform
         </p>
 
         {message && (
@@ -804,7 +791,8 @@ function LoginPage({ onLogin, onRegister, message }) {
           </div>
         )}
 
-        <form onSubmit={submitLogin}>
+        <form onSubmit={submit}>
+
           <label>Email Address</label>
 
           <input
@@ -821,19 +809,26 @@ function LoginPage({ onLogin, onRegister, message }) {
             type="password"
             placeholder="••••••••"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             required
           />
 
-          <button className="primary-button" type="submit">
+          <button
+            type="submit"
+            className="primary-button full"
+          >
             Login
           </button>
+
         </form>
 
         <p className="switch-text">
           Don't have an account?{" "}
           <button
             className="link-button"
+            type="button"
             onClick={onRegister}
           >
             Register here
@@ -843,6 +838,7 @@ function LoginPage({ onLogin, onRegister, message }) {
         <div className="security-text">
           🔒 Enterprise-grade authentication
         </div>
+
       </div>
     </div>
   );
@@ -850,7 +846,7 @@ function LoginPage({ onLogin, onRegister, message }) {
 
 /* =========================================================
    REGISTER PAGE
-   ========================================================= */
+========================================================= */
 
 function RegisterPage({
   onRegister,
@@ -866,30 +862,38 @@ function RegisterPage({
     role: "BRAND_MANAGER",
   });
 
-  const updateField = (field, value) => {
-    setForm({
-      ...form,
+  const update = (field, value) => {
+    setForm((old) => ({
+      ...old,
       [field]: value,
-    });
+    }));
   };
 
-  const submitRegister = (e) => {
+  const submit = (e) => {
     e.preventDefault();
 
+    if (form.password.length < 8) {
+      return;
+    }
+
+    /*
+     * Send fullName because backend user normally stores
+     * the complete name.
+     */
     onRegister({
-      fullName: `${form.firstName} ${form.lastName}`.trim(),
-      firstName: form.firstName,
-      lastName: form.lastName,
-      companyName: form.companyName,
+      fullName:
+        `${form.firstName} ${form.lastName}`.trim(),
       email: form.email,
       password: form.password,
       role: form.role,
+      companyName: form.companyName,
     });
   };
 
   return (
     <div className="auth-page register-page">
       <div className="auth-card register-card">
+
         <h1>Register Account</h1>
 
         <p className="auth-subtitle">
@@ -902,8 +906,10 @@ function RegisterPage({
           </div>
         )}
 
-        <form onSubmit={submitRegister}>
+        <form onSubmit={submit}>
+
           <div className="two-column">
+
             <div>
               <label>First Name</label>
 
@@ -912,7 +918,7 @@ function RegisterPage({
                 placeholder="Jane"
                 value={form.firstName}
                 onChange={(e) =>
-                  updateField("firstName", e.target.value)
+                  update("firstName", e.target.value)
                 }
                 required
               />
@@ -926,11 +932,12 @@ function RegisterPage({
                 placeholder="Doe"
                 value={form.lastName}
                 onChange={(e) =>
-                  updateField("lastName", e.target.value)
+                  update("lastName", e.target.value)
                 }
                 required
               />
             </div>
+
           </div>
 
           <label>Company Name</label>
@@ -940,7 +947,7 @@ function RegisterPage({
             placeholder="Acme Corp (Optional)"
             value={form.companyName}
             onChange={(e) =>
-              updateField("companyName", e.target.value)
+              update("companyName", e.target.value)
             }
           />
 
@@ -951,7 +958,7 @@ function RegisterPage({
             placeholder="manager@gmail.com"
             value={form.email}
             onChange={(e) =>
-              updateField("email", e.target.value)
+              update("email", e.target.value)
             }
             required
           />
@@ -964,7 +971,7 @@ function RegisterPage({
             minLength="8"
             value={form.password}
             onChange={(e) =>
-              updateField("password", e.target.value)
+              update("password", e.target.value)
             }
             required
           />
@@ -974,7 +981,7 @@ function RegisterPage({
           <select
             value={form.role}
             onChange={(e) =>
-              updateField("role", e.target.value)
+              update("role", e.target.value)
             }
           >
             <option value="BRAND_MANAGER">
@@ -991,30 +998,33 @@ function RegisterPage({
           </select>
 
           <button
-            className="primary-button"
             type="submit"
+            className="primary-button full"
           >
             Create Account
           </button>
+
         </form>
 
         <p className="switch-text">
           Already have an account?{" "}
           <button
+            type="button"
             className="link-button"
             onClick={onLogin}
           >
             Login here
           </button>
         </p>
+
       </div>
     </div>
   );
 }
 
 /* =========================================================
-   DASHBOARD
-   ========================================================= */
+   DASHBOARD LAYOUT
+========================================================= */
 
 function Dashboard({
   user,
@@ -1024,20 +1034,26 @@ function Dashboard({
   message,
   setMessage,
 }) {
-  const role = user?.role || "BRAND_MANAGER";
+  const role = String(
+    user?.role || "BRAND_MANAGER"
+  ).toUpperCase();
 
-  const roleName = role.replaceAll("_", " ");
+  const isAdmin =
+    role === "PLATFORM_ADMIN" ||
+    role === "ADMIN";
+
+  const isAgent =
+    role === "RESOLUTION_AGENT";
 
   return (
     <div className="app-container">
 
-      {/* TOP HEADER */}
+      {/* HEADER */}
+
       <header className="top-header">
 
-        <div className="brand-area">
-          <div className="logo-box small-logo">
-            R
-          </div>
+        <div className="header-brand">
+          <div className="header-logo">R</div>
 
           <div>
             <h2>ReviewRave</h2>
@@ -1045,20 +1061,22 @@ function Dashboard({
           </div>
         </div>
 
-        <div className="user-area">
+        <div className="header-user">
 
-          <div className="user-avatar">
+          <div className="avatar">
             {(user.name || "U")
               .charAt(0)
               .toUpperCase()}
           </div>
 
-          <div className="user-details">
+          <div className="user-info">
             <strong>
               {user.name || "ReviewRave User"}
             </strong>
 
-            <span>{roleName}</span>
+            <span>
+              {role.replaceAll("_", " ")}
+            </span>
           </div>
 
           <button
@@ -1073,6 +1091,7 @@ function Dashboard({
       </header>
 
       {/* NAVIGATION */}
+
       <nav className="main-nav">
 
         <button
@@ -1082,8 +1101,7 @@ function Dashboard({
           Home
         </button>
 
-        {(role === "PLATFORM_ADMIN" ||
-          role === "ADMIN") && (
+        {isAdmin && (
           <button
             className={page === "users" ? "active" : ""}
             onClick={() => setPage("users")}
@@ -1092,26 +1110,32 @@ function Dashboard({
           </button>
         )}
 
-        <button
-          className={page === "products" ? "active" : ""}
-          onClick={() => setPage("products")}
-        >
-          Products
-        </button>
+        {!isAgent && (
+          <button
+            className={page === "products" ? "active" : ""}
+            onClick={() => setPage("products")}
+          >
+            Products
+          </button>
+        )}
 
-        <button
-          className={page === "reviews" ? "active" : ""}
-          onClick={() => setPage("reviews")}
-        >
-          Reviews
-        </button>
+        {!isAgent && (
+          <button
+            className={page === "reviews" ? "active" : ""}
+            onClick={() => setPage("reviews")}
+          >
+            Reviews
+          </button>
+        )}
 
-        <button
-          className={page === "insights" ? "active" : ""}
-          onClick={() => setPage("insights")}
-        >
-          Insights
-        </button>
+        {!isAgent && (
+          <button
+            className={page === "insights" ? "active" : ""}
+            onClick={() => setPage("insights")}
+          >
+            Insights
+          </button>
+        )}
 
         <button
           className={page === "tickets" ? "active" : ""}
@@ -1122,7 +1146,6 @@ function Dashboard({
 
       </nav>
 
-      {/* MESSAGE */}
       {message && (
         <div className="global-message">
           {message}
@@ -1135,43 +1158,34 @@ function Dashboard({
         </div>
       )}
 
-      {/* PAGE CONTENT */}
+      {/* ONLY ONE PAGE IS SHOWN */}
 
       {page === "dashboard" && (
         <DashboardHome
-          user={user}
           role={role}
           setPage={setPage}
         />
       )}
 
-      {page === "users" && (
-        <UsersPage
-          setPage={setPage}
-        />
+      {page === "users" && isAdmin && (
+        <UsersPage setMessage={setMessage} />
       )}
 
-      {page === "products" && (
-        <ProductsPage
-          user={user}
-          setMessage={setMessage}
-        />
+      {page === "products" && !isAgent && (
+        <ProductsPage setMessage={setMessage} />
       )}
 
-      {page === "reviews" && (
-        <ReviewsPage
-          user={user}
-          setMessage={setMessage}
-        />
+      {page === "reviews" && !isAgent && (
+        <ReviewsPage setMessage={setMessage} />
       )}
 
-      {page === "insights" && (
+      {page === "insights" && !isAgent && (
         <InsightsPage />
       )}
 
       {page === "tickets" && (
         <TicketsPage
-          user={user}
+          role={role}
           setMessage={setMessage}
         />
       )}
@@ -1182,48 +1196,33 @@ function Dashboard({
 
 /* =========================================================
    DASHBOARD HOME
-   ========================================================= */
+========================================================= */
 
-function DashboardHome({
-  user,
-  role,
-  setPage,
-}) {
+function DashboardHome({ role, setPage }) {
+
   if (
     role === "PLATFORM_ADMIN" ||
     role === "ADMIN"
   ) {
-    return (
-      <AdminDashboard
-        setPage={setPage}
-      />
-    );
+    return <AdminDashboard setPage={setPage} />;
   }
 
   if (role === "RESOLUTION_AGENT") {
-    return (
-      <AgentDashboard
-        setPage={setPage}
-      />
-    );
+    return <AgentDashboard setPage={setPage} />;
   }
 
-  return (
-    <BrandManagerDashboard
-      setPage={setPage}
-    />
-  );
+  return <BrandManagerDashboard setPage={setPage} />;
 }
 
 /* =========================================================
-   ADMIN DASHBOARD
-   ========================================================= */
+   PLATFORM ADMIN
+========================================================= */
 
 function AdminDashboard({ setPage }) {
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
         <div>
           <h1>Platform Overview</h1>
           <p>
@@ -1232,7 +1231,7 @@ function AdminDashboard({ setPage }) {
         </div>
 
         <button
-          className="primary-button small"
+          className="primary-button"
           onClick={() => setPage("users")}
         >
           Manage Users
@@ -1244,57 +1243,53 @@ function AdminDashboard({ setPage }) {
         <StatCard
           title="Total Users"
           value="8"
-          icon="👥"
         />
 
         <StatCard
           title="Tracked Products"
           value="12"
-          icon="📦"
         />
 
         <StatCard
           title="Active Tickets"
           value="3"
-          icon="🎫"
         />
 
         <StatCard
           title="Open Insights"
           value="19"
-          icon="📊"
         />
 
       </div>
 
-      <div className="dashboard-grid">
+      <div className="two-panel-grid">
 
         <section className="panel">
 
           <h3>Global User Roles</h3>
 
-          <div className="role-chart">
+          <div className="role-area">
 
             <div className="donut">
               <span>8</span>
             </div>
 
-            <div className="legend">
+            <div className="role-list">
 
-              <p>
-                <span className="dot admin"></span>
+              <div>
+                <span className="role-dot admin"></span>
                 Platform Admin
-              </p>
+              </div>
 
-              <p>
-                <span className="dot manager"></span>
+              <div>
+                <span className="role-dot manager"></span>
                 Brand Managers
-              </p>
+              </div>
 
-              <p>
-                <span className="dot agent"></span>
+              <div>
+                <span className="role-dot agent"></span>
                 Resolution Agents
-              </p>
+              </div>
 
             </div>
 
@@ -1306,46 +1301,22 @@ function AdminDashboard({ setPage }) {
 
           <h3>Recent Timeline</h3>
 
-          <div className="timeline">
+          <Timeline
+            text="New brand manager registered"
+            sub="Brand Corp"
+          />
 
-            <TimelineItem
-              text="New brand manager registered"
-              sub="Brand Corp"
-            />
+          <Timeline
+            text="System review ingestion completed"
+            sub="1,240 reviews processed"
+          />
 
-            <TimelineItem
-              text="System review ingestion completed"
-              sub="1,240 reviews processed"
-            />
-
-            <TimelineItem
-              text="Critical ticket auto assigned"
-              sub="Resolution Agent"
-            />
-
-          </div>
+          <Timeline
+            text="Critical ticket auto assigned"
+            sub="Resolution Agent"
+          />
 
         </section>
-
-      </div>
-
-      <div className="quick-actions">
-
-        <button onClick={() => setPage("users")}>
-          👥 Manage Users
-        </button>
-
-        <button onClick={() => setPage("products")}>
-          📦 View Products
-        </button>
-
-        <button onClick={() => setPage("insights")}>
-          📊 View Insights
-        </button>
-
-        <button onClick={() => setPage("tickets")}>
-          🎫 Manage Tickets
-        </button>
 
       </div>
 
@@ -1354,14 +1325,14 @@ function AdminDashboard({ setPage }) {
 }
 
 /* =========================================================
-   BRAND MANAGER DASHBOARD
-   ========================================================= */
+   BRAND MANAGER
+========================================================= */
 
 function BrandManagerDashboard({ setPage }) {
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
           <span className="eyebrow">
@@ -1389,128 +1360,65 @@ function BrandManagerDashboard({ setPage }) {
         <StatCard
           title="Tracked Products"
           value="12"
-          icon="📦"
         />
 
         <StatCard
           title="Total Reviews"
           value="1,240"
-          icon="💬"
         />
 
         <StatCard
           title="Positive Sentiment"
           value="78%"
-          icon="😊"
         />
 
         <StatCard
           title="Open Tickets"
           value="5"
-          icon="🎫"
         />
 
       </div>
 
-      <div className="product-section">
+      <section className="panel table-panel">
 
-        <div className="panel product-card">
-
-          <div className="product-header">
-            <div>
-              <h3>Acme Smart Watch</h3>
-              <span>Electronics</span>
-            </div>
-
-            <span className="status-badge">
-              Active
-            </span>
-          </div>
-
-          <div className="product-info">
-
-            <div>
-              <strong>324</strong>
-              <span>Reviews</span>
-            </div>
-
-            <div>
-              <strong>82%</strong>
-              <span>Positive</span>
-            </div>
-
-            <div>
-              <strong>4.3</strong>
-              <span>Rating</span>
-            </div>
-
-          </div>
-
-          <div className="card-actions">
-
-            <button
-              onClick={() => setPage("reviews")}
-            >
-              View Reviews
-            </button>
-
-            <button
-              onClick={() => setPage("insights")}
-            >
-              View Insights
-            </button>
-
-          </div>
-
-        </div>
-
-        <div className="panel empty-product">
-
-          <div className="empty-icon">
-            +
-          </div>
-
-          <h3>Add another product</h3>
-
-          <p>
-            Start tracking customer feedback
-            for another product.
-          </p>
+        <div className="table-header">
+          <h2>Tracked Products</h2>
 
           <button
-            className="primary-button"
+            className="primary-button small"
             onClick={() => setPage("products")}
           >
             Add Product
           </button>
-
         </div>
 
-      </div>
+        <ProductTable setMessage={() => {}} />
+
+      </section>
 
     </main>
   );
 }
 
 /* =========================================================
-   RESOLUTION AGENT DASHBOARD
-   ========================================================= */
+   RESOLUTION AGENT
+========================================================= */
 
 function AgentDashboard({ setPage }) {
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
           <span className="eyebrow">
-            RESOLUTION CENTER
+            SMART TICKET ROUTING
           </span>
 
-          <h1>Ticket Overview</h1>
+          <h1>Resolution Tickets</h1>
 
           <p>
-            Resolve customer issues quickly.
+            Manage and resolve assigned customer issues.
           </p>
         </div>
 
@@ -1528,57 +1436,39 @@ function AgentDashboard({ setPage }) {
         <StatCard
           title="Assigned Tickets"
           value="8"
-          icon="🎫"
         />
 
         <StatCard
           title="Pending"
           value="4"
-          icon="⏳"
         />
 
         <StatCard
           title="Resolved"
           value="21"
-          icon="✓"
         />
 
         <StatCard
           title="Critical"
           value="2"
-          icon="⚠"
         />
 
       </div>
 
-      <section className="panel">
+      <section className="panel table-panel">
 
-        <h3>Recent Assigned Tickets</h3>
+        <div className="table-header">
+          <h2>Resolution Tickets</h2>
 
-        <TicketRow
-          title="Product delivery issue"
-          priority="HIGH"
-          status="OPEN"
-        />
+          <button
+            className="secondary-button"
+            onClick={() => setPage("tickets")}
+          >
+            My Tickets
+          </button>
+        </div>
 
-        <TicketRow
-          title="Payment problem"
-          priority="MEDIUM"
-          status="PENDING"
-        />
-
-        <TicketRow
-          title="Damaged product"
-          priority="HIGH"
-          status="OPEN"
-        />
-
-        <button
-          className="secondary-button"
-          onClick={() => setPage("tickets")}
-        >
-          View All Tickets →
-        </button>
+        <TicketTable />
 
       </section>
 
@@ -1588,31 +1478,67 @@ function AgentDashboard({ setPage }) {
 
 /* =========================================================
    USERS
-   ========================================================= */
+========================================================= */
 
-function UsersPage({ setPage }) {
-  const users = [
+function UsersPage({ setMessage }) {
+
+  const [users, setUsers] = useState([
     {
-      name: "Admin User",
-      email: "admin@reviewrave.com",
-      role: "PLATFORM ADMIN",
-    },
-    {
+      id: 1,
       name: "Brand Manager",
-      email: "manager@gmail.com",
+      email: "manager@reviewrave.com",
+      company: "Brand Corp",
       role: "BRAND MANAGER",
+      status: "Active",
     },
     {
-      name: "Resolution Agent",
-      email: "agent@gmail.com",
+      id: 2,
+      name: "Support Agent",
+      email: "agent@reviewrave.com",
+      company: "ReviewRave Support",
       role: "RESOLUTION AGENT",
+      status: "Active",
     },
-  ];
+    {
+      id: 3,
+      name: "Platform Admin",
+      email: "admin@reviewrave.com",
+      company: "ReviewRave Inc",
+      role: "PLATFORM ADMIN",
+      status: "Active",
+    },
+    {
+      id: 4,
+      name: "John Doe",
+      email: "john@gmail.com",
+      company: "Acme Digital",
+      role: "BRAND MANAGER",
+      status: "Disabled",
+    },
+  ]);
+
+  const toggleUser = (id) => {
+    setUsers((old) =>
+      old.map((u) =>
+        u.id === id
+          ? {
+              ...u,
+              status:
+                u.status === "Active"
+                  ? "Disabled"
+                  : "Active",
+            }
+          : u
+      )
+    );
+
+    setMessage("User status updated.");
+  };
 
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
           <h1>User Management</h1>
@@ -1620,13 +1546,6 @@ function UsersPage({ setPage }) {
             Manage ReviewRave platform users.
           </p>
         </div>
-
-        <button
-          className="primary-button"
-          onClick={() => alert("Add user form opened")}
-        >
-          + Add User
-        </button>
 
       </div>
 
@@ -1636,50 +1555,60 @@ function UsersPage({ setPage }) {
 
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Email</th>
+              <th>Company</th>
               <th>Role</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
 
           <tbody>
 
-            {users.map((item, index) => (
-              <tr key={index}>
+            {users.map((user) => (
+              <tr key={user.id}>
+
+                <td>#{user.id}</td>
 
                 <td>
-                  <strong>{item.name}</strong>
+                  <strong>{user.name}</strong>
                 </td>
 
-                <td>{item.email}</td>
+                <td>{user.email}</td>
+
+                <td>{user.company}</td>
 
                 <td>
-                  <span className="status-badge">
-                    {item.role}
+                  <span className="role-badge">
+                    {user.role}
                   </span>
                 </td>
 
                 <td>
+                  <span
+                    className={
+                      user.status === "Active"
+                        ? "status active"
+                        : "status disabled"
+                    }
+                  >
+                    {user.status}
+                  </span>
+                </td>
 
+                <td>
                   <button
                     className="table-button"
                     onClick={() =>
-                      alert(`Viewing ${item.name}`)
+                      toggleUser(user.id)
                     }
                   >
-                    View
+                    {user.status === "Active"
+                      ? "Disable"
+                      : "Enable"}
                   </button>
-
-                  <button
-                    className="table-button"
-                    onClick={() =>
-                      alert(`Editing ${item.name}`)
-                    }
-                  >
-                    Edit
-                  </button>
-
                 </td>
 
               </tr>
@@ -1697,51 +1626,64 @@ function UsersPage({ setPage }) {
 
 /* =========================================================
    PRODUCTS
-   ========================================================= */
+========================================================= */
 
-function ProductsPage({
-  user,
-  setMessage,
-}) {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Acme Smart Watch",
-      category: "Electronics",
-      reviews: 324,
-      rating: 4.3,
-    },
-    {
-      id: 2,
-      name: "Acme Wireless Earbuds",
-      category: "Audio",
-      reviews: 189,
-      rating: 4.1,
-    },
-  ]);
+function ProductsPage({ setMessage }) {
 
   const [showForm, setShowForm] = useState(false);
 
-  const [productName, setProductName] = useState("");
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      name: "Smartwatch",
+      category: "ELECTRONICS",
+      reviews: 0,
+      sentiment: "88",
+    },
+    {
+      id: 2,
+      name: "Word",
+      category: "SOFTWARE",
+      reviews: 0,
+      sentiment: "82",
+    },
+    {
+      id: 3,
+      name: "Singed",
+      category: "HOSPITALITY",
+      reviews: 0,
+      sentiment: "80",
+    },
+    {
+      id: 4,
+      name: "Rice",
+      category: "RETAIL",
+      reviews: 0,
+      sentiment: "79",
+    },
+  ]);
+
+  const [name, setName] = useState("");
   const [category, setCategory] = useState("");
 
   const addProduct = (e) => {
     e.preventDefault();
 
-    if (!productName) return;
+    if (!name.trim()) return;
 
-    setProducts([
-      ...products,
+    setProducts((old) => [
+      ...old,
       {
         id: Date.now(),
-        name: productName,
-        category: category || "General",
+        name,
+        category:
+          category.toUpperCase() || "GENERAL",
         reviews: 0,
-        rating: 0,
+        sentiment: "0",
       },
     ]);
 
-    setProductName("");
+    setName("");
     setCategory("");
     setShowForm(false);
 
@@ -1751,13 +1693,9 @@ function ProductsPage({
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
-          <span className="eyebrow">
-            CUSTOMER INTELLIGENCE
-          </span>
-
           <h1>Tracked Products</h1>
 
           <p>
@@ -1777,16 +1715,16 @@ function ProductsPage({
       {showForm && (
         <section className="panel form-panel">
 
-          <h3>Add New Product</h3>
+          <h2>Add Product</h2>
 
           <form onSubmit={addProduct}>
 
             <label>Product Name</label>
 
             <input
-              value={productName}
+              value={name}
               onChange={(e) =>
-                setProductName(e.target.value)
+                setName(e.target.value)
               }
               placeholder="Enter product name"
               required
@@ -1802,18 +1740,18 @@ function ProductsPage({
               placeholder="Electronics"
             />
 
-            <div className="form-actions">
+            <div className="form-buttons">
 
               <button
-                type="submit"
                 className="primary-button"
+                type="submit"
               >
                 Save Product
               </button>
 
               <button
-                type="button"
                 className="secondary-button"
+                type="button"
                 onClick={() => setShowForm(false)}
               >
                 Cancel
@@ -1826,109 +1764,189 @@ function ProductsPage({
         </section>
       )}
 
-      <div className="product-list">
+      <section className="panel table-panel">
 
-        {products.map((product) => (
-          <section
-            className="panel product-card"
-            key={product.id}
-          >
+        <div className="search-row">
+          <input
+            placeholder="Search products by name or category..."
+          />
+        </div>
 
-            <div className="product-header">
+        <table>
 
-              <div>
-                <h3>{product.name}</h3>
-                <span>{product.category}</span>
-              </div>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Total Reviews</th>
+              <th>Avg Sentiment</th>
+              <th>Action</th>
+            </tr>
+          </thead>
 
-              <span className="status-badge">
-                Active
-              </span>
+          <tbody>
 
-            </div>
+            {products.map((product) => (
+              <tr key={product.id}>
 
-            <div className="product-info">
+                <td>
+                  <strong>{product.name}</strong>
+                </td>
 
-              <div>
-                <strong>
-                  {product.reviews}
-                </strong>
-                <span>Reviews</span>
-              </div>
+                <td>{product.category}</td>
 
-              <div>
-                <strong>
-                  {product.rating}
-                </strong>
-                <span>Rating</span>
-              </div>
+                <td>{product.reviews}</td>
 
-              <div>
-                <strong>78%</strong>
-                <span>Positive</span>
-              </div>
+                <td>{product.sentiment}</td>
 
-            </div>
+                <td>
 
-            <div className="card-actions">
+                  <button
+                    className="table-button"
+                    onClick={() =>
+                      setMessage(
+                        `${product.name} selected`
+                      )
+                    }
+                  >
+                    View
+                  </button>
 
-              <button
-                onClick={() =>
-                  setMessage(
-                    `${product.name} selected`
-                  )
-                }
-              >
-                View Product
-              </button>
+                  <button
+                    className="table-button danger"
+                    onClick={() =>
+                      setProducts((old) =>
+                        old.filter(
+                          (p) =>
+                            p.id !== product.id
+                        )
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
 
-              <button
-                onClick={() =>
-                  setMessage(
-                    `Insights opened for ${product.name}`
-                  )
-                }
-              >
-                Insights
-              </button>
+                </td>
 
-            </div>
+              </tr>
+            ))}
 
-          </section>
-        ))}
+          </tbody>
 
-      </div>
+        </table>
+
+      </section>
 
     </main>
   );
 }
 
 /* =========================================================
+   PRODUCT TABLE
+========================================================= */
+
+function ProductTable({ setMessage }) {
+
+  const products = [
+    {
+      name: "Smartwatch",
+      category: "ELECTRONICS",
+      reviews: 0,
+      sentiment: "88",
+    },
+    {
+      name: "Word",
+      category: "SOFTWARE",
+      reviews: 0,
+      sentiment: "82",
+    },
+    {
+      name: "Singed",
+      category: "HOSPITALITY",
+      reviews: 0,
+      sentiment: "80",
+    },
+    {
+      name: "Rice",
+      category: "RETAIL",
+      reviews: 0,
+      sentiment: "79",
+    },
+  ];
+
+  return (
+    <table>
+
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Total Reviews</th>
+          <th>Avg Sentiment</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {products.map((product, index) => (
+          <tr key={index}>
+
+            <td>{product.name}</td>
+
+            <td>{product.category}</td>
+
+            <td>{product.reviews}</td>
+
+            <td>{product.sentiment}</td>
+
+            <td>
+              <button
+                className="table-button"
+                onClick={() =>
+                  setMessage(
+                    `${product.name} opened`
+                  )
+                }
+              >
+                View
+              </button>
+
+              <button className="table-button">
+                Edit
+              </button>
+            </td>
+
+          </tr>
+        ))}
+
+      </tbody>
+
+    </table>
+  );
+}
+
+/* =========================================================
    REVIEWS
-   ========================================================= */
+========================================================= */
 
 function ReviewsPage({ setMessage }) {
+
   const [review, setReview] = useState("");
-  const [rating, setRating] = useState("5");
 
   const submitReview = (e) => {
     e.preventDefault();
 
-    if (!review.trim()) {
-      return;
-    }
+    if (!review.trim()) return;
 
-    setMessage(
-      `Review submitted successfully with ${rating} star rating.`
-    );
-
+    setMessage("Review submitted successfully.");
     setReview("");
   };
 
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
           <span className="eyebrow">
@@ -1944,50 +1962,41 @@ function ReviewsPage({ setMessage }) {
 
       </div>
 
-      <div className="dashboard-grid">
+      <div className="two-panel-grid">
 
         <section className="panel">
 
-          <h3>Submit Review</h3>
+          <h2>Submit Review</h2>
 
           <form onSubmit={submitReview}>
 
             <label>Product</label>
 
             <select>
-              <option>
-                Acme Smart Watch
-              </option>
-
-              <option>
-                Acme Wireless Earbuds
-              </option>
+              <option>Smartwatch</option>
+              <option>Word</option>
+              <option>Rice</option>
             </select>
 
             <label>Rating</label>
 
-            <select
-              value={rating}
-              onChange={(e) =>
-                setRating(e.target.value)
-              }
-            >
-              <option value="5">★★★★★ - 5</option>
-              <option value="4">★★★★☆ - 4</option>
-              <option value="3">★★★☆☆ - 3</option>
-              <option value="2">★★☆☆☆ - 2</option>
-              <option value="1">★☆☆☆☆ - 1</option>
+            <select>
+              <option>5</option>
+              <option>4</option>
+              <option>3</option>
+              <option>2</option>
+              <option>1</option>
             </select>
 
             <label>Review</label>
 
             <textarea
+              rows="5"
+              placeholder="Enter customer feedback..."
               value={review}
               onChange={(e) =>
                 setReview(e.target.value)
               }
-              placeholder="Enter customer feedback..."
-              rows="5"
               required
             />
 
@@ -2004,23 +2013,23 @@ function ReviewsPage({ setMessage }) {
 
         <section className="panel">
 
-          <h3>Recent Reviews</h3>
+          <h2>Recent Reviews</h2>
 
-          <ReviewItem
+          <Review
             rating="★★★★★"
             text="Excellent product and very good quality."
             sentiment="Positive"
           />
 
-          <ReviewItem
+          <Review
             rating="★★★★☆"
             text="Good product but delivery was late."
             sentiment="Positive"
           />
 
-          <ReviewItem
+          <Review
             rating="★★☆☆☆"
-            text="The product stopped working after one week."
+            text="The product stopped working."
             sentiment="Negative"
           />
 
@@ -2034,13 +2043,14 @@ function ReviewsPage({ setMessage }) {
 
 /* =========================================================
    INSIGHTS
-   ========================================================= */
+========================================================= */
 
 function InsightsPage() {
+
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
           <span className="eyebrow">
@@ -2061,90 +2071,53 @@ function InsightsPage() {
         <StatCard
           title="Positive"
           value="78%"
-          icon="😊"
         />
 
         <StatCard
           title="Neutral"
           value="14%"
-          icon="😐"
         />
 
         <StatCard
           title="Negative"
           value="8%"
-          icon="😞"
         />
 
         <StatCard
           title="Total Reviews"
           value="1,240"
-          icon="💬"
         />
 
       </div>
 
       <section className="panel">
 
-        <h3>Sentiment Analysis</h3>
+        <h2>Sentiment Analysis</h2>
 
-        <div className="progress-item">
+        <Progress
+          name="Positive"
+          value={78}
+        />
 
-          <div>
-            <span>Positive</span>
-            <strong>78%</strong>
-          </div>
+        <Progress
+          name="Neutral"
+          value={14}
+        />
 
-          <div className="progress">
-            <div
-              className="progress-positive"
-              style={{ width: "78%" }}
-            ></div>
-          </div>
-
-        </div>
-
-        <div className="progress-item">
-
-          <div>
-            <span>Neutral</span>
-            <strong>14%</strong>
-          </div>
-
-          <div className="progress">
-            <div
-              className="progress-neutral"
-              style={{ width: "14%" }}
-            ></div>
-          </div>
-
-        </div>
-
-        <div className="progress-item">
-
-          <div>
-            <span>Negative</span>
-            <strong>8%</strong>
-          </div>
-
-          <div className="progress">
-            <div
-              className="progress-negative"
-              style={{ width: "8%" }}
-            ></div>
-          </div>
-
-        </div>
+        <Progress
+          name="Negative"
+          value={8}
+        />
 
       </section>
 
-      <div className="dashboard-grid">
+      <div className="two-panel-grid">
 
         <section className="panel">
 
-          <h3>Top Customer Complaints</h3>
+          <h2>Top Customer Complaints</h2>
 
-          <ul className="insight-list">
+          <ul>
             <li>Delivery delays</li>
             <li>Product durability</li>
             <li>Payment issues</li>
@@ -2155,9 +2128,9 @@ function InsightsPage() {
 
         <section className="panel">
 
-          <h3>Recommended Actions</h3>
+          <h2>Recommended Actions</h2>
 
-          <ul className="insight-list">
+          <ul>
             <li>Improve delivery tracking</li>
             <li>Review product quality</li>
             <li>Prioritize critical tickets</li>
@@ -2174,33 +2147,35 @@ function InsightsPage() {
 
 /* =========================================================
    TICKETS
-   ========================================================= */
+========================================================= */
 
-function TicketsPage({ setMessage }) {
+function TicketsPage({ role, setMessage }) {
+
   const [tickets, setTickets] = useState([
     {
-      id: "#TK-1001",
-      title: "Product delivery issue",
+      id: "#2",
       priority: "HIGH",
       status: "OPEN",
+      snippet: "hello..",
     },
     {
-      id: "#TK-1002",
-      title: "Payment problem",
-      priority: "MEDIUM",
-      status: "PENDING",
-    },
-    {
-      id: "#TK-1003",
-      title: "Damaged product",
+      id: "#3",
       priority: "HIGH",
       status: "OPEN",
+      snippet: "hahaha..",
+    },
+    {
+      id: "#4",
+      priority: "CRITICAL",
+      status: "OPEN",
+      snippet: "sick..",
     },
   ]);
 
-  const resolveTicket = (id) => {
-    setTickets(
-      tickets.map((ticket) =>
+  const resolve = (id) => {
+
+    setTickets((old) =>
+      old.map((ticket) =>
         ticket.id === id
           ? {
               ...ticket,
@@ -2215,33 +2190,50 @@ function TicketsPage({ setMessage }) {
     );
   };
 
+  const isAgent =
+    role === "RESOLUTION_AGENT";
+
   return (
     <main className="dashboard">
 
-      <div className="page-title">
+      <div className="page-heading">
 
         <div>
-          <span className="eyebrow">
-            SMART TICKET ROUTING
-          </span>
-
           <h1>Resolution Tickets</h1>
 
           <p>
-            Manage and resolve customer issues.
+            Manage customer issues and resolutions.
           </p>
         </div>
 
-        <button
-          className="primary-button"
-          onClick={() =>
-            setMessage("Create ticket form opened.")
-          }
-        >
-          + Create Ticket
-        </button>
+        <div className="ticket-tabs">
+
+          <button className="secondary-button">
+            My Tickets
+          </button>
+
+          {isAgent && (
+            <button className="primary-button">
+              Available Tickets
+            </button>
+          )}
+
+        </div>
 
       </div>
+
+      <section className="filter-panel">
+
+        <label>Filter by Status</label>
+
+        <select>
+          <option>OPEN</option>
+          <option>PENDING</option>
+          <option>RESOLVED</option>
+          <option>ALL</option>
+        </select>
+
+      </section>
 
       <section className="panel table-panel">
 
@@ -2249,10 +2241,10 @@ function TicketsPage({ setMessage }) {
 
           <thead>
             <tr>
-              <th>Ticket</th>
-              <th>Issue</th>
+              <th>Ticket ID</th>
               <th>Priority</th>
               <th>Status</th>
+              <th>Review Snippet</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -2262,13 +2254,7 @@ function TicketsPage({ setMessage }) {
             {tickets.map((ticket) => (
               <tr key={ticket.id}>
 
-                <td>
-                  <strong>{ticket.id}</strong>
-                </td>
-
-                <td>
-                  {ticket.title}
-                </td>
+                <td>{ticket.id}</td>
 
                 <td>
                   <span
@@ -2279,34 +2265,29 @@ function TicketsPage({ setMessage }) {
                 </td>
 
                 <td>
-                  <span className="status-badge">
+                  <span className="status active">
                     {ticket.status}
                   </span>
                 </td>
 
+                <td>{ticket.snippet}</td>
+
                 <td>
 
-                  {ticket.status !== "RESOLVED" && (
+                  {ticket.status !== "RESOLVED" ? (
                     <button
-                      className="resolve-button"
+                      className="table-button"
                       onClick={() =>
-                        resolveTicket(ticket.id)
+                        resolve(ticket.id)
                       }
                     >
                       Resolve
                     </button>
+                  ) : (
+                    <span className="resolved-text">
+                      Resolved
+                    </span>
                   )}
-
-                  <button
-                    className="table-button"
-                    onClick={() =>
-                      setMessage(
-                        `Viewing ${ticket.id}`
-                      )
-                    }
-                  >
-                    View
-                  </button>
 
                 </td>
 
@@ -2325,26 +2306,18 @@ function TicketsPage({ setMessage }) {
 
 /* =========================================================
    SMALL COMPONENTS
-   ========================================================= */
+========================================================= */
 
-function StatCard({ title, value, icon }) {
+function StatCard({ title, value }) {
   return (
     <div className="stat-card">
-
-      <div className="stat-icon">
-        {icon}
-      </div>
-
-      <div>
-        <span>{title}</span>
-        <strong>{value}</strong>
-      </div>
-
+      <span>{title}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
 
-function TimelineItem({ text, sub }) {
+function Timeline({ text, sub }) {
   return (
     <div className="timeline-item">
 
@@ -2359,28 +2332,27 @@ function TimelineItem({ text, sub }) {
   );
 }
 
-function TicketRow({
-  title,
-  priority,
-  status,
-}) {
+function Progress({ name, value }) {
   return (
-    <div className="ticket-row">
+    <div className="progress-item">
 
-      <div>
-        <strong>{title}</strong>
-        <span>{priority}</span>
+      <div className="progress-label">
+        <span>{name}</span>
+        <strong>{value}%</strong>
       </div>
 
-      <span className="status-badge">
-        {status}
-      </span>
+      <div className="progress">
+        <div
+          className="progress-fill"
+          style={{ width: `${value}%` }}
+        ></div>
+      </div>
 
     </div>
   );
 }
 
-function ReviewItem({
+function Review({
   rating,
   text,
   sentiment,
@@ -2388,22 +2360,14 @@ function ReviewItem({
   return (
     <div className="review-item">
 
-      <div className="review-rating">
-        {rating}
-      </div>
+      <strong>{rating}</strong>
 
       <p>{text}</p>
 
-      <span className="sentiment">
-        {sentiment}
-      </span>
+      <span>{sentiment}</span>
 
     </div>
   );
 }
 
-/* =========================================================
-   EXPORT
-   ========================================================= */
-
-export default App;                                              
+export default App;                                             
