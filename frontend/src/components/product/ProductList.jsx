@@ -470,7 +470,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProductForm from "./ProductForm";
 
 import {
-  fetchProducts,
+  getProducts,
   deleteProduct,
 } from "../../store/slices/productSlice";
 
@@ -481,16 +481,18 @@ const ProductList = () => {
 
 
   /* =====================================================
-     REDUX DATA
+     PRODUCT STATE
      ===================================================== */
 
-  const {
-    items = [],
-    loading,
-    error,
-  } = useSelector(
-    (state) => state.products || state.product || {}
+  const productsState = useSelector(
+    (state) => state.products || {}
   );
+
+  const items = productsState.items || [];
+
+  const loading = productsState.loading || false;
+
+  const error = productsState.error || null;
 
 
   /* =====================================================
@@ -507,7 +509,7 @@ const ProductList = () => {
 
 
   /* =====================================================
-     ROLE
+     USER ROLE
      ===================================================== */
 
   const role = localStorage.getItem("role");
@@ -518,12 +520,16 @@ const ProductList = () => {
 
 
   /* =====================================================
-     FETCH PRODUCTS
+     GET PRODUCTS
+     
+     IMPORTANT:
+     Your productSlice exports getProducts,
+     NOT fetchProducts.
      ===================================================== */
 
   useEffect(() => {
 
-    dispatch(fetchProducts());
+    dispatch(getProducts());
 
   }, [dispatch]);
 
@@ -574,7 +580,7 @@ const ProductList = () => {
 
 
   /* =====================================================
-     CLOSE PRODUCT FORM
+     CLOSE FORM
      ===================================================== */
 
   const handleCloseForm = () => {
@@ -587,7 +593,7 @@ const ProductList = () => {
 
 
   /* =====================================================
-     CATEGORY FILTER
+     CATEGORIES
      ===================================================== */
 
   const categories = [
@@ -599,28 +605,38 @@ const ProductList = () => {
   ];
 
 
+  /* =====================================================
+     FILTER PRODUCTS
+     ===================================================== */
+
   const filteredProducts = useMemo(() => {
 
     if (selectedCategory === "ALL") {
+
       return items;
+
     }
 
-    return items.filter(
-      (product) =>
-        String(product.category || "").toUpperCase() ===
-        selectedCategory
-    );
+
+    return items.filter((product) => {
+
+      return (
+        String(product.category || "")
+          .toUpperCase() === selectedCategory
+      );
+
+    });
 
   }, [items, selectedCategory]);
 
 
   /* =====================================================
-     SENTIMENT
+     SENTIMENT VALUE
      ===================================================== */
 
   const getSentimentValue = (product) => {
 
-    const raw =
+    const rawValue =
       product.averageSentiment ??
       product.sentimentScore ??
       product.sentiment ??
@@ -628,28 +644,29 @@ const ProductList = () => {
 
 
     if (
-      raw === null ||
-      raw === undefined ||
-      raw === ""
+      rawValue === null ||
+      rawValue === undefined ||
+      rawValue === ""
     ) {
+
       return null;
+
     }
 
 
-    const value = Number(raw);
+    const value = Number(rawValue);
 
 
     if (Number.isNaN(value)) {
+
       return null;
+
     }
 
 
     /*
-      Backend sentiment is normally 0 - 1.
-      Convert it to a 5-point display.
-
-      If the value is already greater than 1,
-      keep it as it is.
+      If backend gives 0 - 1,
+      convert to 0 - 5.
     */
 
     if (value <= 1) {
@@ -664,34 +681,47 @@ const ProductList = () => {
   };
 
 
+  /* =====================================================
+     SENTIMENT CLASS
+     ===================================================== */
+
   const getSentimentClass = (value) => {
 
     if (value === null) {
+
       return "sentiment-neutral";
+
     }
+
 
     if (value >= 4) {
+
       return "sentiment-positive";
+
     }
 
+
     if (value >= 3) {
+
       return "sentiment-medium";
+
     }
+
 
     return "sentiment-negative";
 
   };
 
 
+  /* =====================================================
+     CATEGORY CLASS
+     ===================================================== */
+
   const getCategoryClass = (category) => {
 
-    const value =
-      String(category || "GENERAL")
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-
-
-    return `category-${value}`;
+    return `category-${String(category || "GENERAL")
+      .toLowerCase()
+      .replace(/\s+/g, "-")}`;
 
   };
 
@@ -724,7 +754,7 @@ const ProductList = () => {
 
 
   /* =====================================================
-     MAIN PAGE
+     MAIN UI
      ===================================================== */
 
   return (
@@ -732,9 +762,7 @@ const ProductList = () => {
     <div className="page-container product-page">
 
 
-      {/* =================================================
-          DECORATIVE BACKGROUND
-          ================================================= */}
+      {/* BACKGROUND DECORATIONS */}
 
       <div className="dashboard-decoration decoration-one"></div>
 
@@ -744,10 +772,11 @@ const ProductList = () => {
 
 
       {/* =================================================
-          PAGE HEADER
+          HEADER
           ================================================= */}
 
       <div className="product-page-header">
+
 
         <div className="product-title-area">
 
@@ -781,15 +810,14 @@ const ProductList = () => {
               +
             </span>
 
-            <span>
-              Add Product
-            </span>
+            Add Product
 
           </button>
 
         )}
 
       </div>
+
 
 
       {/* =================================================
@@ -807,6 +835,7 @@ const ProductList = () => {
             !
           </span>
 
+
           <span>
 
             {typeof error === "string"
@@ -818,6 +847,7 @@ const ProductList = () => {
         </div>
 
       )}
+
 
 
       {/* =================================================
@@ -852,8 +882,9 @@ const ProductList = () => {
       </div>
 
 
+
       {/* =================================================
-          PRODUCT TABLE CARD
+          PRODUCT TABLE
           ================================================= */}
 
       {filteredProducts.length === 0 ? (
@@ -928,6 +959,7 @@ const ProductList = () => {
           </div>
 
 
+
           {/* TABLE ROWS */}
 
           <div className="bright-product-table-body">
@@ -964,15 +996,15 @@ const ProductList = () => {
                       )}`}
                     >
 
-                      {category
+                      {String(category)
                         .toUpperCase()
                         .includes("ELECTRONICS")
                         ? "◉"
-                        : category
+                        : String(category)
                             .toUpperCase()
                             .includes("SOFTWARE")
                         ? "▣"
-                        : category
+                        : String(category)
                             .toUpperCase()
                             .includes("FASHION")
                         ? "◇"
@@ -986,6 +1018,7 @@ const ProductList = () => {
                     </strong>
 
                   </div>
+
 
 
                   {/* CATEGORY */}
@@ -1005,7 +1038,8 @@ const ProductList = () => {
                   </div>
 
 
-                  {/* REVIEWS */}
+
+                  {/* TOTAL REVIEWS */}
 
                   <div className="review-number">
 
@@ -1014,6 +1048,7 @@ const ProductList = () => {
                       0}
 
                   </div>
+
 
 
                   {/* SENTIMENT */}
@@ -1040,7 +1075,8 @@ const ProductList = () => {
                   </div>
 
 
-                  {/* ACTIONS */}
+
+                  {/* ACTION */}
 
                   <div className="bright-action-buttons">
 
@@ -1078,7 +1114,7 @@ const ProductList = () => {
                         >
 
                           <span>
-                            ♡
+                            ×
                           </span>
 
                           Delete
@@ -1091,6 +1127,7 @@ const ProductList = () => {
 
                   </div>
 
+
                 </div>
 
               );
@@ -1102,6 +1139,7 @@ const ProductList = () => {
         </div>
 
       )}
+
 
 
       {/* =================================================
