@@ -828,91 +828,73 @@
 import React, { useState } from "react";
 
 export default function App() {
-  // Navigation Flow State: 'register' -> 'login' -> 'dashboard'
-  const [currentPage, setCurrentPage] = useState("login");
-  const [activeNav, setActiveNav] = useState("Home");
+  // Navigation & Role States
+  const [currentPage, setCurrentPage] = useState("login"); // 'login' | 'register' | 'dashboard'
+  const [selectedRole, setSelectedRole] = useState("Brand Manager"); // 'Brand Manager' | 'Resolution Agent' | 'Platform Admin'
+  const [activeTab, setActiveTab] = useState("Dashboard");
 
-  // Auth States
-  const [firstName, setFirstName] = useState("Jane");
+  // Auth Form States
+  const [firstName, setFirstName] = useState("John");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
   const [email, setEmail] = useState("manager@gmail.com");
   const [password, setPassword] = useState("12345678");
-  
-  // Selected Role State ('Platform Admin', 'Brand Manager', 'Resolution Agent')
-  const [selectedRole, setSelectedRole] = useState("Brand Manager");
 
-  // Filter & Modal States
+  // Filter & Search States
   const [productSearch, setProductSearch] = useState("");
-  const [ticketTab, setTicketTab] = useState("available");
+  const [userSearch, setUserSearch] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("Acme Smart Watch");
+  const [ticketTab, setTicketTab] = useState("Available Tickets"); // 'Available Tickets' | 'My Tasks' | 'Resolved'
   const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [newProdName, setNewProdName] = useState("");
-  const [newProdCategory, setNewProdCategory] = useState("ELECTRONICS");
   const [toastMessage, setToastMessage] = useState("");
 
-  // Users Data
-  const [users, setUsers] = useState([
-    { id: "#1", name: "Brand Manager", email: "manager@brandcorp.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
-    { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Inactive" },
-    { id: "#3", name: "Platform Admin", email: "admin@reviewrave.com", company: "ReviewRave Inc", role: "PLATFORM_ADMIN", status: "Active" },
-    { id: "#4", name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Inactive" },
-    { id: "#5", name: "agent", email: "agent@gmail.com", company: "Joko", role: "RESOLUTION_AGENT", status: "Active" },
-    { id: "#6", name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
-  ]);
+  // Modal States
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newProdName, setNewProdName] = useState("");
+  const [newProdCategory, setNewProdCategory] = useState("Electronics");
 
-  // Products Data
+  // Selected Ticket for Agent Resolution Note
+  const [activeTicketForResolution, setActiveTicketForResolution] = useState(null);
+  const [resolutionNote, setResolutionNote] = useState("");
+
+  // Sample Data States
   const [products, setProducts] = useState([
-    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 12, avgSentiment: 4.2 },
-    { id: 2, name: "SaaS Platform", category: "SOFTWARE", totalReviews: 45, avgSentiment: 3.8 },
-    { id: 3, name: "Grand Resort", category: "HOSPITALITY", totalReviews: 8, avgSentiment: 4.5 },
-    { id: 4, name: "Urban Tee", category: "RETAIL", totalReviews: 23, avgSentiment: 3.1 },
+    { id: 1, name: "Acme Smart Watch", category: "Electronics", status: "Active", totalReviews: 324, positiveRate: "82%", rating: 4.3 },
+    { id: 2, name: "Acme Wireless Earbuds", category: "Audio", status: "Active", totalReviews: 120, positiveRate: "78%", rating: 4.1 },
+    { id: 3, name: "SaaS Platform Pro", category: "Software", status: "Active", totalReviews: 45, positiveRate: "90%", rating: 4.7 },
   ]);
 
-  // Tickets Data
+  const [users, setUsers] = useState([
+    { id: "#001", name: "John Doe", email: "john@reviewrave.com", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#002", name: "Support Agent", email: "agent@reviewrave.com", role: "RESOLUTION_AGENT", status: "Active" },
+    { id: "#003", name: "Admin User", email: "admin@reviewrave.com", role: "PLATFORM_ADMIN", status: "Active" },
+    { id: "#004", name: "Sarah Smith", email: "sarah@acme.com", role: "BRAND_MANAGER", status: "Inactive" },
+  ]);
+
   const [tickets, setTickets] = useState([
-    { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello...", assignedTo: null },
-    { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha...", assignedTo: null },
-    { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req...", assignedTo: null },
+    { id: "#102", priority: "HIGH", status: "OPEN", snippet: "Hello, product stopped working after two weeks...", assignedTo: null, resolutionNote: "" },
+    { id: "#103", priority: "HIGH", status: "OPEN", snippet: "Feedback regarding battery drainage...", assignedTo: null, resolutionNote: "" },
+    { id: "#104", priority: "CRITICAL", status: "OPEN", snippet: "Bad build quality and late delivery...", assignedTo: null, resolutionNote: "" },
   ]);
 
-  const showNotification = (msg) => {
+  // Utility Toast Notification
+  const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  // Auth Submit Handlers
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault();
-    setCurrentPage("login");
-    showNotification(`Registered as ${selectedRole}! Now login.`);
-  };
-
-  const handleLoginSubmit = (e) => {
+  // Handlers
+  const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
-    showNotification(`Logged in as ${selectedRole}`);
+    setActiveTab(selectedRole === "Brand Manager" ? "Tracked Products" : selectedRole === "Resolution Agent" ? "Resolution Tickets" : "Overview");
+    showToast(`Logged in as ${selectedRole}`);
   };
 
-  // User Actions
-  const handleToggleUserStatus = (userId) => {
-    setUsers((prev) =>
-      prev.map((user) => {
-        if (user.id === userId) {
-          const newStatus = user.status === "Active" ? "Inactive" : "Active";
-          showNotification(`User ${user.name} status updated to ${newStatus}`);
-          return { ...user, status: newStatus };
-        }
-        return user;
-      })
-    );
-  };
-
-  // Product Actions
-  const handleDeleteProduct = (productId, name) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
-    showNotification(`Product "${name}" deleted!`);
+  const handleRegister = (e) => {
+    e.preventDefault();
+    setCurrentPage("login");
+    showToast("Registration successful! Please login.");
   };
 
   const handleAddProduct = (e) => {
@@ -922,493 +904,894 @@ export default function App() {
       id: Date.now(),
       name: newProdName,
       category: newProdCategory,
+      status: "Active",
       totalReviews: 0,
-      avgSentiment: 5.0,
+      positiveRate: "100%",
+      rating: 5.0,
     };
     setProducts([...products, newProd]);
     setNewProdName("");
     setIsAddProductOpen(false);
-    showNotification(`Product "${newProdName}" added!`);
+    showToast(`Product "${newProdName}" added successfully!`);
   };
 
-  const handleSaveProduct = (e) => {
-    e.preventDefault();
-    setProducts((prev) =>
-      prev.map((p) => (p.id === editingProduct.id ? editingProduct : p))
+  const handleDeleteProduct = (id) => {
+    setProducts(products.filter((p) => p.id !== id));
+    showToast("Product deleted!");
+  };
+
+  const handleToggleUserStatus = (id) => {
+    setUsers(
+      users.map((u) => (u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u))
     );
-    showNotification(`Product "${editingProduct.name}" updated!`);
-    setEditingProduct(null);
+    showToast("User status updated!");
   };
 
-  // Ticket Actions
   const handleClaimTicket = (ticketId) => {
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id === ticketId) {
-          showNotification(`Ticket ${ticketId} claimed!`);
-          return { ...t, assignedTo: "Current User", status: "IN_PROGRESS" };
-        }
-        return t;
-      })
+    setTickets(
+      tickets.map((t) => (t.id === ticketId ? { ...t, assignedTo: "Current Agent", status: "INVESTIGATING" } : t))
     );
+    showToast(`Ticket ${ticketId} assigned to you!`);
   };
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-      p.category.toLowerCase().includes(productSearch.toLowerCase())
-  );
-
-  const filteredTickets = tickets.filter((t) => {
-    if (ticketTab === "my" && t.assignedTo !== "Current User") return false;
-    if (ticketTab === "available" && t.assignedTo === "Current User") return false;
-    if (ticketStatusFilter !== "ALL" && t.status !== ticketStatusFilter) return false;
-    return true;
-  });
+  const handleResolveTicket = (ticketId) => {
+    if (!resolutionNote.trim()) {
+      showToast("Please enter resolution notes before resolving.");
+      return;
+    }
+    setTickets(
+      tickets.map((t) =>
+        t.id === ticketId ? { ...t, status: "RESOLVED", resolutionNote: resolutionNote } : t
+      )
+    );
+    setResolutionNote("");
+    setActiveTicketForResolution(null);
+    showToast(`Ticket ${ticketId} marked as Resolved!`);
+  };
 
   return (
-    <div style={styles.appWrapper}>
-      {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
-
-      <div style={styles.topHeader}>
-        <div style={styles.searchBox}>🔍 Search System</div>
-        {currentPage === "dashboard" && (
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={styles.roleTag}>Logged in as: <b>{selectedRole}</b></span>
-            <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* 1. REGISTER PAGE */}
-      {currentPage === "register" && (
-        <div style={styles.authContainer}>
-          <div style={styles.authCard}>
-            <h2 style={styles.authTitle}>Register Account</h2>
-            <form onSubmit={handleRegisterSubmit}>
-              <div style={styles.formGroup}>
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={styles.label}>First Name</label>
-                    <input style={styles.input} type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={styles.label}>Last Name</label>
-                    <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-                  </div>
-                </div>
-                <div>
-                  <label style={styles.label}>Company Name</label>
-                  <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp" />
-                </div>
-                <div>
-                  <label style={styles.label}>Email Address</label>
-                  <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div>
-                  <label style={styles.label}>Password</label>
-                  <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-                </div>
-                <div>
-                  <label style={styles.label}>Select Role Dashboard</label>
-                  <select style={styles.input} value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
-                    <option value="Platform Admin">Platform Admin</option>
-                    <option value="Brand Manager">Brand Manager</option>
-                    <option value="Resolution Agent">Resolution Agent</option>
-                  </select>
-                </div>
-                <button type="submit" style={styles.blueBtn}>Create Account</button>
-              </div>
-            </form>
-            <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
-              Already have an account? <span style={styles.linkText} onClick={() => setCurrentPage("login")}>Login here</span>
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
+          <span>ℹ️</span> {toastMessage}
         </div>
       )}
 
-      {/* 2. LOGIN PAGE */}
+      {/* 1. LOGIN PAGE (IMAGE MATCHING SPLIT LAYOUT) */}
       {currentPage === "login" && (
-        <div style={styles.authContainer}>
-          <div style={styles.authCard}>
-            <h2 style={styles.authTitle}>Login to ReviewRave</h2>
-            <form onSubmit={handleLoginSubmit}>
-              <div style={styles.formGroup}>
-                <div>
-                  <label style={styles.label}>Email Address</label>
-                  <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-                <div>
-                  <label style={styles.label}>Password</label>
-                  <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                </div>
-                <div>
-                  <label style={styles.label}>Choose Role to Access Dashboard</label>
-                  <select style={{ ...styles.input, backgroundColor: "#eff6ff", borderColor: "#93c5fd" }} value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
-                    <option value="Platform Admin">Platform Admin</option>
-                    <option value="Brand Manager">Brand Manager</option>
-                    <option value="Resolution Agent">Resolution Agent</option>
-                  </select>
-                </div>
-                <button type="submit" style={styles.blueBtn}>Login to {selectedRole} Dashboard</button>
-              </div>
-            </form>
-            <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
-              Don't have an account? <span style={styles.linkText} onClick={() => setCurrentPage("register")}>Register here</span>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* 3. DYNAMIC ROLE DASHBOARD */}
-      {currentPage === "dashboard" && (
-        <div style={styles.dashboardContainer}>
-          <div style={styles.navbar}>
-            {["Home", "Users", "Products", "Reviews", "Insights"].map((tab) => (
-              <span
-                key={tab}
-                style={{
-                  ...styles.navItem,
-                  borderBottom: activeNav === tab ? "2px solid #ffffff" : "none",
-                  fontWeight: activeNav === tab ? "600" : "normal",
-                  color: activeNav === tab ? "#ffffff" : "#94a3b8",
-                }}
-                onClick={() => setActiveNav(tab)}
-              >
-                {tab}
-              </span>
-            ))}
-          </div>
-
-          <div style={styles.mainContent}>
-            {activeNav === "Home" && (
+        <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+          <div className="bg-white rounded-2xl shadow-xl flex flex-col md:flex-row max-w-4xl w-full overflow-hidden border border-slate-200">
+            {/* Left Hero Panel */}
+            <div className="bg-indigo-600 p-8 text-white md:w-5/12 flex flex-col justify-between">
               <div>
-                <h2 style={styles.pageHeading}>{selectedRole} Dashboard</h2>
-                
-                {/* ROLE 1: PLATFORM ADMIN DASHBOARD VIEW */}
-                {selectedRole === "Platform Admin" && (
-                  <>
-                    <div style={styles.metricsGrid}>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
-                        <span style={styles.metricLabel}>TOTAL SYSTEM USERS</span>
-                        <h3 style={styles.metricVal}>{users.length}</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
-                        <span style={styles.metricLabel}>ALL PRODUCTS</span>
-                        <h3 style={styles.metricVal}>{products.length}</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
-                        <span style={styles.metricLabel}>SYSTEM TICKETS</span>
-                        <h3 style={styles.metricVal}>{tickets.length}</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
-                        <span style={styles.metricLabel}>SYSTEM HEALTH</span>
-                        <h3 style={styles.metricVal}>99.9%</h3>
-                      </div>
-                    </div>
-                    <div style={styles.card}>
-                      <h4 style={styles.cardTitle}>Platform Administration Controls</h4>
-                      <p style={{ fontSize: "14px", color: "#64748b" }}>You have full administrative privileges to manage all system users, product entries, and platform permissions.</p>
-                    </div>
-                  </>
-                )}
-
-                {/* ROLE 2: BRAND MANAGER DASHBOARD VIEW */}
-                {selectedRole === "Brand Manager" && (
-                  <>
-                    <div style={styles.metricsGrid}>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
-                        <span style={styles.metricLabel}>MANAGED PRODUCTS</span>
-                        <h3 style={styles.metricVal}>{products.length}</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
-                        <span style={styles.metricLabel}>AVG BRAND SENTIMENT</span>
-                        <h3 style={styles.metricVal}>4.1</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
-                        <span style={styles.metricLabel}>CUSTOMER REVIEWS</span>
-                        <h3 style={styles.metricVal}>88</h3>
-                      </div>
-                    </div>
-                    <div style={styles.card}>
-                      <h4 style={styles.cardTitle}>Brand Performance Overview</h4>
-                      <p style={{ fontSize: "14px", color: "#64748b" }}>Monitor product reviews, manage catalog offerings, and optimize brand perception metrics.</p>
-                    </div>
-                  </>
-                )}
-
-                {/* ROLE 3: RESOLUTION AGENT DASHBOARD VIEW */}
-                {selectedRole === "Resolution Agent" && (
-                  <>
-                    <div style={styles.metricsGrid}>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
-                        <span style={styles.metricLabel}>OPEN QUEUE TICKETS</span>
-                        <h3 style={styles.metricVal}>{tickets.length}</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
-                        <span style={styles.metricLabel}>MY RESOLVED TICKETS</span>
-                        <h3 style={styles.metricVal}>14</h3>
-                      </div>
-                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
-                        <span style={styles.metricLabel}>AVG RESPONSE TIME</span>
-                        <h3 style={styles.metricVal}>18 mins</h3>
-                      </div>
-                    </div>
-                    <div style={styles.card}>
-                      <h4 style={styles.cardTitle}>Agent Support Portal</h4>
-                      <p style={{ fontSize: "14px", color: "#64748b" }}>Claim escalated customer tickets, process negative feedback responses, and resolve support requests.</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {activeNav === "Users" && (
-              <div style={styles.card}>
-                <h2 style={styles.pageHeading}>User Management</h2>
-                <table style={styles.table}>
-                  <thead>
-                    <tr style={styles.tableHeader}>
-                      <th>ID</th><th>Name</th><th>Email</th><th>Company</th><th>Role</th><th>Status</th><th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((u) => (
-                      <tr key={u.id} style={styles.tableRow}>
-                        <td>{u.id}</td>
-                        <td>{u.name}</td>
-                        <td>{u.email}</td>
-                        <td>{u.company}</td>
-                        <td><span style={styles.roleBadge}>{u.role}</span></td>
-                        <td>
-                          <span style={u.status === "Active" ? styles.statusActive : styles.statusInactive}>
-                            {u.status}
-                          </span>
-                        </td>
-                        <td>
-                          <button style={styles.actionBtn} onClick={() => handleToggleUserStatus(u.id)}>
-                            Toggle Status
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {activeNav === "Products" && (
-              <div style={styles.card}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                  <h2 style={{ ...styles.pageHeading, margin: 0 }}>Tracked Products</h2>
-                  <button style={styles.addBtn} onClick={() => setIsAddProductOpen(true)}>
-                    + Add Product
-                  </button>
+                <div className="flex items-center gap-2 mb-8">
+                  <div className="w-8 h-8 bg-white text-indigo-600 rounded-lg flex items-center justify-center font-bold text-lg">R</div>
+                  <span className="font-bold text-xl tracking-tight">ReviewRave</span>
                 </div>
-                <div style={{ marginBottom: "15px" }}>
+                <h2 className="text-2xl font-bold mb-4">Turn customer feedback into action</h2>
+                <div className="space-y-4 text-indigo-100 text-sm">
+                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
+                    <span>📊</span> Sentiment Insights
+                  </div>
+                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
+                    <span>⚡</span> Smart Ticket Routing
+                  </div>
+                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
+                    <span>🎯</span> Track What Matters
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-indigo-200 mt-8">© 2026 ReviewRave. Customer Intelligence Platform</div>
+            </div>
+
+            {/* Right Login Form */}
+            <div className="p-8 md:w-7/12 flex flex-col justify-center">
+              <h3 className="text-2xl font-bold text-slate-900 mb-1">Login to ReviewRave</h3>
+              <p className="text-sm text-slate-500 mb-6">Sign in to your account</p>
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
                   <input
-                    style={{ ...styles.input, width: "320px" }}
-                    type="text"
-                    placeholder="Search products by name or category..."
-                    value={productSearch}
-                    onChange={(e) => setProductSearch(e.target.value)}
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
                   />
                 </div>
-                <table style={styles.table}>
-                  <thead>
-                    <tr style={styles.tableHeader}>
-                      <th>Name</th><th>Category</th><th>Total Reviews</th><th>Avg Sentiment</th><th style={{ textAlign: "right", paddingRight: "20px" }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProducts.map((p) => (
-                      <tr key={p.id} style={styles.tableRow}>
-                        <td>{p.name}</td>
-                        <td>{p.category}</td>
-                        <td>{p.totalReviews}</td>
-                        <td>{p.avgSentiment.toFixed(1)}</td>
-                        <td style={{ textAlign: "right" }}>
-                          <div style={{ display: "inline-flex", gap: "6px" }}>
-                            <button style={styles.actionBtn} onClick={() => setEditingProduct(p)}>
-                              Edit
-                            </button>
-                            <button style={styles.deleteBtn} onClick={() => handleDeleteProduct(p.id, p.name)}>
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
 
-            {(activeNav === "Reviews" || activeNav === "Insights") && (
-              <div style={styles.card}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-                  <h2 style={styles.pageHeading}>Resolution Tickets</h2>
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    <button
-                      style={ticketTab === "my" ? styles.tabToggleActive : styles.tabToggle}
-                      onClick={() => setTicketTab("my")}
-                    >
-                      My Tickets
-                    </button>
-                    <button
-                      style={ticketTab === "available" ? styles.tabToggleActive : styles.tabToggle}
-                      onClick={() => setTicketTab("available")}
-                    >
-                      Available Tickets
-                    </button>
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
                 </div>
 
-                <div style={{ marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span style={{ fontSize: "13px", color: "#64748b" }}>Filter by Status:</span>
-                  <select style={{ ...styles.input, width: "150px" }} value={ticketStatusFilter} onChange={(e) => setTicketStatusFilter(e.target.value)}>
-                    <option value="ALL">All Statuses</option>
-                    <option value="OPEN">OPEN</option>
-                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Select Role to Enter</label>
+                  <select
+                    value={selectedRole}
+                    onChange={(e) => setSelectedRole(e.target.value)}
+                    className="w-full px-3 py-2 bg-indigo-50 border border-indigo-300 text-indigo-900 font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="Brand Manager">Brand Manager</option>
+                    <option value="Resolution Agent">Resolution Agent</option>
+                    <option value="Platform Admin">Platform Admin</option>
                   </select>
                 </div>
 
-                <table style={styles.table}>
-                  <thead>
-                    <tr style={styles.tableHeader}>
-                      <th>Ticket ID</th><th>Priority</th><th>Status</th><th>Review Snippet</th><th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTickets.map((t) => (
-                      <tr key={t.id} style={styles.tableRow}>
-                        <td>{t.id}</td>
-                        <td style={{ color: t.priority === "CRITICAL" ? "#ef4444" : "#f59e0b", fontWeight: "600" }}>{t.priority}</td>
-                        <td>{t.status}</td>
-                        <td>{t.snippet}</td>
-                        <td>
-                          {t.assignedTo ? (
-                            <span style={{ color: "#16a34a", fontSize: "12px", fontWeight: "600" }}>Claimed</span>
-                          ) : (
-                            <button style={styles.actionBtn} onClick={() => handleClaimTicket(t.id)}>
-                              Claim Ticket
+                <button type="submit" className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition">
+                  Login to {selectedRole} Dashboard
+                </button>
+              </form>
+
+              <p className="text-xs text-slate-500 text-center mt-6">
+                Don't have an account?{" "}
+                <button onClick={() => setCurrentPage("register")} className="text-indigo-600 font-semibold hover:underline">
+                  Register here
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. REGISTER PAGE */}
+      {currentPage === "register" && (
+        <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-slate-200">
+            <h3 className="text-2xl font-bold text-slate-900 mb-1">Register Account</h3>
+            <p className="text-sm text-slate-500 mb-6">Create a new ReviewRave user profile</p>
+
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">First Name</label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Company Name</label>
+                <input
+                  type="text"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Select Role</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-medium"
+                >
+                  <option value="Brand Manager">Brand Manager</option>
+                  <option value="Resolution Agent">Resolution Agent</option>
+                  <option value="Platform Admin">Platform Admin</option>
+                </select>
+              </div>
+
+              <button type="submit" className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm">
+                Create Account
+              </button>
+            </form>
+
+            <p className="text-xs text-slate-500 text-center mt-6">
+              Already have an account?{" "}
+              <button onClick={() => setCurrentPage("login")} className="text-indigo-600 font-semibold hover:underline">
+                Login here
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 3. DASHBOARD (MAIN SYSTEM ACCORDING TO IMAGE) */}
+      {currentPage === "dashboard" && (
+        <div className="min-h-screen flex flex-col">
+          {/* Top Navbar */}
+          <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-indigo-600 text-white rounded-md flex items-center justify-center font-bold text-sm">R</div>
+                <span className="font-bold text-lg text-slate-900">ReviewRave</span>
+              </div>
+
+              {/* Dynamic Role Navigation Tabs */}
+              <nav className="hidden md:flex items-center gap-1">
+                {selectedRole === "Brand Manager" &&
+                  ["Tracked Products", "Sentiment Insights", "Reviews", "Settings"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+
+                {selectedRole === "Resolution Agent" &&
+                  ["Resolution Tickets", "My Tasks", "Resolved"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => {
+                        setActiveTab(tab);
+                        setTicketTab(tab);
+                      }}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+
+                {selectedRole === "Platform Admin" &&
+                  ["Overview", "User Management", "Products"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
+                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+              </nav>
+            </div>
+
+            {/* User Info & Switcher Header */}
+            <div className="flex items-center gap-3">
+              <span className="text-xs bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full font-bold">
+                {selectedRole}
+              </span>
+              <button
+                onClick={() => setCurrentPage("login")}
+                className="text-xs text-slate-500 hover:text-red-600 font-semibold border border-slate-300 px-2.5 py-1 rounded-md"
+              >
+                Logout
+              </button>
+            </div>
+          </header>
+
+          {/* MAIN ROLE DASHBOARD CONTAINER */}
+          <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+            
+            {/* -------------------------------------------------------------------------------- */}
+            {/* ROLE 1: BRAND MANAGER DASHBOARD VIEWS */}
+            {/* -------------------------------------------------------------------------------- */}
+            {selectedRole === "Brand Manager" && (
+              <>
+                {/* 1. Tracked Products View */}
+                {activeTab === "Tracked Products" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h1 className="text-xl font-bold text-slate-900">Tracked Products</h1>
+                        <p className="text-xs text-slate-500">Monitor customer feedback and sentiment</p>
+                      </div>
+                      <button
+                        onClick={() => setIsAddProductOpen(true)}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition"
+                      >
+                        + Add Product
+                      </button>
+                    </div>
+
+                    {/* Metrics Bar */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span className="text-xs font-semibold text-slate-400">Tracked Products</span>
+                        <div className="text-2xl font-bold text-slate-900 mt-1">{products.length}</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span className="text-xs font-semibold text-slate-400">Total Reviews</span>
+                        <div className="text-2xl font-bold text-slate-900 mt-1">1,240</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span className="text-xs font-semibold text-slate-400">Positive Sentiment</span>
+                        <div className="text-2xl font-bold text-emerald-600 mt-1">78%</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span className="text-xs font-semibold text-slate-400">Open Tickets</span>
+                        <div className="text-2xl font-bold text-amber-600 mt-1">5</div>
+                      </div>
+                    </div>
+
+                    {/* Product Cards Grid */}
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {products.map((p) => (
+                        <div key={p.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-bold text-slate-900">{p.name}</h3>
+                              <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
+                                {p.status}
+                              </span>
+                            </div>
+                            <span className="text-xs text-slate-400">{p.category}</span>
+
+                            <div className="grid grid-cols-3 gap-2 mt-4 text-center bg-slate-50 p-3 rounded-lg">
+                              <div>
+                                <div className="text-xs text-slate-400">Reviews</div>
+                                <div className="font-bold text-slate-800 text-sm">{p.totalReviews}</div>
+                              </div>
+                              <div>
+                                <div className="text-xs text-slate-400">Positive</div>
+                                <div className="font-bold text-emerald-600 text-sm">{p.positiveRate}</div>
+                              </div>
+                              <div>
+                                <div className="text-xs text-slate-400">Rating</div>
+                                <div className="font-bold text-indigo-600 text-sm">{p.rating}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+                            <button
+                              onClick={() => setActiveTab("Reviews")}
+                              className="flex-1 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              View Reviews
                             </button>
-                          )}
-                        </td>
+                            <button
+                              onClick={() => setActiveTab("Sentiment Insights")}
+                              className="flex-1 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-semibold hover:bg-indigo-100"
+                            >
+                              View Insights
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(p.id)}
+                              className="px-2 text-xs text-red-500 hover:bg-red-50 rounded"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add another product quick box */}
+                      <div
+                        onClick={() => setIsAddProductOpen(true)}
+                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/20 transition min-h-[200px]"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold mb-2">+</div>
+                        <span className="font-semibold text-sm text-slate-700">Add Another Product</span>
+                        <span className="text-xs text-slate-400">Track a new product line</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Sentiment Insights View */}
+                {activeTab === "Sentiment Insights" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Sentiment Insights</h1>
+                      <p className="text-xs text-slate-500">Understand customer sentiment across product lines</p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-xl border border-slate-200">
+                      <label className="block text-xs font-semibold text-slate-500 mb-1">Select Product</label>
+                      <select
+                        value={selectedProduct}
+                        onChange={(e) => setSelectedProduct(e.target.value)}
+                        className="w-full md:w-64 px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                      >
+                        {products.map((p) => (
+                          <option key={p.id} value={p.name}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                        <div className="text-xs text-slate-400 font-semibold">Positive</div>
+                        <div className="text-2xl font-bold text-emerald-600 mt-1">78%</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                        <div className="text-xs text-slate-400 font-semibold">Neutral</div>
+                        <div className="text-2xl font-bold text-amber-500 mt-1">12%</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                        <div className="text-xs text-slate-400 font-semibold">Negative</div>
+                        <div className="text-2xl font-bold text-red-500 mt-1">10%</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
+                        <div className="text-xs text-slate-400 font-semibold">Total Reviews</div>
+                        <div className="text-2xl font-bold text-slate-800 mt-1">324</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-slate-200">
+                      <h3 className="font-bold text-slate-900 mb-2">Recommendation</h3>
+                      <p className="text-sm text-slate-600">Focus on improving battery life and increasing product durability based on negative sentiment trends.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Customer Reviews View */}
+                {activeTab === "Reviews" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Customer Reviews</h1>
+                      <p className="text-xs text-slate-500">Ingest customer feedback from supported platforms</p>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 space-y-4 max-w-2xl">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1">Product</label>
+                        <select className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                          {products.map((p) => (
+                            <option key={p.id}>{p.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1">Source Platform</label>
+                        <select className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                          <option>Google Reviews</option>
+                          <option>Amazon</option>
+                          <option>Trustpilot</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600 mb-1">Review Text</label>
+                        <textarea
+                          placeholder="Enter customer review..."
+                          rows={4}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                        ></textarea>
+                      </div>
+
+                      <button
+                        onClick={() => showToast("Review submitted for processing!")}
+                        className="px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg text-xs hover:bg-indigo-700"
+                      >
+                        Submit Review
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* -------------------------------------------------------------------------------- */}
+            {/* ROLE 2: RESOLUTION AGENT DASHBOARD VIEWS */}
+            {/* -------------------------------------------------------------------------------- */}
+            {selectedRole === "Resolution Agent" && (
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900">Resolution Dashboard</h1>
+                  <p className="text-xs text-slate-500">Process customer escalation tickets, assign ownership, and record resolution notes</p>
+                </div>
+
+                {/* Agent Sub-tabs */}
+                <div className="flex gap-2 border-b border-slate-200 pb-2">
+                  {["Available Tickets", "My Tasks", "Resolved"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => {
+                        setActiveTab(tab);
+                        setTicketTab(tab);
+                      }}
+                      className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
+                        ticketTab === tab ? "bg-indigo-600 text-white" : "bg-white text-slate-600 border border-slate-200"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Filter Controls */}
+                <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
+                  <span className="text-xs font-semibold text-slate-500">Filter by Status:</span>
+                  <select
+                    value={ticketStatusFilter}
+                    onChange={(e) => setTicketStatusFilter(e.target.value)}
+                    className="px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-slate-50"
+                  >
+                    <option value="ALL font-semibold">ALL</option>
+                    <option value="OPEN">OPEN</option>
+                    <option value="INVESTIGATING">INVESTIGATING</option>
+                    <option value="RESOLVED">RESOLVED</option>
+                  </select>
+                </div>
+
+                {/* Ticket Table */}
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+                        <th className="p-3">Ticket ID</th>
+                        <th className="p-3">Priority</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3">Review Snippet</th>
+                        <th className="p-3 text-right">Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {tickets
+                        .filter((t) => {
+                          if (ticketTab === "My Tasks") return t.assignedTo === "Current Agent" && t.status !== "RESOLVED";
+                          if (ticketTab === "Resolved") return t.status === "RESOLVED";
+                          return t.assignedTo === null && t.status !== "RESOLVED";
+                        })
+                        .map((t) => (
+                          <tr key={t.id} className="hover:bg-slate-50">
+                            <td className="p-3 font-bold text-slate-800">{t.id}</td>
+                            <td className="p-3">
+                              <span
+                                className={`font-bold px-2 py-0.5 rounded text-[10px] ${
+                                  t.priority === "CRITICAL"
+                                    ? "bg-red-100 text-red-700"
+                                    : t.priority === "HIGH"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : "bg-slate-100 text-slate-600"
+                                }`}
+                              >
+                                {t.priority}
+                              </span>
+                            </td>
+                            <td className="p-3 font-semibold text-slate-600">{t.status}</td>
+                            <td className="p-3 max-w-xs truncate text-slate-500">{t.snippet}</td>
+                            <td className="p-3 text-right">
+                              {ticketTab === "Available Tickets" && (
+                                <button
+                                  onClick={() => handleClaimTicket(t.id)}
+                                  className="px-3 py-1 bg-indigo-600 text-white rounded font-semibold text-xs hover:bg-indigo-700"
+                                >
+                                  Assign / Claim
+                                </button>
+                              )}
+                              {ticketTab === "My Tasks" && (
+                                <button
+                                  onClick={() => setActiveTicketForResolution(t)}
+                                  className="px-3 py-1 bg-emerald-600 text-white rounded font-semibold text-xs hover:bg-emerald-700"
+                                >
+                                  Resolve Ticket
+                                </button>
+                              )}
+                              {ticketTab === "Resolved" && (
+                                <span className="text-emerald-600 font-bold">✓ Resolved</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Resolution Notes Drawer / Card */}
+                {activeTicketForResolution && (
+                  <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-xl space-y-3">
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      Resolve Ticket {activeTicketForResolution.id}
+                    </h3>
+                    <p className="text-xs text-slate-600">"{activeTicketForResolution.snippet}"</p>
+                    <textarea
+                      value={resolutionNote}
+                      onChange={(e) => setResolutionNote(e.target.value)}
+                      placeholder="Enter resolution details..."
+                      rows={3}
+                      className="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-xs"
+                    ></textarea>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleResolveTicket(activeTicketForResolution.id)}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700"
+                      >
+                        Resolve Ticket
+                      </button>
+                      <button
+                        onClick={() => setActiveTicketForResolution(null)}
+                        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+
+            {/* -------------------------------------------------------------------------------- */}
+            {/* ROLE 3: PLATFORM ADMIN DASHBOARD VIEWS */}
+            {/* -------------------------------------------------------------------------------- */}
+            {selectedRole === "Platform Admin" && (
+              <>
+                {/* Admin Overview */}
+                {activeTab === "Overview" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">Platform Overview</h1>
+                      <p className="text-xs text-slate-500">Manage users, products, tickets, and platform-wide activity</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-400">Total Users</span>
+                        <div className="text-2xl font-bold text-slate-900 mt-1">{users.length}</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-400">Total Products</span>
+                        <div className="text-2xl font-bold text-indigo-600 mt-1">{products.length}</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-400">Active Tickets</span>
+                        <div className="text-2xl font-bold text-amber-500 mt-1">{tickets.length}</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-400">Resolved Today</span>
+                        <div className="text-2xl font-bold text-emerald-600 mt-1">14</div>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="bg-white p-5 rounded-xl border border-slate-200">
+                        <h3 className="font-bold text-slate-900 text-sm mb-4">Global User Roles</h3>
+                        <div className="space-y-3 text-xs">
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-600">Brand Managers</span>
+                            <span className="font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">60%</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-600">Resolution Agents</span>
+                            <span className="font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">25%</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-600">Platform Admins</span>
+                            <span className="font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">15%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-5 rounded-xl border border-slate-200">
+                        <h3 className="font-bold text-slate-900 text-sm mb-4">Recent Timeline</h3>
+                        <ul className="space-y-2 text-xs text-slate-600">
+                          <li>• New brand manager registered 2h ago</li>
+                          <li>• System review ingestion completed 4h ago</li>
+                          <li>• Critical ticket assigned to agent</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Admin User Management */}
+                {activeTab === "User Management" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-xl font-bold text-slate-900">User Management</h1>
+                      <p className="text-xs text-slate-500">Manage platform users and account status</p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-xl border border-slate-200">
+                      <input
+                        type="text"
+                        placeholder="Search users by name or email..."
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        className="w-full md:w-80 px-3 py-1.5 border border-slate-300 rounded-lg text-xs"
+                      />
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+                            <th className="p-3">ID</th>
+                            <th className="p-3">Name</th>
+                            <th className="p-3">Email</th>
+                            <th className="p-3">Role</th>
+                            <th className="p-3">Status</th>
+                            <th className="p-3 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {users
+                            .filter(
+                              (u) =>
+                                u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+                                u.email.toLowerCase().includes(userSearch.toLowerCase())
+                            )
+                            .map((u) => (
+                              <tr key={u.id} className="hover:bg-slate-50">
+                                <td className="p-3 text-slate-400">{u.id}</td>
+                                <td className="p-3 font-bold text-slate-800">{u.name}</td>
+                                <td className="p-3 text-slate-500">{u.email}</td>
+                                <td className="p-3">
+                                  <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold text-[10px]">
+                                    {u.role}
+                                  </span>
+                                </td>
+                                <td className="p-3">
+                                  <span
+                                    className={`px-2 py-0.5 rounded font-bold text-[10px] ${
+                                      u.status === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                    }`}
+                                  >
+                                    {u.status}
+                                  </span>
+                                </td>
+                                <td className="p-3 text-right">
+                                  <button
+                                    onClick={() => handleToggleUserStatus(u.id)}
+                                    className="px-3 py-1 border border-slate-300 rounded text-slate-700 font-semibold text-xs hover:bg-slate-100"
+                                  >
+                                    Toggle Status
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Admin Products View */}
+                {activeTab === "Products" && (
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h1 className="text-xl font-bold text-slate-900">Tracked Products</h1>
+                        <p className="text-xs text-slate-500">Manage all tracked products across the platform</p>
+                      </div>
+                      <button
+                        onClick={() => setIsAddProductOpen(true)}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700"
+                      >
+                        + Add Product
+                      </button>
+                    </div>
+
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
+                            <th className="p-3">Name</th>
+                            <th className="p-3">Category</th>
+                            <th className="p-3">Reviews</th>
+                            <th className="p-3">Rating</th>
+                            <th className="p-3">Status</th>
+                            <th className="p-3 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {products.map((p) => (
+                            <tr key={p.id} className="hover:bg-slate-50">
+                              <td className="p-3 font-bold text-slate-800">{p.name}</td>
+                              <td className="p-3 text-slate-500">{p.category}</td>
+                              <td className="p-3 font-semibold">{p.totalReviews}</td>
+                              <td className="p-3 text-indigo-600 font-bold">{p.rating}</td>
+                              <td className="p-3">
+                                <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold text-[10px]">
+                                  {p.status}
+                                </span>
+                              </td>
+                              <td className="p-3 text-right">
+                                <button
+                                  onClick={() => handleDeleteProduct(p.id)}
+                                  className="px-3 py-1 bg-red-50 text-red-600 rounded font-semibold hover:bg-red-100"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
         </div>
       )}
 
       {/* ADD PRODUCT MODAL */}
       {isAddProductOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard}>
-            <h3 style={{ margin: "0 0 16px 0", fontSize: "16px" }}>Add New Product</h3>
-            <form onSubmit={handleAddProduct}>
-              <div style={styles.formGroup}>
-                <div>
-                  <label style={styles.label}>Product Name</label>
-                  <input style={styles.input} type="text" placeholder="e.g. Laptop Pro" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} required />
-                </div>
-                <div>
-                  <label style={styles.label}>Category</label>
-                  <select style={styles.input} value={newProdCategory} onChange={(e) => setNewProdCategory(e.target.value)}>
-                    <option value="ELECTRONICS">ELECTRONICS</option>
-                    <option value="SOFTWARE">SOFTWARE</option>
-                    <option value="HOSPITALITY">HOSPITALITY</option>
-                    <option value="RETAIL">RETAIL</option>
-                  </select>
-                </div>
-                <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                  <button type="submit" style={styles.blueBtn}>Add Product</button>
-                  <button type="button" style={{ ...styles.blueBtn, backgroundColor: "#64748b" }} onClick={() => setIsAddProductOpen(false)}>Cancel</button>
-                </div>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full space-y-4">
+            <h3 className="font-bold text-slate-900 text-base">Add New Product</h3>
+            <form onSubmit={handleAddProduct} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Acme Smart Headphones"
+                  value={newProdName}
+                  onChange={(e) => setNewProdName(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+                <select
+                  value={newProdCategory}
+                  onChange={(e) => setNewProdCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                >
+                  <option value="Electronics">Electronics</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Software">Software</option>
+                  <option value="Retail">Retail</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button type="submit" className="flex-1 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700">
+                  Save Product
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddProductOpen(false)}
+                  className="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* EDIT PRODUCT MODAL */}
-      {editingProduct && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard}>
-            <h3 style={{ margin: "0 0 16px 0", fontSize: "16px" }}>Edit Product: {editingProduct.name}</h3>
-            <form onSubmit={handleSaveProduct}>
-              <div style={styles.formGroup}>
-                <div>
-                  <label style={styles.label}>Category</label>
-                  <input style={styles.input} type="text" value={editingProduct.category} onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })} />
-                </div>
-                <div>
-                  <label style={styles.label}>Avg Sentiment</label>
-                  <input style={styles.input} type="number" step="0.1" value={editingProduct.avgSentiment} onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) || 0 })} />
-                </div>
-                <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                  <button type="submit" style={styles.blueBtn}>Save Changes</button>
-                  <button type="button" style={{ ...styles.blueBtn, backgroundColor: "#64748b" }} onClick={() => setEditingProduct(null)}>Cancel</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* STICKY BOTTOM ACTIONS */}
-      <div style={styles.bottomBar}>
-        <button style={styles.pullBtn} onClick={() => showNotification("Data Sync Completed!")}>Pull</button>
-        <button style={styles.checkBtn} onClick={() => showNotification("System Verification Passed!")}>Check Verify</button>
-      </div>
     </div>
   );
 }
-
-const styles = {
-  appWrapper: { backgroundColor: "#eef2f6", minHeight: "100vh", fontFamily: "Segoe UI, sans-serif", paddingBottom: "60px", position: "relative" },
-  topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e8f0" },
-  searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "320px", textAlign: "center", margin: "0 auto" },
-  logoutBtn: { backgroundColor: "#ef4444", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
-  roleTag: { fontSize: "12px", color: "#475569" },
-  authContainer: { display: "flex", justifyContent: "center", alignItems: "center", paddingTop: "40px" },
-  authCard: { backgroundColor: "#ffffff", padding: "32px", borderRadius: "8px", width: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", border: "1px solid #e2e8f0" },
-  authTitle: { textAlign: "center", marginBottom: "24px", color: "#1e293b", fontSize: "22px", fontWeight: "600" },
-  formGroup: { display: "flex", flexDirection: "column", gap: "14px" },
-  label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
-  input: { width: "100%", padding: "8px 12px", borderRadius: "4px", border: "1px solid #cbd5e1", backgroundColor: "#f8fafc", fontSize: "14px", outline: "none", boxSizing: "border-box" },
-  blueBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", fontSize: "13px", flex: 1 },
-  addBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
-  linkText: { color: "#2563eb", cursor: "pointer", fontWeight: "500" },
-  dashboardContainer: { width: "95%", maxWidth: "1100px", margin: "20px auto" },
-  navbar: { backgroundColor: "#1e293b", display: "flex", gap: "25px", padding: "12px 24px", borderRadius: "6px 6px 0 0" },
-  navItem: { cursor: "pointer", fontSize: "14px", paddingBottom: "4px" },
-  mainContent: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "0 0 6px 6px", border: "1px solid #e2e8f0", borderTop: "none" },
-  pageHeading: { margin: "0 0 20px 0", color: "#1e293b", fontSize: "18px", fontWeight: "600" },
-  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" },
-  card: { backgroundColor: "#ffffff", padding: "20px", borderRadius: "6px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" },
-  metricLabel: { color: "#64748b", fontSize: "11px", fontWeight: "600", letterSpacing: "0.5px" },
-  metricVal: { margin: "10px 0 0 0", fontSize: "26px", color: "#0f172a", fontWeight: "700" },
-  table: { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
-  tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0", padding: "10px 8px" },
-  tableRow: { borderBottom: "1px solid #f1f5f9", color: "#334155" },
-  roleBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
-  statusActive: { backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
-  statusInactive: { backgroundColor: "#fee2e2", color: "#ef4444", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
-  actionBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
-  deleteBtn: { backgroundColor: "#ef4444", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
-  tabToggleActive: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
-  tabToggle: { backgroundColor: "#f1f5f9", color: "#475569", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
-  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "8px", width: "350px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" },
-  toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "12px 20px", borderRadius: "6px", fontSize: "14px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 1000 },
-  bottomBar: { position: "fixed", bottom: 0, left: 0, right: 0, height: "48px", backgroundColor: "#ffffff", display: "flex", gap: "12px", padding: "8px 16px", borderTop: "1px solid #cbd5e1", boxSizing: "border-box" },
-  pullBtn: { flex: 1, backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" },
-  checkBtn: { flex: 1, backgroundColor: "#2563eb", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" }
-};
