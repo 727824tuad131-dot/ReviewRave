@@ -101,80 +101,163 @@
 // export default ReviewList;
 
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getReviews } from '../../store/slices/reviewSlice';
-import ReviewIngestForm from './ReviewIngestForm';
-import EmptyState from '../common/EmptyState';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const ReviewList = () => {
-  const dispatch = useDispatch();
-  const { items = [] } = useSelector((state) => state.reviews || {});
-  const [showForm, setShowForm] = useState(false);
+const styles = {
+  pageContainer: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "radial-gradient(circle at top, #1e293b 0%, #0f172a 100%)",
+    fontFamily: "'Inter', sans-serif",
+    color: "#f8fafc",
+    padding: "20px",
+  },
+  glassCard: {
+    width: "100%",
+    maxWidth: "460px",
+    background: "rgba(30, 41, 59, 0.8)",
+    backdropFilter: "blur(16px)",
+    borderRadius: "16px",
+    padding: "32px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+  },
+  heading: { color: "#f8fafc", textAlign: "center", marginBottom: "24px" },
+  formGroup: { display: "flex", flexDirection: "column", gap: "16px" },
+  row: { display: "flex", gap: "12px" },
+  label: { display: "block", color: "#94a3b8", fontSize: "13px", marginBottom: "6px" },
+  input: { width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #334155", backgroundColor: "#0f172a", color: "#f8fafc", outline: "none", boxSizing: "border-box" },
+  select: { width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #334155", backgroundColor: "#0f172a", color: "#f8fafc", outline: "none", boxSizing: "border-box" },
+  primaryBtn: { width: "100%", padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "#2563eb", color: "#ffffff", fontWeight: "600", cursor: "pointer", marginTop: "10px" },
+  footerText: { textAlign: "center", color: "#94a3b8", fontSize: "13px", marginTop: "20px" },
+  link: { color: "#38bdf8", cursor: "pointer", textDecoration: "underline" }
+};
 
-  useEffect(() => {
-    dispatch(getReviews());
-  }, [dispatch]);
+const Register = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    companyName: "",
+    email: "",
+    password: "",
+    role: "BRAND_MANAGER",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Registration submitted successfully:", formData);
+    
+    // Direct-a Login page-ku navigate aagum:
+    navigate("/");
+  };
 
   return (
-    <div className="review-list" data-testid="review-list">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 style={{ margin: '0 0 0.25rem 0' }}>Product Reviews</h1>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
-            Customer feedback and rating submissions across all registered products
-          </p>
-        </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="btn-primary"
-          data-testid="toggle-review-form-btn"
-        >
-          {showForm ? 'Cancel' : 'Write Review'}
-        </button>
-      </div>
-
-      {showForm && (
-        <div style={{ marginBottom: '2rem' }}>
-          <ReviewIngestForm onSuccess={() => setShowForm(false)} />
-        </div>
-      )}
-
-      {items.length === 0 ? (
-        <EmptyState message="No reviews found." />
-      ) : (
-        <div className="reviews-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
-          {items.map((rev, idx) => (
-            <div
-              key={rev.id || idx}
-              className="card review-item"
-              style={{ padding: '1.25rem' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>Product #{rev.productId || 1}</strong>
-                <span
-                  style={{
-                    backgroundColor: '#ecfdf5',
-                    color: '#065f46',
-                    border: '1px solid #a7f3d0',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    padding: '0.2rem 0.5rem',
-                    borderRadius: '9999px',
-                  }}
-                >
-                  ★ {rev.rating}/5
-                </span>
-              </div>
-              <p style={{ margin: 0, color: '#475569', fontSize: '0.875rem', lineHeight: '1.5' }}>
-                {rev.content}
-              </p>
+    <div style={styles.pageContainer}>
+      <div style={styles.glassCard}>
+        <h2 style={styles.heading}>Register Account</h2>
+        <form onSubmit={handleSubmit} style={styles.formGroup}>
+          <div style={styles.row}>
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="Jane"
+                value={formData.firstName}
+                onChange={handleChange}
+                style={styles.input}
+                required
+              />
             </div>
-          ))}
-        </div>
-      )}
+            <div style={{ flex: 1 }}>
+              <label style={styles.label}>Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Doe"
+                value={formData.lastName}
+                onChange={handleChange}
+                style={styles.input}
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={styles.label}>Company Name</label>
+            <input
+              type="text"
+              name="companyName"
+              placeholder="Acme Corp (Optional)"
+              value={formData.companyName}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Email Address</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="manager@gmail.com"
+              value={formData.email}
+              onChange={handleChange}
+              style={styles.input}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Password (min 8 chars)</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              style={styles.input}
+              minLength={8}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Select Role</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              style={styles.select}
+            >
+              <option value="BRAND_MANAGER">Brand Manager</option>
+              <option value="RESOLUTION_AGENT">Resolution Agent</option>
+              <option value="PLATFORM_ADMIN">Platform Admin</option>
+            </select>
+          </div>
+
+          <button type="submit" style={styles.primaryBtn}>
+            Create Account
+          </button>
+        </form>
+
+        <p style={styles.footerText}>
+          Already have an account?{" "}
+          <span onClick={() => navigate("/")} style={styles.link}>
+            Login here
+          </span>
+        </p>
+      </div>
     </div>
   );
 };
 
-export default ReviewList;
+export default Register;
