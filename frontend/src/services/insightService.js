@@ -12,12 +12,16 @@ import api from './api';
 
 export const insightService = {
   getReviewInsights: async (productId) => {
-    const response = await api.get(`/insights/${productId}`);
+    const response = await api.get(`/insights/product/${productId}`);
     return response.data;
   },
+
   getInsights: async (productId) => {
-    const url = productId ? `/insights/${productId}` : '/insights';
-    const response = await api.get(url);
+    if (!productId) {
+      return null;
+    }
+
+    const response = await api.get(`/insights/product/${productId}`);
     return response.data;
   },
 };
