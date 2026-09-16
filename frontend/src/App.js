@@ -825,13 +825,14 @@
 // export default App;
 
 
+
 import React, { useState } from "react";
 
 export default function App() {
   // Navigation & Role States
-  const [currentPage, setCurrentPage] = useState("dashboard"); // 'login' | 'register' | 'dashboard'
-  const [selectedRole, setSelectedRole] = useState("Platform Admin"); // Defaulting to Platform Admin based on current UI
-  const [activeTab, setActiveTab] = useState("Products");
+  const [currentPage, setCurrentPage] = useState("login"); // 'login' | 'register' | 'dashboard'
+  const [selectedRole, setSelectedRole] = useState("Platform Admin"); // Default Role
+  const [activeTab, setActiveTab] = useState("Overview");
 
   // Auth Form States
   const [firstName, setFirstName] = useState("John");
@@ -890,10 +891,8 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
-    if (selectedRole === "Brand Manager") setActiveTab("Tracked Products");
-    else if (selectedRole === "Resolution Agent") setActiveTab("Resolution Tickets");
-    else setActiveTab("Overview");
-    showToast(`Logged in as ${selectedRole}`);
+    setActiveTab("Overview");
+    showToast(`Logged in successfully!`);
   };
 
   const handleRegister = (e) => {
@@ -971,7 +970,7 @@ export default function App() {
       {/* Toast Alert */}
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* 1. LOGIN PAGE */}
+      {/* 1. LOGIN PAGE (ROLE SELECT DROPDOWN REMOVED HERE) */}
       {currentPage === "login" && (
         <div style={styles.authWrapper}>
           <div style={styles.authCard}>
@@ -1006,16 +1005,9 @@ export default function App() {
                   <label style={styles.label}>Password</label>
                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
                 </div>
-                <div>
-                  <label style={styles.label}>Select Role to Enter</label>
-                  <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.roleSelect}>
-                    <option value="Brand Manager">Brand Manager</option>
-                    <option value="Resolution Agent">Resolution Agent</option>
-                    <option value="Platform Admin">Platform Admin</option>
-                  </select>
-                </div>
-                <button type="submit" style={styles.primaryBtn}>
-                  Login to {selectedRole} Dashboard
+                
+                <button type="submit" style={{ ...styles.primaryBtn, marginTop: "10px" }}>
+                  Login to Dashboard
                 </button>
               </form>
 
@@ -1060,14 +1052,7 @@ export default function App() {
                 <label style={styles.label}>Password</label>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
               </div>
-              <div>
-                <label style={styles.label}>Select Role</label>
-                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.input}>
-                  <option value="Brand Manager">Brand Manager</option>
-                  <option value="Resolution Agent">Resolution Agent</option>
-                  <option value="Platform Admin">Platform Admin</option>
-                </select>
-              </div>
+              
               <button type="submit" style={styles.primaryBtn}>
                 Create Account
               </button>
@@ -1096,53 +1081,19 @@ export default function App() {
 
               {/* Navigation Tabs */}
               <nav style={{ display: "flex", gap: "4px" }}>
-                {selectedRole === "Brand Manager" &&
-                  ["Tracked Products", "Sentiment Insights", "Reviews"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-
-                {selectedRole === "Resolution Agent" &&
-                  ["Resolution Tickets", "My Tasks", "Resolved"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        setActiveTab(tab);
-                        setTicketTab(tab);
-                      }}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-
-                {selectedRole === "Platform Admin" &&
-                  ["Overview", "User Management", "Products"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                {["Overview", "User Management", "Products"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    style={{
+                      ...styles.navTab,
+                      backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
+                      color: activeTab === tab ? "#4338ca" : "#475569",
+                    }}
+                  >
+                    {tab}
+                  </button>
+                ))}
               </nav>
             </div>
 
@@ -1156,304 +1107,96 @@ export default function App() {
 
           {/* Body Content */}
           <main style={styles.mainContainer}>
-            {/* BRAND MANAGER DASHBOARD */}
-            {selectedRole === "Brand Manager" && (
-              <>
-                {activeTab === "Tracked Products" && (
-                  <div>
-                    <div style={styles.sectionHeader}>
-                      <div>
-                        <h2 style={styles.heading}>Tracked Products</h2>
-                        <span style={styles.subHeading}>Monitor customer feedback and sentiment</span>
-                      </div>
-                      <button onClick={() => setIsAddProductOpen(true)} style={styles.primaryBtnWidth}>
-                        + Add Product
-                      </button>
-                    </div>
-
-                    <div style={styles.statsGrid}>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Tracked Products</span>
-                        <div style={styles.statVal}>{products.length}</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Total Reviews</span>
-                        <div style={styles.statVal}>1,240</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Positive Sentiment</span>
-                        <div style={{ ...styles.statVal, color: "#16a34a" }}>78%</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Open Tickets</span>
-                        <div style={{ ...styles.statVal, color: "#d97706" }}>5</div>
-                      </div>
-                    </div>
-
-                    <div style={styles.gridContainer}>
-                      {products.map((p) => (
-                        <div key={p.id} style={styles.productCard}>
-                          <div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <h4 style={{ margin: 0, fontWeight: "700" }}>{p.name}</h4>
-                              <span style={styles.activeTag}>{p.status}</span>
-                            </div>
-                            <span style={{ fontSize: "12px", color: "#94a3b8" }}>{p.category}</span>
-                            <div style={styles.prodStatsRow}>
-                              <div>
-                                <div style={{ fontSize: "10px", color: "#64748b" }}>Reviews</div>
-                                <div style={{ fontWeight: "700" }}>{p.totalReviews}</div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize: "10px", color: "#64748b" }}>Positive</div>
-                                <div style={{ fontWeight: "700", color: "#16a34a" }}>{p.positiveRate}</div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize: "10px", color: "#64748b" }}>Rating</div>
-                                <div style={{ fontWeight: "700", color: "#4f46e5" }}>{p.rating}</div>
-                              </div>
-                            </div>
-                          </div>
-                          <div style={{ display: "flex", gap: "6px", marginTop: "15px" }}>
-                            <button onClick={() => setActiveTab("Reviews")} style={styles.secondaryBtn}>
-                              Reviews
-                            </button>
-                            <button onClick={() => handleOpenEditModal(p)} style={styles.secondaryBtn}>
-                              Edit
-                            </button>
-                            <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-
-                      <div onClick={() => setIsAddProductOpen(true)} style={styles.addDashedCard}>
-                        <div style={styles.plusIcon}>+</div>
-                        <span style={{ fontWeight: "600", fontSize: "13px" }}>Add Another Product</span>
-                      </div>
-                    </div>
+            <div>
+              <h2 style={styles.heading}>Platform Overview</h2>
+              {activeTab === "Overview" && (
+                <div style={styles.statsGrid}>
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>Total Users</span>
+                    <div style={styles.statVal}>{users.length}</div>
                   </div>
-                )}
-              </>
-            )}
-
-            {/* RESOLUTION AGENT DASHBOARD */}
-            {selectedRole === "Resolution Agent" && (
-              <div>
-                <h2 style={styles.heading}>Resolution Dashboard</h2>
-                <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
-                  {["Available Tickets", "My Tasks", "Resolved"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        setActiveTab(tab);
-                        setTicketTab(tab);
-                      }}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: ticketTab === tab ? "#4f46e5" : "#ffffff",
-                        color: ticketTab === tab ? "#ffffff" : "#475569",
-                        border: "1px solid #cbd5e1",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>Total Products</span>
+                    <div style={styles.statVal}>{products.length}</div>
+                  </div>
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>System Health</span>
+                    <div style={{ ...styles.statVal, color: "#16a34a" }}>99.9%</div>
+                  </div>
                 </div>
+              )}
 
+              {activeTab === "User Management" && (
                 <div style={styles.tableCard}>
                   <table style={styles.table}>
                     <thead>
                       <tr style={styles.tableHeader}>
-                        <th style={styles.th}>Ticket ID</th>
-                        <th style={styles.th}>Priority</th>
+                        <th style={styles.th}>ID</th>
+                        <th style={styles.th}>Name</th>
+                        <th style={styles.th}>Email</th>
+                        <th style={styles.th}>Role</th>
                         <th style={styles.th}>Status</th>
-                        <th style={styles.th}>Review Snippet</th>
                         <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {tickets
-                        .filter((t) => {
-                          if (ticketTab === "My Tasks") return t.assignedTo === "Current Agent" && t.status !== "RESOLVED";
-                          if (ticketTab === "Resolved") return t.status === "RESOLVED";
-                          return t.assignedTo === null && t.status !== "RESOLVED";
-                        })
-                        .map((t) => (
-                          <tr key={t.id} style={styles.tableRow}>
-                            <td style={{ ...styles.td, fontWeight: "700" }}>{t.id}</td>
-                            <td style={styles.td}>
-                              <span style={t.priority === "CRITICAL" ? styles.critBadge : styles.highBadge}>{t.priority}</span>
-                            </td>
-                            <td style={styles.td}>{t.status}</td>
-                            <td style={styles.td}>{t.snippet}</td>
-                            <td style={{ ...styles.td, textAlign: "right" }}>
-                              {ticketTab === "Available Tickets" && (
-                                <button onClick={() => handleClaimTicket(t.id)} style={styles.primaryBtnSmall}>
-                                  Claim Ticket
-                                </button>
-                              )}
-                              {ticketTab === "My Tasks" && (
-                                <button onClick={() => setActiveTicketForResolution(t)} style={styles.greenBtn}>
-                                  Resolve
-                                </button>
-                              )}
-                              {ticketTab === "Resolved" && <span style={{ color: "#16a34a", fontWeight: "700" }}>✓ Resolved</span>}
-                            </td>
-                          </tr>
-                        ))}
+                      {users.map((u) => (
+                        <tr key={u.id} style={styles.tableRow}>
+                          <td style={styles.td}>{u.id}</td>
+                          <td style={{ ...styles.td, fontWeight: "700" }}>{u.name}</td>
+                          <td style={styles.td}>{u.email}</td>
+                          <td style={styles.td}>{u.role}</td>
+                          <td style={styles.td}>
+                            <span style={u.status === "Active" ? styles.activeTag : styles.critBadge}>{u.status}</span>
+                          </td>
+                          <td style={{ ...styles.td, textAlign: "right" }}>
+                            <button onClick={() => handleToggleUserStatus(u.id)} style={styles.secondaryBtn}>
+                              Toggle Status
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
+              )}
 
-                {activeTicketForResolution && (
-                  <div style={{ ...styles.statCard, marginTop: "20px", backgroundColor: "#e0e7ff" }}>
-                    <h4 style={{ margin: "0 0 10px 0" }}>Resolve Ticket {activeTicketForResolution.id}</h4>
-                    <textarea
-                      value={resolutionNote}
-                      onChange={(e) => setResolutionNote(e.target.value)}
-                      placeholder="Enter resolution notes..."
-                      rows={3}
-                      style={{ ...styles.input, marginBottom: "10px" }}
-                    ></textarea>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      <button onClick={() => handleResolveTicket(activeTicketForResolution.id)} style={styles.greenBtn}>
-                        Confirm Resolve
-                      </button>
-                      <button onClick={() => setActiveTicketForResolution(null)} style={styles.secondaryBtn}>
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* PLATFORM ADMIN DASHBOARD */}
-            {selectedRole === "Platform Admin" && (
-              <div>
-                <h2 style={styles.heading}>Platform Overview</h2>
-                {activeTab === "Overview" && (
-                  <div style={styles.statsGrid}>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>Total Users</span>
-                      <div style={styles.statVal}>{users.length}</div>
-                    </div>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>Total Products</span>
-                      <div style={styles.statVal}>{products.length}</div>
-                    </div>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>System Health</span>
-                      <div style={{ ...styles.statVal, color: "#16a34a" }}>99.9%</div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "User Management" && (
-                  <div style={styles.tableCard}>
-                    <table style={styles.table}>
-                      <thead>
-                        <tr style={styles.tableHeader}>
-                          <th style={styles.th}>ID</th>
-                          <th style={styles.th}>Name</th>
-                          <th style={styles.th}>Email</th>
-                          <th style={styles.th}>Role</th>
-                          <th style={styles.th}>Status</th>
-                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((u) => (
-                          <tr key={u.id} style={styles.tableRow}>
-                            <td style={styles.td}>{u.id}</td>
-                            <td style={{ ...styles.td, fontWeight: "700" }}>{u.name}</td>
-                            <td style={styles.td}>{u.email}</td>
-                            <td style={styles.td}>{u.role}</td>
-                            <td style={styles.td}>
-                              <span style={u.status === "Active" ? styles.activeTag : styles.critBadge}>{u.status}</span>
-                            </td>
-                            <td style={{ ...styles.td, textAlign: "right" }}>
-                              <button onClick={() => handleToggleUserStatus(u.id)} style={styles.secondaryBtn}>
-                                Toggle Status
+              {/* PRODUCTS TABLE WITH EDIT BUTTON */}
+              {activeTab === "Products" && (
+                <div style={styles.tableCard}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr style={styles.tableHeader}>
+                        <th style={styles.th}>Product Name</th>
+                        <th style={styles.th}>Category</th>
+                        <th style={styles.th}>Reviews</th>
+                        <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map((p) => (
+                        <tr key={p.id} style={styles.tableRow}>
+                          <td style={{ ...styles.td, fontWeight: "700" }}>{p.name}</td>
+                          <td style={styles.td}>{p.category}</td>
+                          <td style={styles.td}>{p.totalReviews}</td>
+                          <td style={{ ...styles.td, textAlign: "right" }}>
+                            <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                              <button onClick={() => handleOpenEditModal(p)} style={styles.editBtn}>
+                                Edit
                               </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* PRODUCTS TABLE WITH EDIT BUTTON ADDED */}
-                {activeTab === "Products" && (
-                  <div style={styles.tableCard}>
-                    <table style={styles.table}>
-                      <thead>
-                        <tr style={styles.tableHeader}>
-                          <th style={styles.th}>Product Name</th>
-                          <th style={styles.th}>Category</th>
-                          <th style={styles.th}>Reviews</th>
-                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
+                              <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
+                                Delete
+                              </button>
+                            </div>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {products.map((p) => (
-                          <tr key={p.id} style={styles.tableRow}>
-                            <td style={{ ...styles.td, fontWeight: "700" }}>{p.name}</td>
-                            <td style={styles.td}>{p.category}</td>
-                            <td style={styles.td}>{p.totalReviews}</td>
-                            <td style={{ ...styles.td, textAlign: "right" }}>
-                              <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                                <button onClick={() => handleOpenEditModal(p)} style={styles.editBtn}>
-                                  Edit
-                                </button>
-                                <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </main>
-        </div>
-      )}
-
-      {/* ADD PRODUCT MODAL */}
-      {isAddProductOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard}>
-            <h3 style={{ margin: "0 0 15px 0" }}>Add New Product</h3>
-            <form onSubmit={handleAddProduct} style={styles.formStack}>
-              <div>
-                <label style={styles.label}>Product Name</label>
-                <input type="text" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} style={styles.input} required />
-              </div>
-              <div>
-                <label style={styles.label}>Category</label>
-                <select value={newProdCategory} onChange={(e) => setNewProdCategory(e.target.value)} style={styles.input}>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Audio">Audio</option>
-                  <option value="Software">Software</option>
-                </select>
-              </div>
-              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button type="submit" style={styles.primaryBtn}>
-                  Save
-                </button>
-                <button type="button" onClick={() => setIsAddProductOpen(false)} style={styles.secondaryBtn}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
 
@@ -1503,13 +1246,9 @@ const styles = {
   formStack: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
   input: { width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", boxSizing: "border-box", outline: "none" },
-  roleSelect: { width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #a5b4fc", backgroundColor: "#e0e7ff", color: "#312e81", fontWeight: "600", fontSize: "13px" },
   primaryBtn: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "10px 16px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
-  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
-  primaryBtnSmall: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   editBtn: { backgroundColor: "#e0e7ff", color: "#4338ca", border: "none", padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  greenBtn: { backgroundColor: "#16a34a", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   linkText: { color: "#4f46e5", fontWeight: "600", cursor: "pointer" },
   navbar: { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" },
@@ -1518,18 +1257,11 @@ const styles = {
   logoutBtn: { backgroundColor: "transparent", border: "1px solid #cbd5e1", padding: "4px 10px", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   mainContainer: { maxWidth: "1100px", margin: "24px auto", padding: "0 20px" },
   heading: { fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" },
-  subHeading: { fontSize: "12px", color: "#64748b" },
-  sectionHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" },
   statsGrid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" },
   statCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px" },
   statLabel: { fontSize: "12px", color: "#94a3b8", fontWeight: "600" },
   statVal: { fontSize: "24px", fontWeight: "700", marginTop: "4px" },
-  gridContainer: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" },
-  productCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
   activeTag: { backgroundColor: "#dcfce7", color: "#15803d", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" },
-  prodStatsRow: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px", backgroundColor: "#f8fafc", padding: "8px", borderRadius: "8px", marginTop: "12px", textAlign: "center" },
-  addDashedCard: { border: "2px dashed #cbd5e1", borderRadius: "12px", display: "flex", flexDirection: "column", alignItems: "center", justifyCenter: "center", padding: "24px", cursor: "pointer", color: "#64748b" },
-  plusIcon: { width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#e0e7ff", color: "#4f46e5", display: "flex", alignItems: "center", justifyCenter: "center", fontWeight: "bold", marginBottom: "8px" },
   tableCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "12px" },
   tableHeader: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" },
@@ -1537,7 +1269,6 @@ const styles = {
   tableRow: { borderBottom: "1px solid #f1f5f9" },
   td: { padding: "12px", color: "#334155" },
   critBadge: { backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
-  highBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
   toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "10px 16px", borderRadius: "8px", fontSize: "13px", zIndex: 1000 },
   modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center" },
   modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "320px" },
