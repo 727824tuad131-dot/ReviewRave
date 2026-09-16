@@ -830,9 +830,9 @@ import React, { useState } from "react";
 
 export default function App() {
   // Navigation & Role States
-  const [currentPage, setCurrentPage] = useState("register"); // Default set to register page
-  const [selectedRole, setSelectedRole] = useState("Platform Admin");
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [currentPage, setCurrentPage] = useState("dashboard"); 
+  const [selectedRole, setSelectedRole] = useState("Brand Manager"); // Set to Brand Manager as in screenshot
+  const [activeTab, setActiveTab] = useState("Tracked Products");
 
   // Auth Form States
   const [firstName, setFirstName] = useState("John");
@@ -841,12 +841,10 @@ export default function App() {
   const [email, setEmail] = useState("manager@gmail.com");
   const [password, setPassword] = useState("12345678");
 
-  // Filter & Search States
-  const [selectedProduct, setSelectedProduct] = useState("Acme Smart Watch");
-  const [ticketTab, setTicketTab] = useState("Available Tickets");
+  // Toast State
   const [toastMessage, setToastMessage] = useState("");
 
-  // Add Product Modal States
+  // ADD Product Modal States
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("Electronics");
@@ -856,10 +854,6 @@ export default function App() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [editProdName, setEditProdName] = useState("");
   const [editProdCategory, setEditProdCategory] = useState("Electronics");
-
-  // Selected Ticket for Agent Resolution
-  const [activeTicketForResolution, setActiveTicketForResolution] = useState(null);
-  const [resolutionNote, setResolutionNote] = useState("");
 
   // Data States
   const [products, setProducts] = useState([
@@ -872,16 +866,14 @@ export default function App() {
     { id: "#001", name: "John Doe", email: "john@reviewrave.com", role: "BRAND_MANAGER", status: "Active" },
     { id: "#002", name: "Support Agent", email: "agent@reviewrave.com", role: "RESOLUTION_AGENT", status: "Active" },
     { id: "#003", name: "Admin User", email: "admin@reviewrave.com", role: "PLATFORM_ADMIN", status: "Active" },
-    { id: "#004", name: "Sarah Smith", email: "sarah@acme.com", role: "BRAND_MANAGER", status: "Inactive" },
   ]);
 
   const [tickets, setTickets] = useState([
     { id: "#102", priority: "HIGH", status: "OPEN", snippet: "Hello, product stopped working after two weeks...", assignedTo: null },
     { id: "#103", priority: "HIGH", status: "OPEN", snippet: "Feedback regarding battery drainage...", assignedTo: null },
-    { id: "#104", priority: "CRITICAL", status: "OPEN", snippet: "Bad build quality and late delivery...", assignedTo: null },
   ]);
 
-  // Toast Function
+  // Toast Helper
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
@@ -894,15 +886,16 @@ export default function App() {
     if (selectedRole === "Brand Manager") setActiveTab("Tracked Products");
     else if (selectedRole === "Resolution Agent") setActiveTab("Resolution Tickets");
     else setActiveTab("Overview");
-    showToast(`Logged in successfully as ${selectedRole}!`);
+    showToast(`Logged in successfully!`);
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     setCurrentPage("login");
-    showToast(`Registered successfully as ${selectedRole}! Please login.`);
+    showToast(`Registered successfully! Please login.`);
   };
 
+  // HANDLE ADD PRODUCT
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!newProdName.trim()) return;
@@ -917,10 +910,12 @@ export default function App() {
     };
     setProducts([...products, newProd]);
     setNewProdName("");
+    setNewProdCategory("Electronics");
     setIsAddProductOpen(false);
     showToast(`Product "${newProdName}" added successfully!`);
   };
 
+  // HANDLE EDIT PRODUCT
   const handleOpenEditModal = (product) => {
     setEditingProductId(product.id);
     setEditProdName(product.name);
@@ -944,27 +939,6 @@ export default function App() {
     showToast("Product deleted!");
   };
 
-  const handleToggleUserStatus = (id) => {
-    setUsers(users.map((u) => (u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u)));
-    showToast("User status updated!");
-  };
-
-  const handleClaimTicket = (ticketId) => {
-    setTickets(tickets.map((t) => (t.id === ticketId ? { ...t, assignedTo: "Current Agent", status: "INVESTIGATING" } : t)));
-    showToast(`Ticket ${ticketId} assigned!`);
-  };
-
-  const handleResolveTicket = (ticketId) => {
-    if (!resolutionNote.trim()) {
-      showToast("Please enter resolution notes.");
-      return;
-    }
-    setTickets(tickets.map((t) => (t.id === ticketId ? { ...t, status: "RESOLVED" } : t)));
-    setResolutionNote("");
-    setActiveTicketForResolution(null);
-    showToast(`Ticket ${ticketId} resolved!`);
-  };
-
   return (
     <div style={styles.appWrapper}>
       {/* Toast Alert */}
@@ -983,19 +957,12 @@ export default function App() {
                 <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "20px" }}>
                   Turn customer feedback into action
                 </h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <div style={styles.featureBadge}>📊 Sentiment Insights</div>
-                  <div style={styles.featureBadge}>⚡ Smart Ticket Routing</div>
-                  <div style={styles.featureBadge}>🎯 Track What Matters</div>
-                </div>
               </div>
-              <span style={{ fontSize: "11px", color: "#a5b4fc" }}>© 2026 ReviewRave. Customer Intelligence Platform</span>
+              <span style={{ fontSize: "11px", color: "#a5b4fc" }}>© 2026 ReviewRave.</span>
             </div>
 
             <div style={styles.authRight}>
               <h3 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" }}>Login to ReviewRave</h3>
-              <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 20px 0" }}>Sign in to your account</p>
-
               <form onSubmit={handleLogin} style={styles.formStack}>
                 <div>
                   <label style={styles.label}>Email Address</label>
@@ -1005,87 +972,16 @@ export default function App() {
                   <label style={styles.label}>Password</label>
                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
                 </div>
-                
-                <button type="submit" style={{ ...styles.primaryBtn, marginTop: "10px" }}>
+                <button type="submit" style={styles.primaryBtn}>
                   Login to Dashboard
                 </button>
               </form>
-
-              <p style={{ fontSize: "12px", textAlign: "center", marginTop: "20px", color: "#64748b" }}>
-                Don't have an account?{" "}
-                <span onClick={() => setCurrentPage("register")} style={styles.linkText}>
-                  Register here
-                </span>
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. REGISTER PAGE (ROLE SELECT DROPDOWN ADDED HERE) */}
-      {currentPage === "register" && (
-        <div style={styles.authWrapper}>
-          <div style={styles.registerCard}>
-            <h3 style={{ fontSize: "22px", fontWeight: "700", margin: "0 0 4px 0", textAlign: "center", color: "#0f172a" }}>
-              Register Account
-            </h3>
-            <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 24px 0", textAlign: "center" }}>
-              Create a new ReviewRave profile
-            </p>
-
-            <form onSubmit={handleRegister} style={styles.formStack}>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>First Name</label>
-                  <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} required />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>Last Name</label>
-                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} required />
-                </div>
-              </div>
-
-              <div>
-                <label style={styles.label}>Company Name</label>
-                <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} style={styles.input} required />
-              </div>
-
-              <div>
-                <label style={styles.label}>Email Address</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
-              </div>
-
-              <div>
-                <label style={styles.label}>Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
-              </div>
-
-              {/* ROLE SELECT DROPDOWN */}
-              <div>
-                <label style={styles.label}>Select Role</label>
-                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.roleSelect}>
-                  <option value="Platform Admin">Platform Admin</option>
-                  <option value="Brand Manager">Brand Manager</option>
-                  <option value="Resolution Agent">Resolution Agent</option>
-                </select>
-              </div>
-
-              <button type="submit" style={{ ...styles.primaryBtn, marginTop: "10px", padding: "12px" }}>
-                Create Account
-              </button>
-            </form>
-
-            <p style={{ fontSize: "13px", textAlign: "center", marginTop: "20px", color: "#64748b" }}>
-              Already have an account?{" "}
-              <span onClick={() => setCurrentPage("login")} style={styles.linkText}>
-                Login here
-              </span>
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* 3. DASHBOARD SYSTEM */}
+      {/* 2. DASHBOARD */}
       {currentPage === "dashboard" && (
         <div style={{ minHeight: "100vh" }}>
           {/* Header */}
@@ -1098,53 +994,19 @@ export default function App() {
 
               {/* Navigation Tabs */}
               <nav style={{ display: "flex", gap: "4px" }}>
-                {selectedRole === "Brand Manager" &&
-                  ["Tracked Products", "Sentiment Insights", "Reviews"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-
-                {selectedRole === "Resolution Agent" &&
-                  ["Available Tickets", "My Tasks", "Resolved"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        setActiveTab(tab);
-                        setTicketTab(tab);
-                      }}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-
-                {selectedRole === "Platform Admin" &&
-                  ["Overview", "User Management", "Products"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      style={{
-                        ...styles.navTab,
-                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
-                        color: activeTab === tab ? "#4338ca" : "#475569",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                {["Tracked Products", "Sentiment Insights", "Reviews"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    style={{
+                      ...styles.navTab,
+                      backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
+                      color: activeTab === tab ? "#4338ca" : "#475569",
+                    }}
+                  >
+                    {tab}
+                  </button>
+                ))}
               </nav>
             </div>
 
@@ -1156,16 +1018,16 @@ export default function App() {
             </div>
           </header>
 
-          {/* Body Content */}
+          {/* Main Body */}
           <main style={styles.mainContainer}>
-            {/* BRAND MANAGER DASHBOARD */}
-            {selectedRole === "Brand Manager" && (
+            {activeTab === "Tracked Products" && (
               <div>
                 <div style={styles.sectionHeader}>
                   <div>
                     <h2 style={styles.heading}>Tracked Products</h2>
                     <span style={styles.subHeading}>Monitor customer feedback and sentiment</span>
                   </div>
+                  {/* TRIGGER FOR ADD PRODUCT MODAL */}
                   <button onClick={() => setIsAddProductOpen(true)} style={styles.primaryBtnWidth}>
                     + Add Product
                   </button>
@@ -1191,7 +1053,7 @@ export default function App() {
                     <div key={p.id} style={styles.productCard}>
                       <div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <h4 style={{ margin: 0, fontWeight: "700" }}>{p.name}</h4>
+                          <h4 style={{ margin: 0, fontWeight: "700", fontSize: "15px" }}>{p.name}</h4>
                           <span style={styles.activeTag}>{p.status}</span>
                         </div>
                         <span style={{ fontSize: "12px", color: "#94a3b8" }}>{p.category}</span>
@@ -1209,162 +1071,85 @@ export default function App() {
                 </div>
               </div>
             )}
-
-            {/* RESOLUTION AGENT DASHBOARD */}
-            {selectedRole === "Resolution Agent" && (
-              <div>
-                <h2 style={styles.heading}>Resolution Dashboard</h2>
-                <div style={styles.tableCard}>
-                  <table style={styles.table}>
-                    <thead>
-                      <tr style={styles.tableHeader}>
-                        <th style={styles.th}>Ticket ID</th>
-                        <th style={styles.th}>Priority</th>
-                        <th style={styles.th}>Status</th>
-                        <th style={styles.th}>Review Snippet</th>
-                        <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tickets.map((t) => (
-                        <tr key={t.id} style={styles.tableRow}>
-                          <td style={{ ...styles.td, fontWeight: "700" }}>{t.id}</td>
-                          <td style={styles.td}>
-                            <span style={t.priority === "CRITICAL" ? styles.critBadge : styles.highBadge}>{t.priority}</span>
-                          </td>
-                          <td style={styles.td}>{t.status}</td>
-                          <td style={styles.td}>{t.snippet}</td>
-                          <td style={{ ...styles.td, textAlign: "right" }}>
-                            <button onClick={() => handleClaimTicket(t.id)} style={styles.primaryBtnSmall}>
-                              Claim Ticket
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* PLATFORM ADMIN DASHBOARD */}
-            {selectedRole === "Platform Admin" && (
-              <div>
-                <h2 style={styles.heading}>Platform Overview</h2>
-                {activeTab === "Overview" && (
-                  <div style={styles.statsGrid}>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>Total Users</span>
-                      <div style={styles.statVal}>{users.length}</div>
-                    </div>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>Total Products</span>
-                      <div style={styles.statVal}>{products.length}</div>
-                    </div>
-                    <div style={styles.statCard}>
-                      <span style={styles.statLabel}>System Health</span>
-                      <div style={{ ...styles.statVal, color: "#16a34a" }}>99.9%</div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "User Management" && (
-                  <div style={styles.tableCard}>
-                    <table style={styles.table}>
-                      <thead>
-                        <tr style={styles.tableHeader}>
-                          <th style={styles.th}>ID</th>
-                          <th style={styles.th}>Name</th>
-                          <th style={styles.th}>Email</th>
-                          <th style={styles.th}>Role</th>
-                          <th style={styles.th}>Status</th>
-                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((u) => (
-                          <tr key={u.id} style={styles.tableRow}>
-                            <td style={styles.td}>{u.id}</td>
-                            <td style={{ ...styles.td, fontWeight: "700" }}>{u.name}</td>
-                            <td style={styles.td}>{u.email}</td>
-                            <td style={styles.td}>{u.role}</td>
-                            <td style={styles.td}>
-                              <span style={u.status === "Active" ? styles.activeTag : styles.critBadge}>{u.status}</span>
-                            </td>
-                            <td style={{ ...styles.td, textAlign: "right" }}>
-                              <button onClick={() => handleToggleUserStatus(u.id)} style={styles.secondaryBtn}>
-                                Toggle Status
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {activeTab === "Products" && (
-                  <div style={styles.tableCard}>
-                    <table style={styles.table}>
-                      <thead>
-                        <tr style={styles.tableHeader}>
-                          <th style={styles.th}>Product Name</th>
-                          <th style={styles.th}>Category</th>
-                          <th style={styles.th}>Reviews</th>
-                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {products.map((p) => (
-                          <tr key={p.id} style={styles.tableRow}>
-                            <td style={{ ...styles.td, fontWeight: "700" }}>{p.name}</td>
-                            <td style={styles.td}>{p.category}</td>
-                            <td style={styles.td}>{p.totalReviews}</td>
-                            <td style={{ ...styles.td, textAlign: "right" }}>
-                              <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-                                <button onClick={() => handleOpenEditModal(p)} style={styles.editBtn}>
-                                  Edit
-                                </button>
-                                <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
-                                  Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            )}
           </main>
         </div>
       )}
 
-      {/* EDIT PRODUCT MODAL */}
-      {isEditProductOpen && (
+      {/* 3. ADD PRODUCT MODAL (FIXED & ADDED HERE) */}
+      {isAddProductOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
-            <h3 style={{ margin: "0 0 15px 0" }}>Edit Product</h3>
-            <form onSubmit={handleSaveEditProduct} style={styles.formStack}>
+            <h3 style={{ margin: "0 0 15px 0", fontSize: "18px", fontWeight: "700" }}>Add New Product</h3>
+            <form onSubmit={handleAddProduct} style={styles.formStack}>
               <div>
                 <label style={styles.label}>Product Name</label>
-                <input type="text" value={editProdName} onChange={(e) => setEditProdName(e.target.value)} style={styles.input} required />
+                <input
+                  type="text"
+                  placeholder="e.g. Acme Headphones"
+                  value={newProdName}
+                  onChange={(e) => setNewProdName(e.target.value)}
+                  style={styles.input}
+                  required
+                />
               </div>
               <div>
                 <label style={styles.label}>Category</label>
-                <select value={editProdCategory} onChange={(e) => setEditProdCategory(e.target.value)} style={styles.input}>
+                <select
+                  value={newProdCategory}
+                  onChange={(e) => setNewProdCategory(e.target.value)}
+                  style={styles.input}
+                >
                   <option value="Electronics">Electronics</option>
                   <option value="Audio">Audio</option>
                   <option value="Software">Software</option>
                 </select>
               </div>
               <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button type="submit" style={styles.primaryBtn}>
-                  Update Product
+                <button type="submit" style={{ ...styles.primaryBtn, flex: 1 }}>
+                  Save Product
                 </button>
-                <button type="button" onClick={() => setIsEditProductOpen(false)} style={styles.secondaryBtn}>
+                <button type="button" onClick={() => setIsAddProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. EDIT PRODUCT MODAL */}
+      {isEditProductOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0", fontSize: "18px", fontWeight: "700" }}>Edit Product</h3>
+            <form onSubmit={handleSaveEditProduct} style={styles.formStack}>
+              <div>
+                <label style={styles.label}>Product Name</label>
+                <input
+                  type="text"
+                  value={editProdName}
+                  onChange={(e) => setEditProdName(e.target.value)}
+                  style={styles.input}
+                  required
+                />
+              </div>
+              <div>
+                <label style={styles.label}>Category</label>
+                <select
+                  value={editProdCategory}
+                  onChange={(e) => setEditProdCategory(e.target.value)}
+                  style={styles.input}
+                >
+                  <option value="Electronics">Electronics</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Software">Software</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button type="submit" style={{ ...styles.primaryBtn, flex: 1 }}>
+                  Update
+                </button>
+                <button type="button" onClick={() => setIsEditProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>
                   Cancel
                 </button>
               </div>
@@ -1376,27 +1161,21 @@ export default function App() {
   );
 }
 
-// INLINE STYLES DEFINITION
+// STYLES
 const styles = {
   appWrapper: { fontFamily: "Segoe UI, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
   authWrapper: { minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f1f5f9", padding: "20px" },
-  authCard: { display: "flex", backgroundColor: "#ffffff", borderRadius: "16px", overflow: "hidden", maxWidth: "850px", width: "100%", border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" },
-  registerCard: { backgroundColor: "#ffffff", borderRadius: "16px", padding: "36px", width: "100%", maxWidth: "440px", border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" },
+  authCard: { display: "flex", backgroundColor: "#ffffff", borderRadius: "16px", overflow: "hidden", maxWidth: "850px", width: "100%", border: "1px solid #e2e8f0" },
   authLeft: { backgroundColor: "#4f46e5", color: "#ffffff", padding: "40px", width: "45%", display: "flex", flexDirection: "column", justifyContent: "space-between" },
   authRight: { padding: "40px", width: "55%", display: "flex", flexDirection: "column", justify: "center" },
   logoBox: { width: "28px", height: "28px", backgroundColor: "#4f46e5", color: "#fff", borderRadius: "6px", display: "flex", alignItems: "center", justifyCenter: "center", fontWeight: "bold" },
-  featureBadge: { backgroundColor: "rgba(255,255,255,0.15)", padding: "10px 14px", borderRadius: "8px", fontSize: "13px" },
   formStack: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
   input: { width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", boxSizing: "border-box", outline: "none" },
-  roleSelect: { width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #6366f1", backgroundColor: "#e0e7ff", color: "#312e81", fontWeight: "600", fontSize: "13px", boxSizing: "border-box", outline: "none", cursor: "pointer" },
   primaryBtn: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "10px 16px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
-  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
-  primaryBtnSmall: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  editBtn: { backgroundColor: "#e0e7ff", color: "#4338ca", border: "none", padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  linkText: { color: "#4f46e5", fontWeight: "600", cursor: "pointer" },
+  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "10px 18px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
+  secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer", textAlign: "center" },
+  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   navbar: { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" },
   navTab: { border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: "600", cursor: "pointer" },
   roleBadge: { backgroundColor: "#e0e7ff", color: "#3730a3", padding: "4px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: "700" },
@@ -1412,15 +1191,7 @@ const styles = {
   gridContainer: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" },
   productCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
   activeTag: { backgroundColor: "#dcfce7", color: "#15803d", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" },
-  tableCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
-  table: { width: "100%", borderCollapse: "collapse", fontSize: "12px" },
-  tableHeader: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" },
-  th: { padding: "12px", textAlign: "left", color: "#64748b", fontWeight: "600" },
-  tableRow: { borderBottom: "1px solid #f1f5f9" },
-  td: { padding: "12px", color: "#334155" },
-  critBadge: { backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
-  highBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
   toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "10px 16px", borderRadius: "8px", fontSize: "13px", zIndex: 1000 },
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center" },
-  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "320px" },
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
+  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "340px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" },
 };
