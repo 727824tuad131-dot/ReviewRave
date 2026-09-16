@@ -547,278 +547,312 @@
 // export default App;
 
 
-import React from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
+// import React from "react";
+// import {
+//   BrowserRouter,
+//   Routes,
+//   Route,
+//   Navigate,
+//   Outlet,
+// } from "react-router-dom";
 
-import Login from "./Login";
+// import Login from "./Login";
+// import Register from "./Register";
+
+// import Navbar from "./components/layout/Navbar";
+// import NotificationStack from "./NotificationStack";
+
+// import ProductList from "./components/product/ProductList";
+// import ReviewIngestForm from "./components/review/ReviewIngestForm";
+// import TicketList from "./components/ticket/TicketList";
+// import InsightList from "./components/insight/InsightList";
+// import AdminDashboard from "./components/dashboard/AdminDashboard";
+
+// /* =========================================================
+//    PROTECTED ROUTE
+//    ========================================================= */
+
+// const ProtectedRoute = () => {
+//   const token = localStorage.getItem("token");
+
+//   if (!token) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   return (
+//     <>
+//       <Navbar />
+
+//       <main className="app-main">
+//         <Outlet />
+//       </main>
+
+//       <NotificationStack />
+//     </>
+//   );
+// };
+
+// /* =========================================================
+//    ROLE ROUTE
+//    ========================================================= */
+
+// const RoleRoute = ({ allowedRoles, children }) => {
+//   const token = localStorage.getItem("token");
+//   const role = localStorage.getItem("role");
+
+//   /* User not logged in */
+//   if (!token) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   /* User does not have permission */
+//   if (allowedRoles && !allowedRoles.includes(role)) {
+//     return <Navigate to="/" replace />;
+//   }
+
+//   return children;
+// };
+
+// /* =========================================================
+//    HOME PAGE
+//    ========================================================= */
+
+// const Home = () => {
+//   const role = localStorage.getItem("role");
+
+//   /* Platform Admin */
+//   if (role === "PLATFORM_ADMIN") {
+//     return <AdminDashboard />;
+//   }
+
+//   /* Resolution Agent */
+//   if (role === "RESOLUTION_AGENT") {
+//     return <TicketList />;
+//   }
+
+//   /* Brand Manager */
+//   return <ProductList />;
+// };
+
+// /* =========================================================
+//    APP
+//    ========================================================= */
+
+// function App() {
+//   return (
+//     <BrowserRouter>
+//       <Routes>
+
+//         {/* =================================================
+//             PUBLIC ROUTES
+//             ================================================= */}
+
+//         <Route
+//           path="/login"
+//           element={<Login />}
+//         />
+
+//         <Route
+//           path="/register"
+//           element={<Register />}
+//         />
+
+
+//         {/* =================================================
+//             PROTECTED ROUTES
+//             ================================================= */}
+
+//         <Route element={<ProtectedRoute />}>
+
+//           {/* ================= HOME ================= */}
+
+//           <Route
+//             path="/"
+//             element={<Home />}
+//           />
+
+
+//           {/* =================================================
+//               PRODUCTS
+//               BRAND MANAGER + PLATFORM ADMIN
+//               ================================================= */}
+
+//           <Route
+//             path="/products"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "BRAND_MANAGER",
+//                   "PLATFORM_ADMIN",
+//                 ]}
+//               >
+//                 <ProductList />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               REVIEWS
+//               BRAND MANAGER
+//               ================================================= */}
+
+//           <Route
+//             path="/reviews"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "BRAND_MANAGER",
+//                 ]}
+//               >
+//                 <ReviewIngestForm />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               INSIGHTS
+//               BRAND MANAGER + PLATFORM ADMIN
+//               ================================================= */}
+
+//           <Route
+//             path="/insights"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "BRAND_MANAGER",
+//                   "PLATFORM_ADMIN",
+//                 ]}
+//               >
+//                 <InsightList />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               TICKETS
+//               RESOLUTION AGENT + PLATFORM ADMIN + BRAND MANAGER
+//               ================================================= */}
+
+//           <Route
+//             path="/tickets"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "RESOLUTION_AGENT",
+//                   "PLATFORM_ADMIN",
+//                   "BRAND_MANAGER",
+//                 ]}
+//               >
+//                 <TicketList />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               RESOLUTION AGENT - MY TASKS
+//               ================================================= */}
+
+//           <Route
+//             path="/tasks"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "RESOLUTION_AGENT",
+//                 ]}
+//               >
+//                 <TicketList />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               RESOLUTION AGENT - RESOLUTION CENTER
+//               ================================================= */}
+
+//           <Route
+//             path="/resolution-center"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "RESOLUTION_AGENT",
+//                 ]}
+//               >
+//                 <TicketList />
+//               </RoleRoute>
+//             }
+//           />
+
+
+//           {/* =================================================
+//               PLATFORM ADMIN
+//               ================================================= */}
+
+//           <Route
+//             path="/admin"
+//             element={
+//               <RoleRoute
+//                 allowedRoles={[
+//                   "PLATFORM_ADMIN",
+//                 ]}
+//               >
+//                 <AdminDashboard />
+//               </RoleRoute>
+//             }
+//           />
+
+//         </Route>
+
+
+//         {/* =================================================
+//             UNKNOWN ROUTES
+//             ================================================= */}
+
+//         <Route
+//           path="*"
+//           element={<Navigate to="/" replace />}
+//         />
+
+//       </Routes>
+//     </BrowserRouter>
+//   );
+// }
+
+// export default App;
+
+
+import React, { useState } from "react";
 import Register from "./Register";
-
-import Navbar from "./components/layout/Navbar";
-import NotificationStack from "./NotificationStack";
-
-import ProductList from "./components/product/ProductList";
-import ReviewIngestForm from "./components/review/ReviewIngestForm";
-import TicketList from "./components/ticket/TicketList";
-import InsightList from "./components/insight/InsightList";
+import Login from "./Login";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
 
-/* =========================================================
-   PROTECTED ROUTE
-   ========================================================= */
-
-const ProtectedRoute = () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return (
-    <>
-      <Navbar />
-
-      <main className="app-main">
-        <Outlet />
-      </main>
-
-      <NotificationStack />
-    </>
-  );
-};
-
-/* =========================================================
-   ROLE ROUTE
-   ========================================================= */
-
-const RoleRoute = ({ allowedRoles, children }) => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-
-  /* User not logged in */
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  /* User does not have permission */
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
-
-/* =========================================================
-   HOME PAGE
-   ========================================================= */
-
-const Home = () => {
-  const role = localStorage.getItem("role");
-
-  /* Platform Admin */
-  if (role === "PLATFORM_ADMIN") {
-    return <AdminDashboard />;
-  }
-
-  /* Resolution Agent */
-  if (role === "RESOLUTION_AGENT") {
-    return <TicketList />;
-  }
-
-  /* Brand Manager */
-  return <ProductList />;
-};
-
-/* =========================================================
-   APP
-   ========================================================= */
-
 function App() {
+  const [currentPage, setCurrentPage] = useState("register");
+
+  const handleRegisterSuccess = (data) => {
+    console.log("Registered Data:", data);
+    setCurrentPage("login"); // Register aanadhum login page-ku pogum
+  };
+
   return (
-    <BrowserRouter>
-      <Routes>
-
-        {/* =================================================
-            PUBLIC ROUTES
-            ================================================= */}
-
-        <Route
-          path="/login"
-          element={<Login />}
+    <div>
+      {currentPage === "register" && (
+        <Register
+          onRegisterSuccess={handleRegisterSuccess}
+          onGoToLogin={() => setCurrentPage("login")}
         />
+      )}
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+      {currentPage === "login" && (
+        <Login onLoginSuccess={() => setCurrentPage("dashboard")} />
+      )}
 
-
-        {/* =================================================
-            PROTECTED ROUTES
-            ================================================= */}
-
-        <Route element={<ProtectedRoute />}>
-
-          {/* ================= HOME ================= */}
-
-          <Route
-            path="/"
-            element={<Home />}
-          />
-
-
-          {/* =================================================
-              PRODUCTS
-              BRAND MANAGER + PLATFORM ADMIN
-              ================================================= */}
-
-          <Route
-            path="/products"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "BRAND_MANAGER",
-                  "PLATFORM_ADMIN",
-                ]}
-              >
-                <ProductList />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              REVIEWS
-              BRAND MANAGER
-              ================================================= */}
-
-          <Route
-            path="/reviews"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "BRAND_MANAGER",
-                ]}
-              >
-                <ReviewIngestForm />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              INSIGHTS
-              BRAND MANAGER + PLATFORM ADMIN
-              ================================================= */}
-
-          <Route
-            path="/insights"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "BRAND_MANAGER",
-                  "PLATFORM_ADMIN",
-                ]}
-              >
-                <InsightList />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              TICKETS
-              RESOLUTION AGENT + PLATFORM ADMIN + BRAND MANAGER
-              ================================================= */}
-
-          <Route
-            path="/tickets"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "RESOLUTION_AGENT",
-                  "PLATFORM_ADMIN",
-                  "BRAND_MANAGER",
-                ]}
-              >
-                <TicketList />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              RESOLUTION AGENT - MY TASKS
-              ================================================= */}
-
-          <Route
-            path="/tasks"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "RESOLUTION_AGENT",
-                ]}
-              >
-                <TicketList />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              RESOLUTION AGENT - RESOLUTION CENTER
-              ================================================= */}
-
-          <Route
-            path="/resolution-center"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "RESOLUTION_AGENT",
-                ]}
-              >
-                <TicketList />
-              </RoleRoute>
-            }
-          />
-
-
-          {/* =================================================
-              PLATFORM ADMIN
-              ================================================= */}
-
-          <Route
-            path="/admin"
-            element={
-              <RoleRoute
-                allowedRoles={[
-                  "PLATFORM_ADMIN",
-                ]}
-              >
-                <AdminDashboard />
-              </RoleRoute>
-            }
-          />
-
-        </Route>
-
-
-        {/* =================================================
-            UNKNOWN ROUTES
-            ================================================= */}
-
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
-
-      </Routes>
-    </BrowserRouter>
+      {currentPage === "dashboard" && <AdminDashboard />}
+    </div>
   );
 }
 
