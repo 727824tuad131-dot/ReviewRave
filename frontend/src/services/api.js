@@ -59,10 +59,16 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('reviewrave_token');
+    // Support the current token key used by authSlice
+    // and keep compatibility with the older key.
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('reviewrave_token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -70,18 +76,28 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
+
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       localStorage.removeItem('reviewrave_token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('email');
+      localStorage.removeItem('user');
+
       window.location.href = '/login';
     }
+
     const message =
       error.response?.data?.error ||
       error.response?.data?.message ||
-      (typeof error.response?.data === 'string' ? error.response?.data : null) ||
+      (typeof error.response?.data === 'string'
+        ? error.response.data
+        : null) ||
       error.message ||
       'An unexpected error occurred';
+
     return Promise.reject(new Error(message));
   }
 );
