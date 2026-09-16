@@ -565,8 +565,8 @@ import NotificationStack from "./NotificationStack";
 import ProductList from "./components/product/ProductList";
 import ReviewIngestForm from "./components/review/ReviewIngestForm";
 import TicketList from "./components/ticket/TicketList";
+import InsightList from "./components/insight/InsightList";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
-
 
 /* =========================================================
    PROTECTED ROUTE
@@ -592,7 +592,6 @@ const ProtectedRoute = () => {
   );
 };
 
-
 /* =========================================================
    ROLE ROUTE
    ========================================================= */
@@ -601,39 +600,39 @@ const RoleRoute = ({ allowedRoles, children }) => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  /* User not logged in */
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (
-    allowedRoles &&
-    !allowedRoles.includes(role)
-  ) {
+  /* User does not have permission */
+  if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
-
 /* =========================================================
-   HOME
+   HOME PAGE
    ========================================================= */
 
 const Home = () => {
   const role = localStorage.getItem("role");
 
+  /* Platform Admin */
   if (role === "PLATFORM_ADMIN") {
     return <AdminDashboard />;
   }
 
+  /* Resolution Agent */
   if (role === "RESOLUTION_AGENT") {
     return <TicketList />;
   }
 
+  /* Brand Manager */
   return <ProductList />;
 };
-
 
 /* =========================================================
    APP
@@ -644,7 +643,9 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* ================= AUTH ================= */}
+        {/* =================================================
+            PUBLIC ROUTES
+            ================================================= */}
 
         <Route
           path="/login"
@@ -657,11 +658,13 @@ function App() {
         />
 
 
-        {/* ================= PROTECTED ================= */}
+        {/* =================================================
+            PROTECTED ROUTES
+            ================================================= */}
 
         <Route element={<ProtectedRoute />}>
 
-          {/* HOME */}
+          {/* ================= HOME ================= */}
 
           <Route
             path="/"
@@ -669,7 +672,10 @@ function App() {
           />
 
 
-          {/* PRODUCTS */}
+          {/* =================================================
+              PRODUCTS
+              BRAND MANAGER + PLATFORM ADMIN
+              ================================================= */}
 
           <Route
             path="/products"
@@ -686,7 +692,10 @@ function App() {
           />
 
 
-          {/* REVIEWS */}
+          {/* =================================================
+              REVIEWS
+              BRAND MANAGER
+              ================================================= */}
 
           <Route
             path="/reviews"
@@ -702,7 +711,10 @@ function App() {
           />
 
 
-          {/* INSIGHTS */}
+          {/* =================================================
+              INSIGHTS
+              BRAND MANAGER + PLATFORM ADMIN
+              ================================================= */}
 
           <Route
             path="/insights"
@@ -713,13 +725,16 @@ function App() {
                   "PLATFORM_ADMIN",
                 ]}
               >
-                <ProductList />
+                <InsightList />
               </RoleRoute>
             }
           />
 
 
-          {/* TICKETS */}
+          {/* =================================================
+              TICKETS
+              RESOLUTION AGENT + PLATFORM ADMIN + BRAND MANAGER
+              ================================================= */}
 
           <Route
             path="/tickets"
@@ -737,7 +752,9 @@ function App() {
           />
 
 
-          {/* RESOLUTION AGENT TASKS */}
+          {/* =================================================
+              RESOLUTION AGENT - MY TASKS
+              ================================================= */}
 
           <Route
             path="/tasks"
@@ -753,7 +770,9 @@ function App() {
           />
 
 
-          {/* RESOLUTION CENTER */}
+          {/* =================================================
+              RESOLUTION AGENT - RESOLUTION CENTER
+              ================================================= */}
 
           <Route
             path="/resolution-center"
@@ -769,7 +788,9 @@ function App() {
           />
 
 
-          {/* ADMIN */}
+          {/* =================================================
+              PLATFORM ADMIN
+              ================================================= */}
 
           <Route
             path="/admin"
@@ -787,16 +808,13 @@ function App() {
         </Route>
 
 
-        {/* ================= UNKNOWN URL ================= */}
+        {/* =================================================
+            UNKNOWN ROUTES
+            ================================================= */}
 
         <Route
           path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
+          element={<Navigate to="/" replace />}
         />
 
       </Routes>
@@ -804,4 +822,4 @@ function App() {
   );
 }
 
-export default App;                                            
+export default App;
