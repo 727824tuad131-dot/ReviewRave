@@ -280,71 +280,33 @@
 // export default authSlice.reducer;
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-/*
-=========================================================
-LOCAL AUTHENTICATION
-Backend is NOT required for Login/Register.
-=========================================================
-*/
+import authService from "../../services/authService";
 
 /* =======================================================
-   REGISTER
+   ERROR MESSAGE HELPER
 ======================================================= */
 
-export const register = createAsyncThunk(
-  "auth/register",
+const getErrorMessage = (error, fallback) => {
+  const data = error?.response?.data;
 
-  async (userData, { rejectWithValue }) => {
-    try {
-      const existingAccount = JSON.parse(
-        localStorage.getItem("reviewraveAccount")
-      );
-
-      /* Check duplicate email */
-      if (
-        existingAccount &&
-        existingAccount.email?.toLowerCase() ===
-          userData.email?.toLowerCase()
-      ) {
-        return rejectWithValue(
-          "An account with this email already exists."
-        );
-      }
-
-      /* Save account locally */
-      const account = {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        companyName: userData.companyName || "",
-        email: userData.email,
-        password: userData.password,
-        role: userData.role,
-      };
-
-      localStorage.setItem(
-        "reviewraveAccount",
-        JSON.stringify(account)
-      );
-
-      /*
-        Registration should NOT automatically login.
-        We only save the account and return success.
-      */
-
-      return {
-        success: true,
-        message: "Account created successfully.",
-        user: account,
-      };
-    } catch (error) {
-      return rejectWithValue(
-        error.message || "Registration failed"
-      );
-    }
+  if (typeof data === "string") {
+    return data;
   }
-);
 
+  if (data?.message) {
+    return data.message;
+  }
+
+  if (data?.error) {
+    return data.error;
+  }
+
+  if (error?.message) {
+    return error.message;
+  }
+
+  return fallback;
+};
 
 /* =======================================================
    LOGIN
@@ -355,69 +317,36 @@ export const login = createAsyncThunk(
 
   async (credentials, { rejectWithValue }) => {
     try {
-      const savedAccount = JSON.parse(
-        localStorage.getItem("reviewraveAccount")
-      );
+      const response = await authService.login(credentials);
 
-      /* No registered account */
-      if (!savedAccount) {
-        return rejectWithValue(
-          "No account found. Please register first."
-        );
-      }
-
-      /* Check email */
-      if (
-        savedAccount.email?.toLowerCase() !==
-        credentials.email?.toLowerCase()
-      ) {
-        return rejectWithValue(
-          "Invalid email or password."
-        );
-      }
-
-      /* Check password */
-      if (savedAccount.password !== credentials.password) {
-        return rejectWithValue(
-          "Invalid email or password."
-        );
-      }
-
-      /*
-        Create a local token.
-        This is only for frontend route protection.
-      */
-      const localToken =
-        "local-token-" + Date.now();
-
-      localStorage.setItem(
-        "token",
-        localToken
-      );
-
-      localStorage.setItem(
-        "role",
-        savedAccount.role
-      );
-
-      localStorage.setItem(
-        "email",
-        savedAccount.email
-      );
-
-      return {
-        token: localToken,
-        user: savedAccount,
-        role: savedAccount.role,
-      };
+      return response?.data ?? response;
     } catch (error) {
       return rejectWithValue(
-        error.message || "Login failed"
+        getErrorMessage(error, "Login failed")
       );
     }
   }
 );
 
+/* =======================================================
+   REGISTER
+======================================================= */
+
+export const register = createAsyncThunk(
+  "auth/register",
+
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await authService.register(userData);
+
+      return response?.data ?? response;
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Registration failed")
+      );
+    }
+  }
+);
 
 /* =======================================================
    ALIASES
@@ -426,22 +355,25 @@ export const login = createAsyncThunk(
 export const loginUser = login;
 export const registerUser = register;
 
-
 /* =======================================================
    INITIAL STATE
 ======================================================= */
 
 const initialState = {
   user: null,
-  token: localStorage.getItem("token") || null,
+  token: null,
+  role: null,
+  userId: null,
 
+  loading: false,
+  error: null,
+
+  // Keep these for compatibility with existing UI/tests
   isError: false,
   isSuccess: false,
   isLoading: false,
-
   message: "",
 };
-
 
 /* =======================================================
    AUTH SLICE
@@ -453,47 +385,55 @@ const authSlice = createSlice({
   initialState,
 
   reducers: {
-
     /* ===================================================
        LOGOUT
     =================================================== */
 
     logout: (state) => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("email");
-
-      state.token = null;
       state.user = null;
+      state.token = null;
+      state.role = null;
+      state.userId = null;
+
+      state.loading = false;
+      state.error = null;
 
       state.isError = false;
       state.isSuccess = false;
       state.isLoading = false;
       state.message = "";
-    },
 
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("email");
+      localStorage.removeItem("reviewrave_token");
+      localStorage.removeItem("user");
+    },
 
     /* ===================================================
        RESET
     =================================================== */
 
     reset: (state) => {
-      state.isLoading = false;
-      state.isSuccess = false;
+      state.loading = false;
+      state.error = null;
+
       state.isError = false;
+      state.isSuccess = false;
+      state.isLoading = false;
       state.message = "";
     },
-
 
     /* ===================================================
        CLEAR ERROR
     =================================================== */
 
     clearError: (state) => {
+      state.error = null;
       state.isError = false;
       state.message = "";
     },
-
 
     /* ===================================================
        SET USER
@@ -502,105 +442,193 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
 
-      state.token =
-        action.payload?.token ||
-        state.token;
+      if (action.payload?.token) {
+        state.token = action.payload.token;
+      }
+
+      if (action.payload?.role) {
+        state.role = action.payload.role;
+      }
+
+      if (action.payload?.userId !== undefined) {
+        state.userId = action.payload.userId;
+      }
     },
-
   },
-
 
   /* =====================================================
      ASYNC ACTIONS
   ===================================================== */
 
   extraReducers: (builder) => {
-
     /* ===================================================
-       LOGIN
+       LOGIN PENDING
     =================================================== */
 
-    builder
+    builder.addCase(login.pending, (state) => {
+      state.loading = true;
+      state.error = null;
 
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-        state.isError = false;
-        state.isSuccess = false;
-        state.message = "";
-      })
-
-      .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.isError = false;
-
-        state.token =
-          action.payload?.token || null;
-
-        state.user =
-          action.payload?.user ||
-          null;
-
-        state.message = "";
-      })
-
-      .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = false;
-        state.isError = true;
-
-        state.message =
-          action.payload ||
-          "Login failed";
-      });
-
+      state.isLoading = true;
+      state.isError = false;
+      state.isSuccess = false;
+      state.message = "";
+    });
 
     /* ===================================================
-       REGISTER
+       LOGIN SUCCESS
     =================================================== */
 
-    builder
+    builder.addCase(login.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
 
-      .addCase(register.pending, (state) => {
-        state.isLoading = true;
-        state.isError = false;
-        state.isSuccess = false;
-        state.message = "";
-      })
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = true;
+      state.message = "";
 
-      .addCase(register.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.isError = false;
+      const data = action.payload || {};
 
-        /*
-          IMPORTANT:
-          Registration does NOT create login session.
-        */
+      state.token = data.token ?? null;
+      state.role = data.role ?? null;
 
-        state.token = null;
-        state.user = null;
+      state.userId =
+        data.userId !== undefined && data.userId !== null
+          ? data.userId
+          : null;
 
-        state.message =
-          action.payload?.message ||
-          "Account created successfully.";
-      })
+      state.user = data;
 
-      .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = false;
-        state.isError = true;
+      /* Save REAL backend JWT */
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
 
-        state.message =
-          action.payload ||
-          "Registration failed";
-      });
+      if (data.role) {
+        localStorage.setItem("role", data.role);
+      }
+
+      if (
+        data.userId !== undefined &&
+        data.userId !== null
+      ) {
+        localStorage.setItem(
+          "userId",
+          String(data.userId)
+        );
+      }
+
+      if (data.email) {
+        localStorage.setItem("email", data.email);
+      }
+    });
+
+    /* ===================================================
+       LOGIN FAILED
+    =================================================== */
+
+    builder.addCase(login.rejected, (state, action) => {
+      state.loading = false;
+
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = true;
+
+      state.error =
+        action.payload || "Login failed";
+
+      state.message =
+        action.payload || "Login failed";
+    });
+
+    /* ===================================================
+       REGISTER PENDING
+    =================================================== */
+
+    builder.addCase(register.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+
+      state.isLoading = true;
+      state.isError = false;
+      state.isSuccess = false;
+      state.message = "";
+    });
+
+    /* ===================================================
+       REGISTER SUCCESS
+    =================================================== */
+
+    builder.addCase(register.fulfilled, (state, action) => {
+      state.loading = false;
+      state.error = null;
+
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = true;
+
+      const data = action.payload || {};
+
+      state.message =
+        data.message ||
+        "Account created successfully.";
+
+      /*
+       * Backend registration may return a JWT.
+       * If it does, store it.
+       */
+      state.token = data.token ?? null;
+      state.role = data.role ?? null;
+
+      state.userId =
+        data.userId !== undefined && data.userId !== null
+          ? data.userId
+          : null;
+
+      state.user = data;
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      if (data.role) {
+        localStorage.setItem("role", data.role);
+      }
+
+      if (
+        data.userId !== undefined &&
+        data.userId !== null
+      ) {
+        localStorage.setItem(
+          "userId",
+          String(data.userId)
+        );
+      }
+    });
+
+    /* ===================================================
+       REGISTER FAILED
+    =================================================== */
+
+    builder.addCase(register.rejected, (state, action) => {
+      state.loading = false;
+
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = true;
+
+      state.error =
+        action.payload || "Registration failed";
+
+      state.message =
+        action.payload || "Registration failed";
+    });
   },
 });
 
-
 /* =======================================================
-   EXPORTS
+   EXPORT ACTIONS
 ======================================================= */
 
 export const {
