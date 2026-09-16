@@ -345,7 +345,7 @@ const Navbar = () => {
     {
       icon: "▤",
       label: "Reports",
-      path: "/tickets",
+      path: "/reports",
     },
     {
       icon: "⚙",
@@ -361,13 +361,18 @@ const Navbar = () => {
   const resolutionAgentMenu = [
     {
       icon: "⌂",
-      label: "Dashboard",
+      label: "Home",
       path: "/",
     },
     {
       icon: "▤",
       label: "Resolution Tickets",
       path: "/tickets",
+    },
+    {
+      icon: "✓",
+      label: "My Tasks",
+      path: "/tasks",
     },
   ];
 
@@ -403,6 +408,10 @@ const Navbar = () => {
     },
   ];
 
+  /* =====================================================
+     SELECT MENU BASED ON ROLE
+     ===================================================== */
+
   let menu = brandManagerMenu;
 
   if (role === "RESOLUTION_AGENT") {
@@ -417,11 +426,12 @@ const Navbar = () => {
     <header className="rr-header">
 
       {/* =================================================
-          TOP BRAND HEADER
+          TOP BAR
           ================================================= */}
 
       <div className="rr-topbar">
 
+        {/* BRAND */}
         <div
           className="rr-brand"
           onClick={() => goTo("/")}
@@ -433,13 +443,11 @@ const Navbar = () => {
             }
           }}
         >
-
           <div className="rr-logo-mark">
             R
           </div>
 
           <div className="rr-brand-text">
-
             <div className="rr-brand-name">
               ReviewRave
             </div>
@@ -447,16 +455,10 @@ const Navbar = () => {
             <div className="rr-brand-subtitle">
               SOCIAL SENTIMENT PLATFORM
             </div>
-
           </div>
-
         </div>
 
-
-        {/* =================================================
-            USER SECTION
-            ================================================= */}
-
+        {/* USER AREA */}
         <div className="rr-user-area">
 
           <button
@@ -474,7 +476,6 @@ const Navbar = () => {
           </div>
 
           <div className="rr-user-details">
-
             <strong>
               {email.split("@")[0]}
             </strong>
@@ -482,7 +483,6 @@ const Navbar = () => {
             <span>
               {getRoleName()}
             </span>
-
           </div>
 
           <button
@@ -496,9 +496,7 @@ const Navbar = () => {
           </button>
 
         </div>
-
       </div>
-
 
       {/* =================================================
           NAVIGATION
@@ -508,11 +506,9 @@ const Navbar = () => {
         className="rr-navigation"
         aria-label="Main navigation"
       >
-
         <div className="rr-navigation-inner">
 
           {menu.map((item) => (
-
             <button
               key={item.path}
               type="button"
@@ -523,7 +519,6 @@ const Navbar = () => {
               }`}
               onClick={() => goTo(item.path)}
             >
-
               <span className="rr-nav-icon">
                 {item.icon}
               </span>
@@ -531,13 +526,10 @@ const Navbar = () => {
               <span>
                 {item.label}
               </span>
-
             </button>
-
           ))}
 
         </div>
-
       </nav>
 
     </header>
