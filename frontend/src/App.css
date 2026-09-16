@@ -3654,3 +3654,380 @@ body {
     padding: 8px;
   }
 }
+
+
+/* =========================================================
+   INSIGHTS PAGE
+   ========================================================= */
+
+.insight-list {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 60px;
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+.insight-page-header {
+  margin-bottom: 32px;
+}
+
+.insight-eyebrow {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #5b4bdb;
+  text-transform: uppercase;
+}
+
+.insight-page-header h1 {
+  margin: 0;
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #172554;
+}
+
+.insight-description {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+
+/* =========================
+   PRODUCT SELECTOR
+   ========================= */
+
+.insight-selector-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.insight-selector-section label {
+  display: block;
+  margin-bottom: 10px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.insight-product-select {
+  width: 100%;
+  max-width: 500px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.insight-product-select:hover {
+  border-color: #7c3aed;
+}
+
+.insight-product-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+
+/* =========================
+   LOADING
+   ========================= */
+
+.insight-loading {
+  text-align: center;
+  padding: 50px;
+  background: #ffffff;
+  border-radius: 16px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.insight-loading-text {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+
+/* =========================
+   INSIGHTS CONTAINER
+   ========================= */
+
+.insights-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+/* =========================
+   SENTIMENT SUMMARY
+   ========================= */
+
+.insight-summary-section {
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f8f7ff 100%
+  );
+
+  border: 1px solid #e8e5ff;
+  border-radius: 18px;
+  padding: 28px;
+
+  box-shadow:
+    0 10px 30px rgba(79, 70, 229, 0.08);
+}
+
+.insight-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.insight-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #6366f1,
+    #8b5cf6
+  );
+
+  color: white;
+  font-size: 21px;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+}
+
+.insight-section-heading h2 {
+  margin: 0;
+  color: #172554;
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.insight-section-heading p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.insight-summary-text {
+  margin: 0;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+
+/* =========================
+   METRICS
+   ========================= */
+
+.insight-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.insight-metric {
+  position: relative;
+  overflow: hidden;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 8px 22px rgba(15, 23, 42, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.insight-metric:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 14px 28px rgba(15, 23, 42, 0.09);
+}
+
+.insight-metric::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.insight-metric.positive::before {
+  background: #22c55e;
+}
+
+.insight-metric.neutral::before {
+  background: #f59e0b;
+}
+
+.insight-metric.negative::before {
+  background: #ef4444;
+}
+
+.insight-metric.reviews::before {
+  background: #6366f1;
+}
+
+.metric-label {
+  display: block;
+  margin-bottom: 12px;
+
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.insight-metric strong {
+  display: block;
+
+  color: #172554;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+
+/* =========================
+   CUSTOMER INTELLIGENCE
+   ========================= */
+
+.insight-details {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  padding: 28px;
+
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.insight-details h2 {
+  margin: 0 0 8px;
+
+  color: #172554;
+  font-size: 21px;
+  font-weight: 750;
+}
+
+.insight-details > p {
+  margin: 0;
+
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+
+/* =========================
+   RECOMMENDATION
+   ========================= */
+
+.insight-recommendation {
+  margin-top: 22px;
+  padding: 18px 20px;
+
+  border-left: 4px solid #6366f1;
+  border-radius: 10px;
+
+  background: #f5f3ff;
+}
+
+.insight-recommendation span {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.insight-recommendation p {
+  margin: 0;
+
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .insight-list {
+    padding: 30px 24px 50px;
+  }
+
+  .insight-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .insight-list {
+    padding: 24px 16px 40px;
+  }
+
+  .insight-page-header h1 {
+    font-size: 30px;
+  }
+
+  .insight-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .insight-selector-section,
+  .insight-summary-section,
+  .insight-details {
+    padding: 20px;
+  }
+
+}
