@@ -826,34 +826,314 @@
 
 
 import React, { useState } from "react";
-import Register from "./Register";
-import Login from "./Login";
-import AdminDashboard from "./components/dashboard/AdminDashboard";
 
-function App() {
+export default function App() {
+  // Current Active Page: 'register', 'login', 'dashboard'
   const [currentPage, setCurrentPage] = useState("register");
 
-  const handleRegisterSuccess = (data) => {
-    console.log("Registered Data:", data);
-    setCurrentPage("login"); // Register aanadhum login page-ku pogum
+  // Form Input States
+  const [firstName, setFirstName] = useState("Jane");
+  const [lastName, setLastName] = useState("Doe");
+  const [company, setCompany] = useState("Acme Corp");
+  const [email, setEmail] = useState("manager@gmail.com");
+  const [password, setPassword] = useState("12345678");
+  const [role, setRole] = useState("BRAND_MANAGER");
+
+  // Create Account Button Click Handler
+  const handleCreateAccount = () => {
+    if (!firstName || !lastName || !email || !password) {
+      alert("Please fill in all required fields!");
+      return;
+    }
+
+    // Success Message Alert
+    alert(`Account Created Successfully for ${firstName} ${lastName}!`);
+    
+    // Automatically Go to Login Page
+    setCurrentPage("login");
+  };
+
+  // Login Button Click Handler
+  const handleLogin = () => {
+    if (!email || !password) {
+      alert("Please enter Email and Password!");
+      return;
+    }
+    
+    // Direct to Dashboard
+    setCurrentPage("dashboard");
   };
 
   return (
-    <div>
+    <div style={styles.pageContainer}>
+      {/* ---------------- 1. REGISTER PAGE ---------------- */}
       {currentPage === "register" && (
-        <Register
-          onRegisterSuccess={handleRegisterSuccess}
-          onGoToLogin={() => setCurrentPage("login")}
-        />
+        <div style={styles.glassCard}>
+          <h2 style={styles.heading}>Register Account</h2>
+
+          <div style={styles.formGroup}>
+            <div style={styles.row}>
+              <div style={{ flex: 1 }}>
+                <label style={styles.label}>First Name</label>
+                <input
+                  type="text"
+                  placeholder="Jane"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={styles.label}>Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={styles.label}>Company Name</label>
+              <input
+                type="text"
+                placeholder="Acme Corp (Optional)"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div>
+              <label style={styles.label}>Email Address</label>
+              <input
+                type="email"
+                placeholder="manager@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div>
+              <label style={styles.label}>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div>
+              <label style={styles.label}>Select Role</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                style={styles.select}
+              >
+                <option value="BRAND_MANAGER">Brand Manager</option>
+                <option value="RESOLUTION_AGENT">Resolution Agent</option>
+                <option value="PLATFORM_ADMIN">Platform Admin</option>
+              </select>
+            </div>
+
+            {/* Direct onClick Event - No Form Block Issue */}
+            <button
+              type="button"
+              onClick={handleCreateAccount}
+              style={styles.primaryBtn}
+            >
+              Create Account
+            </button>
+          </div>
+
+          <p style={styles.footerText}>
+            Already have an account?{" "}
+            <span onClick={() => setCurrentPage("login")} style={styles.link}>
+              Login here
+            </span>
+          </p>
+        </div>
       )}
 
+      {/* ---------------- 2. LOGIN PAGE ---------------- */}
       {currentPage === "login" && (
-        <Login onLoginSuccess={() => setCurrentPage("dashboard")} />
+        <div style={styles.glassCard}>
+          <h2 style={styles.heading}>Login to ReviewRave</h2>
+
+          <div style={styles.formGroup}>
+            <div>
+              <label style={styles.label}>Email Address</label>
+              <input
+                type="email"
+                placeholder="manager@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <div>
+              <label style={styles.label}>Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={styles.input}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLogin}
+              style={styles.primaryBtn}
+            >
+              Login
+            </button>
+          </div>
+
+          <p style={styles.footerText}>
+            Don't have an account?{" "}
+            <span
+              onClick={() => setCurrentPage("register")}
+              style={styles.link}
+            >
+              Register here
+            </span>
+          </p>
+        </div>
       )}
 
-      {currentPage === "dashboard" && <AdminDashboard />}
+      {/* ---------------- 3. DASHBOARD PAGE ---------------- */}
+      {currentPage === "dashboard" && (
+        <div style={{ width: "100%", maxWidth: "900px" }}>
+          <div style={styles.navBar}>
+            <h2>ReviewRave Workspace</h2>
+            <button
+              onClick={() => setCurrentPage("login")}
+              style={styles.logoutBtn}
+            >
+              Logout
+            </button>
+          </div>
+
+          <h3 style={{ marginBottom: "20px" }}>Platform Overview</h3>
+
+          <div style={styles.metricsGrid}>
+            <div style={{ ...styles.metricCard, borderLeft: "4px solid #2563eb" }}>
+              <small>Total Users</small>
+              <h2>8</h2>
+            </div>
+            <div style={{ ...styles.metricCard, borderLeft: "4px solid #10b981" }}>
+              <small>Tracked Products</small>
+              <h2>12</h2>
+            </div>
+            <div style={{ ...styles.metricCard, borderLeft: "4px solid #ef4444" }}>
+              <small>Active Tickets</small>
+              <h2>3</h2>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default App;
+// ---------------- STYLES OBJECT ----------------
+const styles = {
+  pageContainer: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0f172a",
+    fontFamily: "'Inter', sans-serif",
+    color: "#f8fafc",
+    padding: "20px",
+    boxSizing: "border-box",
+  },
+  glassCard: {
+    width: "100%",
+    maxWidth: "440px",
+    background: "#1e293b",
+    borderRadius: "16px",
+    padding: "32px",
+    border: "1px solid #334155",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.5)",
+  },
+  heading: { color: "#f8fafc", textAlign: "center", marginBottom: "24px" },
+  formGroup: { display: "flex", flexDirection: "column", gap: "16px" },
+  row: { display: "flex", gap: "12px" },
+  label: {
+    display: "block",
+    color: "#94a3b8",
+    fontSize: "13px",
+    marginBottom: "6px",
+  },
+  input: {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    border: "1px solid #334155",
+    backgroundColor: "#0f172a",
+    color: "#f8fafc",
+    outline: "none",
+    boxSizing: "border-box",
+  },
+  select: {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    border: "1px solid #334155",
+    backgroundColor: "#0f172a",
+    color: "#f8fafc",
+    outline: "none",
+    boxSizing: "border-box",
+  },
+  primaryBtn: {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "#ffffff",
+    fontWeight: "600",
+    cursor: "pointer",
+    marginTop: "10px",
+  },
+  footerText: {
+    textAlign: "center",
+    color: "#94a3b8",
+    fontSize: "13px",
+    marginTop: "20px",
+  },
+  link: { color: "#38bdf8", cursor: "pointer", textDecoration: "underline" },
+  navBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px 24px",
+    backgroundColor: "#1e293b",
+    borderRadius: "8px",
+    marginBottom: "24px",
+  },
+  logoutBtn: {
+    padding: "8px 16px",
+    backgroundColor: "#ef4444",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+  metricsGrid: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" },
+  metricCard: {
+    backgroundColor: "#1e293b",
+    padding: "20px",
+    borderRadius: "8px",
+  },
+};
