@@ -48,8 +48,44 @@
 // }
 
 
+// package com.example.demo.entity;
+
+// import jakarta.persistence.*;
+// import lombok.AllArgsConstructor;
+// import lombok.Builder;
+// import lombok.Data;
+// import lombok.NoArgsConstructor;
+
+// @Entity
+// @Table(name = "customer_reviews")
+// @Data
+// @Builder
+// @NoArgsConstructor
+// @AllArgsConstructor
+// public class CustomerReview {
+
+//     @Id
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//     private Long id;
+
+//     @ManyToOne
+//     @JoinColumn(name = "product_id", nullable = false)
+//     private TrackedProduct product;
+
+//     @Column(columnDefinition = "TEXT", nullable = false)
+//     private String content;
+
+//     @Column(nullable = false)
+//     private Integer rating;
+
+//     @Column(name = "sentiment_score", nullable = false)
+//     private Double sentimentScore;
+// }
+
+
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,6 +104,7 @@ public class CustomerReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private TrackedProduct product;
