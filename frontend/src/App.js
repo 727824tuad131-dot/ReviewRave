@@ -826,13 +826,13 @@
 
 
 
-  import React, { useState } from "react";
+import React, { useState } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState("register"); // Default to register page to view forms
+  const [currentPage, setCurrentPage] = useState("register"); // 'register', 'login', or 'dashboard'
   const [activeNav, setActiveNav] = useState("Home");
 
-  // Registration & Auth States
+  // Registration Form States
   const [firstName, setFirstName] = useState("Jane");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
@@ -840,8 +840,15 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
   const [role, setRole] = useState("Brand Manager");
 
-  // User Management State
-  const [users] = useState([
+  // Filter and Modal States
+  const [productSearch, setProductSearch] = useState("");
+  const [ticketTab, setTicketTab] = useState("available"); // 'my' or 'available'
+  const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Interactive Data Tables
+  const [users, setUsers] = useState([
     { id: "#1", name: "Brand Manager", email: "manager@brand.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
     { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Active" },
     { id: "#3", name: "Platform Admin", email: "admin@reviewrave.com", company: "ReviewRave Inc", role: "PLATFORM_ADMIN", status: "Active" },
@@ -850,28 +857,86 @@ export default function App() {
     { id: "#6", name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
   ]);
 
-  // Tracked Products State
-  const [products] = useState([
-    { name: "ProBook", category: "ELECTRONICS", totalReviews: 0, avgSentiment: 0 },
-    { name: "SaaS", category: "SOFTWARE", totalReviews: 0, avgSentiment: 0 },
-    { name: "Resort", category: "HOSPITALITY", totalReviews: 0, avgSentiment: 0 },
-    { name: "Tee", category: "RETAIL", totalReviews: 0, avgSentiment: 0 },
+  const [products, setProducts] = useState([
+    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 12, avgSentiment: 4.2 },
+    { id: 2, name: "SaaS", category: "SOFTWARE", totalReviews: 45, avgSentiment: 3.8 },
+    { id: 3, name: "Resort", category: "HOSPITALITY", totalReviews: 8, avgSentiment: 4.5 },
+    { id: 4, name: "Tee", category: "RETAIL", totalReviews: 23, avgSentiment: 3.1 },
   ]);
 
-  // Resolution Tickets State
-  const [tickets] = useState([
-    { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello..." },
-    { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha..." },
-    { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req..." },
+  const [tickets, setTickets] = useState([
+    { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello...", assignedTo: null },
+    { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha...", assignedTo: null },
+    { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req...", assignedTo: null },
   ]);
+
+  // Helper notification handler
+  const showNotification = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  // Button Action Handlers
+  const handleToggleUserStatus = (userId) => {
+    setUsers((prev) =>
+      prev.map((user) => {
+        if (user.id === userId) {
+          const newStatus = user.status === "Active" ? "Inactive" : "Active";
+          showNotification(`User ${user.name} status changed to ${newStatus}`);
+          return { ...user, status: newStatus };
+        }
+        return user;
+      })
+    );
+  };
+
+  const handleClaimTicket = (ticketId) => {
+    setTickets((prev) =>
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          showNotification(`Ticket ${ticketId} successfully claimed!`);
+          return { ...t, assignedTo: "Current User", status: "IN_PROGRESS" };
+        }
+        return t;
+      })
+    );
+  };
+
+  const handleSaveProduct = (e) => {
+    e.preventDefault();
+    setProducts((prev) =>
+      prev.map((p) => (p.id === editingProduct.id ? editingProduct : p))
+    );
+    showNotification(`Product ${editingProduct.name} updated!`);
+    setEditingProduct(null);
+  };
+
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
+      p.category.toLowerCase().includes(productSearch.toLowerCase())
+  );
+
+  const filteredTickets = tickets.filter((t) => {
+    if (ticketTab === "my" && t.assignedTo !== "Current User") return false;
+    if (ticketTab === "available" && t.assignedTo === "Current User") return false;
+    if (ticketStatusFilter !== "ALL" && t.status !== ticketStatusFilter) return false;
+    return true;
+  });
 
   return (
     <div style={styles.appWrapper}>
-      {/* Search Header */}
+      {/* Toast Notification */}
+      {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
+
+      {/* Global Header */}
       <div style={styles.topHeader}>
-        <div style={styles.searchBox}>
-          🔍 Search
-        </div>
+        <div style={styles.searchBox}>🔍 Search System</div>
+        {currentPage === "dashboard" && (
+          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
+            Logout
+          </button>
+        )}
       </div>
 
       {/* 1. REGISTER PAGE */}
@@ -879,46 +944,46 @@ export default function App() {
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Register Account</h2>
-            
-            <div style={styles.formGroup}>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>First Name</label>
-                  <input style={styles.input} type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Jane" />
+            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Account created!"); }}>
+              <div style={styles.formGroup}>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={styles.label}>First Name</label>
+                    <input style={styles.input} type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={styles.label}>Last Name</label>
+                    <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                  </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>Last Name</label>
-                  <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" />
+
+                <div>
+                  <label style={styles.label}>Company Name</label>
+                  <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp (Optional)" />
                 </div>
+
+                <div>
+                  <label style={styles.label}>Email Address</label>
+                  <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Password (min 8 chars)</label>
+                  <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Select Role</label>
+                  <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
+                    <option value="Brand Manager">Brand Manager</option>
+                    <option value="Resolution Agent">Resolution Agent</option>
+                    <option value="Platform Admin">Platform Admin</option>
+                  </select>
+                </div>
+
+                <button type="submit" style={styles.blueBtn}>Create Account</button>
               </div>
-
-              <div>
-                <label style={styles.label}>Company Name</label>
-                <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp (Optional)" />
-              </div>
-
-              <div>
-                <label style={styles.label}>Email Address</label>
-                <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="manager@gmail.com" />
-              </div>
-
-              <div>
-                <label style={styles.label}>Password (min 8 chars)</label>
-                <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
-
-              <div>
-                <label style={styles.label}>Select Role</label>
-                <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
-                  <option value="Brand Manager">Brand Manager</option>
-                  <option value="Resolution Agent">Resolution Agent</option>
-                  <option value="Platform Admin">Platform Admin</option>
-                </select>
-              </div>
-
-              <button style={styles.blueBtn} onClick={() => setCurrentPage("dashboard")}>Create Account</button>
-            </div>
-
+            </form>
             <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
               Already have an account? <span style={styles.linkText} onClick={() => setCurrentPage("login")}>Login here</span>
             </p>
@@ -931,21 +996,21 @@ export default function App() {
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Login to ReviewRave</h2>
-            
-            <div style={styles.formGroup}>
-              <div>
-                <label style={styles.label}>Email Address</label>
-                <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="manager@gmail.com" />
+            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Welcome back!"); }}>
+              <div style={styles.formGroup}>
+                <div>
+                  <label style={styles.label}>Email Address</label>
+                  <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Password</label>
+                  <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+
+                <button type="submit" style={styles.blueBtn}>Login</button>
               </div>
-
-              <div>
-                <label style={styles.label}>Password</label>
-                <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
-
-              <button style={styles.blueBtn} onClick={() => setCurrentPage("dashboard")}>Login</button>
-            </div>
-
+            </form>
             <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
               Don't have an account? <span style={styles.linkText} onClick={() => setCurrentPage("register")}>Register here</span>
             </p>
@@ -958,40 +1023,39 @@ export default function App() {
         <div style={styles.dashboardContainer}>
           {/* Navigation Bar */}
           <div style={styles.navbar}>
-            {["Home", "Users", "Products", "Reviews", "Insights"].map((item) => (
+            {["Home", "Users", "Products", "Reviews", "Insights"].map((tab) => (
               <span
-                key={item}
+                key={tab}
                 style={{
                   ...styles.navItem,
-                  borderBottom: activeNav === item ? "2px solid #2563eb" : "none",
-                  fontWeight: activeNav === item ? "600" : "normal",
-                  color: activeNav === item ? "#ffffff" : "#94a3b8",
+                  borderBottom: activeNav === tab ? "2px solid #2563eb" : "none",
+                  fontWeight: activeNav === tab ? "600" : "normal",
+                  color: activeNav === tab ? "#ffffff" : "#94a3b8",
                 }}
-                onClick={() => setActiveNav(item)}
+                onClick={() => setActiveNav(tab)}
               >
-                {item}
+                {tab}
               </span>
             ))}
           </div>
 
           <div style={styles.mainContent}>
-            {/* HOME / OVERVIEW */}
+            {/* TAB 1: HOME */}
             {activeNav === "Home" && (
               <div>
                 <h2 style={styles.pageHeading}>Platform Overview</h2>
-                
                 <div style={styles.metricsGrid}>
                   <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
                     <span style={styles.metricLabel}>TOTAL USERS</span>
-                    <h3 style={styles.metricVal}>8</h3>
+                    <h3 style={styles.metricVal}>{users.length}</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
                     <span style={styles.metricLabel}>TRACKED PRODUCTS</span>
-                    <h3 style={styles.metricVal}>12</h3>
+                    <h3 style={styles.metricVal}>{products.length}</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
                     <span style={styles.metricLabel}>ACTIVE TICKETS</span>
-                    <h3 style={styles.metricVal}>3</h3>
+                    <h3 style={styles.metricVal}>{tickets.length}</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
                     <span style={styles.metricLabel}>ACTIVE SENTIMENT</span>
@@ -1024,7 +1088,7 @@ export default function App() {
               </div>
             )}
 
-            {/* USERS TAB */}
+            {/* TAB 2: USERS */}
             {activeNav === "Users" && (
               <div style={styles.card}>
                 <h2 style={styles.pageHeading}>User Management</h2>
@@ -1035,15 +1099,23 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((u, i) => (
-                      <tr key={i} style={styles.tableRow}>
+                    {users.map((u) => (
+                      <tr key={u.id} style={styles.tableRow}>
                         <td>{u.id}</td>
                         <td>{u.name}</td>
                         <td>{u.email}</td>
                         <td>{u.company}</td>
                         <td><span style={styles.roleBadge}>{u.role}</span></td>
-                        <td><span style={styles.statusBadge}>{u.status}</span></td>
-                        <td><button style={styles.actionBtn}>Toggle Status</button></td>
+                        <td>
+                          <span style={u.status === "Active" ? styles.statusActive : styles.statusInactive}>
+                            {u.status}
+                          </span>
+                        </td>
+                        <td>
+                          <button style={styles.actionBtn} onClick={() => handleToggleUserStatus(u.id)}>
+                            Toggle Status
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1051,12 +1123,18 @@ export default function App() {
               </div>
             )}
 
-            {/* PRODUCTS TAB */}
+            {/* TAB 3: PRODUCTS */}
             {activeNav === "Products" && (
               <div style={styles.card}>
                 <h2 style={styles.pageHeading}>Tracked Products</h2>
                 <div style={{ marginBottom: "15px" }}>
-                  <input style={{ ...styles.input, width: "300px" }} type="text" placeholder="Search products by name or category..." />
+                  <input
+                    style={{ ...styles.input, width: "320px" }}
+                    type="text"
+                    placeholder="Search products by name or category..."
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                  />
                 </div>
                 <table style={styles.table}>
                   <thead>
@@ -1065,13 +1143,17 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((p, i) => (
-                      <tr key={i} style={styles.tableRow}>
+                    {filteredProducts.map((p) => (
+                      <tr key={p.id} style={styles.tableRow}>
                         <td>{p.name}</td>
                         <td>{p.category}</td>
                         <td>{p.totalReviews}</td>
                         <td>{p.avgSentiment}</td>
-                        <td><button style={styles.actionBtn}>Edit</button></td>
+                        <td>
+                          <button style={styles.actionBtn} onClick={() => setEditingProduct(p)}>
+                            Edit
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1079,16 +1161,36 @@ export default function App() {
               </div>
             )}
 
-            {/* REVIEWS & TICKETS TAB */}
+            {/* TAB 4 & 5: REVIEWS & INSIGHTS */}
             {(activeNav === "Reviews" || activeNav === "Insights") && (
               <div style={styles.card}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
                   <h2 style={styles.pageHeading}>Resolution Tickets</h2>
                   <div style={{ display: "flex", gap: "10px" }}>
-                    <button style={styles.tabToggleActive}>My Tickets</button>
-                    <button style={styles.tabToggle}>Available Tickets</button>
+                    <button
+                      style={ticketTab === "my" ? styles.tabToggleActive : styles.tabToggle}
+                      onClick={() => setTicketTab("my")}
+                    >
+                      My Tickets
+                    </button>
+                    <button
+                      style={ticketTab === "available" ? styles.tabToggleActive : styles.tabToggle}
+                      onClick={() => setTicketTab("available")}
+                    >
+                      Available Tickets
+                    </button>
                   </div>
                 </div>
+
+                <div style={{ marginBottom: "15px", display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "13px", color: "#64748b" }}>Filter by Status:</span>
+                  <select style={{ ...styles.input, width: "150px" }} value={ticketStatusFilter} onChange={(e) => setTicketStatusFilter(e.target.value)}>
+                    <option value="ALL">All Statuses</option>
+                    <option value="OPEN">OPEN</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  </select>
+                </div>
+
                 <table style={styles.table}>
                   <thead>
                     <tr style={styles.tableHeader}>
@@ -1096,13 +1198,21 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tickets.map((t, i) => (
-                      <tr key={i} style={styles.tableRow}>
+                    {filteredTickets.map((t) => (
+                      <tr key={t.id} style={styles.tableRow}>
                         <td>{t.id}</td>
                         <td style={{ color: t.priority === "CRITICAL" ? "#ef4444" : "#f59e0b", fontWeight: "600" }}>{t.priority}</td>
                         <td>{t.status}</td>
                         <td>{t.snippet}</td>
-                        <td><button style={styles.actionBtn}>Claim Ticket</button></td>
+                        <td>
+                          {t.assignedTo ? (
+                            <span style={{ color: "#16a34a", fontSize: "12px", fontWeight: "600" }}>Claimed</span>
+                          ) : (
+                            <button style={styles.actionBtn} onClick={() => handleClaimTicket(t.id)}>
+                              Claim Ticket
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1113,26 +1223,63 @@ export default function App() {
         </div>
       )}
 
-      {/* Bottom Sticky Action Bar */}
+      {/* EDIT PRODUCT MODAL */}
+      {editingProduct && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3>Edit Product: {editingProduct.name}</h3>
+            <form onSubmit={handleSaveProduct}>
+              <div style={styles.formGroup}>
+                <div>
+                  <label style={styles.label}>Category</label>
+                  <input
+                    style={styles.input}
+                    type="text"
+                    value={editingProduct.category}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={styles.label}>Avg Sentiment</label>
+                  <input
+                    style={styles.input}
+                    type="number"
+                    step="0.1"
+                    value={editingProduct.avgSentiment}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) })}
+                  />
+                </div>
+                <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                  <button type="submit" style={styles.blueBtn}>Save Changes</button>
+                  <button type="button" style={{ ...styles.blueBtn, backgroundColor: "#64748b" }} onClick={() => setEditingProduct(null)}>Cancel</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Test Footer Bar */}
       <div style={styles.bottomBar}>
-        <button style={styles.pullBtn}>Pull</button>
-        <button style={styles.checkBtn}>Check Verify</button>
+        <button style={styles.pullBtn} onClick={() => showNotification("Data Sync Completed!")}>Pull</button>
+        <button style={styles.checkBtn} onClick={() => showNotification("System Verification Passed!")}>Check Verify</button>
       </div>
     </div>
   );
 }
 
 const styles = {
-  appWrapper: { backgroundColor: "#eef2f6", minHeight: "100vh", fontFamily: "Segoe UI, sans-serif", paddingBottom: "60px" },
-  topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "center", borderBottom: "1px solid #e2e8f0" },
-  searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "320px", textAlign: "center" },
+  appWrapper: { backgroundColor: "#eef2f6", minHeight: "100vh", fontFamily: "Segoe UI, sans-serif", paddingBottom: "60px", position: "relative" },
+  topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e8f0" },
+  searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "320px", textAlign: "center", margin: "0 auto" },
+  logoutBtn: { backgroundColor: "#ef4444", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
   authContainer: { display: "flex", justifyContent: "center", alignItems: "center", paddingTop: "40px" },
   authCard: { backgroundColor: "#ffffff", padding: "32px", borderRadius: "8px", width: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", border: "1px solid #e2e8f0" },
   authTitle: { textAlign: "center", marginBottom: "24px", color: "#1e293b", fontSize: "22px", fontWeight: "600" },
   formGroup: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
   input: { width: "100%", padding: "8px 12px", borderRadius: "4px", border: "1px solid #cbd5e1", backgroundColor: "#f8fafc", fontSize: "14px", outline: "none", boxSizing: "border-box" },
-  blueBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "10px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", marginTop: "10px", fontSize: "14px" },
+  blueBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "10px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", marginTop: "10px", fontSize: "14px", flex: 1 },
   linkText: { color: "#3b82f6", cursor: "pointer", fontWeight: "500" },
   dashboardContainer: { width: "95%", maxWidth: "1100px", margin: "20px auto" },
   navbar: { backgroundColor: "#1e293b", display: "flex", gap: "25px", padding: "12px 24px", borderRadius: "6px 6px 0 0" },
@@ -1154,10 +1301,14 @@ const styles = {
   tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" },
   tableRow: { borderBottom: "1px solid #f1f5f9", color: "#334155" },
   roleBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
-  statusBadge: { backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
+  statusActive: { backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
+  statusInactive: { backgroundColor: "#fee2e2", color: "#ef4444", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
   actionBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
   tabToggleActive: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
   tabToggle: { backgroundColor: "#f1f5f9", color: "#475569", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center" },
+  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "8px", width: "350px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" },
+  toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "12px 20px", borderRadius: "6px", fontSize: "14px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 1000 },
   bottomBar: { position: "fixed", bottom: 0, left: 0, right: 0, height: "48px", backgroundColor: "#ffffff", display: "flex", gap: "12px", padding: "8px 16px", borderTop: "1px solid #cbd5e1", boxSizing: "border-box" },
   pullBtn: { flex: 1, backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" },
   checkBtn: { flex: 1, backgroundColor: "#3b82f6", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" }
