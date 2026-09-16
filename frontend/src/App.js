@@ -829,10 +829,10 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState("register"); // 'register', 'login', or 'dashboard'
-  const [activeNav, setActiveNav] = useState("Home");
+  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [activeNav, setActiveNav] = useState("Products");
 
-  // Registration Form States
+  // Auth States
   const [firstName, setFirstName] = useState("Jane");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
@@ -840,49 +840,55 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
   const [role, setRole] = useState("Brand Manager");
 
-  // Filter and Modal States
+  // Filter & Modal States
   const [productSearch, setProductSearch] = useState("");
-  const [ticketTab, setTicketTab] = useState("available"); // 'my' or 'available'
+  const [ticketTab, setTicketTab] = useState("available");
   const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newProdName, setNewProdName] = useState("");
+  const [newProdCategory, setNewProdCategory] = useState("ELECTRONICS");
   const [toastMessage, setToastMessage] = useState("");
 
-  // Interactive Data Tables
+  // Users Table Data
   const [users, setUsers] = useState([
-    { id: "#1", name: "Brand Manager", email: "manager@brand.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
-    { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Active" },
+    { id: "#1", name: "Brand Manager", email: "manager@brandcorp.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Inactive" },
     { id: "#3", name: "Platform Admin", email: "admin@reviewrave.com", company: "ReviewRave Inc", role: "PLATFORM_ADMIN", status: "Active" },
-    { id: "#4", name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#4", name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Inactive" },
     { id: "#5", name: "agent", email: "agent@gmail.com", company: "Joko", role: "RESOLUTION_AGENT", status: "Active" },
     { id: "#6", name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
+    { id: "#7", name: "manager", email: "manager@gmail.com", company: "manager", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#8", name: "Brand Manager", email: "brand@test.com", company: "TestingTest", role: "BRAND_MANAGER", status: "Active" },
   ]);
 
+  // Tracked Products Data
   const [products, setProducts] = useState([
-    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 12, avgSentiment: 4.2 },
-    { id: 2, name: "SaaS", category: "SOFTWARE", totalReviews: 45, avgSentiment: 3.8 },
-    { id: 3, name: "Resort", category: "HOSPITALITY", totalReviews: 8, avgSentiment: 4.5 },
-    { id: 4, name: "Tee", category: "RETAIL", totalReviews: 23, avgSentiment: 3.1 },
+    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 0, avgSentiment: 0.0 },
+    { id: 2, name: "SaaS", category: "SOFTWARE", totalReviews: 0, avgSentiment: 0.0 },
+    { id: 3, name: "Resort", category: "HOSPITALITY", totalReviews: 0, avgSentiment: 0.0 },
+    { id: 4, name: "Tee", category: "RETAIL", totalReviews: 0, avgSentiment: 0.0 },
   ]);
 
+  // Resolution Tickets Data
   const [tickets, setTickets] = useState([
     { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello...", assignedTo: null },
     { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha...", assignedTo: null },
     { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req...", assignedTo: null },
   ]);
 
-  // Helper notification handler
   const showNotification = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  // Button Action Handlers
+  // Button Handlers
   const handleToggleUserStatus = (userId) => {
     setUsers((prev) =>
       prev.map((user) => {
         if (user.id === userId) {
           const newStatus = user.status === "Active" ? "Inactive" : "Active";
-          showNotification(`User ${user.name} status changed to ${newStatus}`);
+          showNotification(`User ${user.name} status updated to ${newStatus}`);
           return { ...user, status: newStatus };
         }
         return user;
@@ -890,16 +896,25 @@ export default function App() {
     );
   };
 
-  const handleClaimTicket = (ticketId) => {
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id === ticketId) {
-          showNotification(`Ticket ${ticketId} successfully claimed!`);
-          return { ...t, assignedTo: "Current User", status: "IN_PROGRESS" };
-        }
-        return t;
-      })
-    );
+  const handleDeleteProduct = (productId, name) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    showNotification(`Product "${name}" deleted successfully!`);
+  };
+
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!newProdName.trim()) return;
+    const newProd = {
+      id: Date.now(),
+      name: newProdName,
+      category: newProdCategory,
+      totalReviews: 0,
+      avgSentiment: 0.0,
+    };
+    setProducts([...products, newProd]);
+    setNewProdName("");
+    setIsAddProductOpen(false);
+    showNotification(`Product "${newProdName}" added successfully!`);
   };
 
   const handleSaveProduct = (e) => {
@@ -907,8 +922,20 @@ export default function App() {
     setProducts((prev) =>
       prev.map((p) => (p.id === editingProduct.id ? editingProduct : p))
     );
-    showNotification(`Product ${editingProduct.name} updated!`);
+    showNotification(`Product "${editingProduct.name}" updated!`);
     setEditingProduct(null);
+  };
+
+  const handleClaimTicket = (ticketId) => {
+    setTickets((prev) =>
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          showNotification(`Ticket ${ticketId} claimed!`);
+          return { ...t, assignedTo: "Current User", status: "IN_PROGRESS" };
+        }
+        return t;
+      })
+    );
   };
 
   const filteredProducts = products.filter(
@@ -926,25 +953,22 @@ export default function App() {
 
   return (
     <div style={styles.appWrapper}>
-      {/* Toast Notification */}
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* Global Header */}
       <div style={styles.topHeader}>
-        <div style={styles.searchBox}>🔍 Search System</div>
+        <div style={styles.searchBox}>🔍 Search</div>
         {currentPage === "dashboard" && (
-          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
+          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out"); }}>
             Logout
           </button>
         )}
       </div>
 
-      {/* 1. REGISTER PAGE */}
       {currentPage === "register" && (
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Register Account</h2>
-            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Account created!"); }}>
+            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Account Created!"); }}>
               <div style={styles.formGroup}>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <div style={{ flex: 1 }}>
@@ -956,22 +980,18 @@ export default function App() {
                     <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                   </div>
                 </div>
-
                 <div>
                   <label style={styles.label}>Company Name</label>
                   <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp (Optional)" />
                 </div>
-
                 <div>
                   <label style={styles.label}>Email Address</label>
                   <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-
                 <div>
                   <label style={styles.label}>Password (min 8 chars)</label>
                   <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                 </div>
-
                 <div>
                   <label style={styles.label}>Select Role</label>
                   <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
@@ -980,7 +1000,6 @@ export default function App() {
                     <option value="Platform Admin">Platform Admin</option>
                   </select>
                 </div>
-
                 <button type="submit" style={styles.blueBtn}>Create Account</button>
               </div>
             </form>
@@ -991,7 +1010,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 2. LOGIN PAGE */}
       {currentPage === "login" && (
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
@@ -1002,12 +1020,10 @@ export default function App() {
                   <label style={styles.label}>Email Address</label>
                   <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-
                 <div>
                   <label style={styles.label}>Password</label>
                   <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
-
                 <button type="submit" style={styles.blueBtn}>Login</button>
               </div>
             </form>
@@ -1018,17 +1034,15 @@ export default function App() {
         </div>
       )}
 
-      {/* 3. DASHBOARD PAGE */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardContainer}>
-          {/* Navigation Bar */}
           <div style={styles.navbar}>
             {["Home", "Users", "Products", "Reviews", "Insights"].map((tab) => (
               <span
                 key={tab}
                 style={{
                   ...styles.navItem,
-                  borderBottom: activeNav === tab ? "2px solid #2563eb" : "none",
+                  borderBottom: activeNav === tab ? "2px solid #ffffff" : "none",
                   fontWeight: activeNav === tab ? "600" : "normal",
                   color: activeNav === tab ? "#ffffff" : "#94a3b8",
                 }}
@@ -1040,7 +1054,6 @@ export default function App() {
           </div>
 
           <div style={styles.mainContent}>
-            {/* TAB 1: HOME */}
             {activeNav === "Home" && (
               <div>
                 <h2 style={styles.pageHeading}>Platform Overview</h2>
@@ -1088,7 +1101,6 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 2: USERS */}
             {activeNav === "Users" && (
               <div style={styles.card}>
                 <h2 style={styles.pageHeading}>User Management</h2>
@@ -1123,10 +1135,14 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 3: PRODUCTS */}
             {activeNav === "Products" && (
               <div style={styles.card}>
-                <h2 style={styles.pageHeading}>Tracked Products</h2>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <h2 style={{ ...styles.pageHeading, margin: 0 }}>Tracked Products</h2>
+                  <button style={styles.addBtn} onClick={() => setIsAddProductOpen(true)}>
+                    + Add Product
+                  </button>
+                </div>
                 <div style={{ marginBottom: "15px" }}>
                   <input
                     style={{ ...styles.input, width: "320px" }}
@@ -1139,7 +1155,7 @@ export default function App() {
                 <table style={styles.table}>
                   <thead>
                     <tr style={styles.tableHeader}>
-                      <th>Name</th><th>Category</th><th>Total Reviews</th><th>Avg Sentiment</th><th>Action</th>
+                      <th>Name</th><th>Category</th><th>Total Reviews</th><th>Avg Sentiment</th><th style={{ textAlign: "right", paddingRight: "20px" }}>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1148,11 +1164,16 @@ export default function App() {
                         <td>{p.name}</td>
                         <td>{p.category}</td>
                         <td>{p.totalReviews}</td>
-                        <td>{p.avgSentiment}</td>
-                        <td>
-                          <button style={styles.actionBtn} onClick={() => setEditingProduct(p)}>
-                            Edit
-                          </button>
+                        <td>{p.avgSentiment.toFixed(1)}</td>
+                        <td style={{ textAlign: "right" }}>
+                          <div style={{ display: "inline-flex", gap: "6px" }}>
+                            <button style={styles.actionBtn} onClick={() => setEditingProduct(p)}>
+                              Edit
+                            </button>
+                            <button style={styles.deleteBtn} onClick={() => handleDeleteProduct(p.id, p.name)}>
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1161,7 +1182,6 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 4 & 5: REVIEWS & INSIGHTS */}
             {(activeNav === "Reviews" || activeNav === "Insights") && (
               <div style={styles.card}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
@@ -1223,11 +1243,52 @@ export default function App() {
         </div>
       )}
 
+      {/* ADD PRODUCT MODAL */}
+      {isAddProductOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 16px 0", fontSize: "16px" }}>Add New Product</h3>
+            <form onSubmit={handleAddProduct}>
+              <div style={styles.formGroup}>
+                <div>
+                  <label style={styles.label}>Product Name</label>
+                  <input
+                    style={styles.input}
+                    type="text"
+                    placeholder="e.g. Laptop Pro"
+                    value={newProdName}
+                    onChange={(e) => setNewProdName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={styles.label}>Category</label>
+                  <select
+                    style={styles.input}
+                    value={newProdCategory}
+                    onChange={(e) => setNewProdCategory(e.target.value)}
+                  >
+                    <option value="ELECTRONICS">ELECTRONICS</option>
+                    <option value="SOFTWARE">SOFTWARE</option>
+                    <option value="HOSPITALITY">HOSPITALITY</option>
+                    <option value="RETAIL">RETAIL</option>
+                  </select>
+                </div>
+                <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                  <button type="submit" style={styles.blueBtn}>Add Product</button>
+                  <button type="button" style={{ ...styles.blueBtn, backgroundColor: "#64748b" }} onClick={() => setIsAddProductOpen(false)}>Cancel</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* EDIT PRODUCT MODAL */}
       {editingProduct && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
-            <h3>Edit Product: {editingProduct.name}</h3>
+            <h3 style={{ margin: "0 0 16px 0", fontSize: "16px" }}>Edit Product: {editingProduct.name}</h3>
             <form onSubmit={handleSaveProduct}>
               <div style={styles.formGroup}>
                 <div>
@@ -1246,7 +1307,7 @@ export default function App() {
                     type="number"
                     step="0.1"
                     value={editingProduct.avgSentiment}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) })}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
@@ -1259,7 +1320,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Sticky Test Footer Bar */}
       <div style={styles.bottomBar}>
         <button style={styles.pullBtn} onClick={() => showNotification("Data Sync Completed!")}>Pull</button>
         <button style={styles.checkBtn} onClick={() => showNotification("System Verification Passed!")}>Check Verify</button>
@@ -1279,8 +1339,9 @@ const styles = {
   formGroup: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
   input: { width: "100%", padding: "8px 12px", borderRadius: "4px", border: "1px solid #cbd5e1", backgroundColor: "#f8fafc", fontSize: "14px", outline: "none", boxSizing: "border-box" },
-  blueBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "10px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", marginTop: "10px", fontSize: "14px", flex: 1 },
-  linkText: { color: "#3b82f6", cursor: "pointer", fontWeight: "500" },
+  blueBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", fontSize: "13px", flex: 1 },
+  addBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
+  linkText: { color: "#2563eb", cursor: "pointer", fontWeight: "500" },
   dashboardContainer: { width: "95%", maxWidth: "1100px", margin: "20px auto" },
   navbar: { backgroundColor: "#1e293b", display: "flex", gap: "25px", padding: "12px 24px", borderRadius: "6px 6px 0 0" },
   navItem: { cursor: "pointer", fontSize: "14px", paddingBottom: "4px" },
@@ -1293,23 +1354,24 @@ const styles = {
   rowGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
   cardTitle: { margin: "0 0 16px 0", color: "#334155", fontSize: "15px" },
   chartWrapper: { display: "flex", alignItems: "center", gap: "24px" },
-  donutChart: { width: "110px", height: "110px", borderRadius: "50%", background: "conic-gradient(#ef4444 0% 25%, #3b82f6 25% 70%, #10b981 70% 100%)" },
+  donutChart: { width: "110px", height: "110px", borderRadius: "50%", background: "conic-gradient(#ef4444 0% 25%, #2563eb 25% 70%, #10b981 70% 100%)" },
   chartLegend: { fontSize: "13px", lineHeight: "2", color: "#475569" },
   timelineList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px", lineHeight: "1.6", color: "#334155" },
   timeText: { color: "#94a3b8", fontSize: "12px" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
-  tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" },
+  tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0", padding: "10px 8px" },
   tableRow: { borderBottom: "1px solid #f1f5f9", color: "#334155" },
   roleBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
   statusActive: { backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
   statusInactive: { backgroundColor: "#fee2e2", color: "#ef4444", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
-  actionBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
-  tabToggleActive: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
+  actionBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
+  deleteBtn: { backgroundColor: "#ef4444", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
+  tabToggleActive: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
   tabToggle: { backgroundColor: "#f1f5f9", color: "#475569", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center" },
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
   modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "8px", width: "350px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" },
   toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "12px 20px", borderRadius: "6px", fontSize: "14px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", zIndex: 1000 },
   bottomBar: { position: "fixed", bottom: 0, left: 0, right: 0, height: "48px", backgroundColor: "#ffffff", display: "flex", gap: "12px", padding: "8px 16px", borderTop: "1px solid #cbd5e1", boxSizing: "border-box" },
   pullBtn: { flex: 1, backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" },
-  checkBtn: { flex: 1, backgroundColor: "#3b82f6", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" }
+  checkBtn: { flex: 1, backgroundColor: "#2563eb", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" }
 };
