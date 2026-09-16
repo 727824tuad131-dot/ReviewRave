@@ -825,10 +825,11 @@
 // export default App;
 
 
-import React, { useState } from "react";
+
+  import React, { useState } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [currentPage, setCurrentPage] = useState("register"); // Default to register page to view forms
   const [activeNav, setActiveNav] = useState("Home");
 
   // Registration & Auth States
@@ -837,24 +838,24 @@ export default function App() {
   const [company, setCompany] = useState("Acme Corp");
   const [email, setEmail] = useState("manager@gmail.com");
   const [password, setPassword] = useState("12345678");
-  const [role, setRole] = useState("BRAND_MANAGER");
+  const [role, setRole] = useState("Brand Manager");
 
   // User Management State
-  const [users, setUsers] = useState([
-    { id: 1, name: "Brand Manager", email: "manager@brand.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
-    { id: 2, name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Active" },
-    { id: 3, name: "Platform Admin", email: "admin@reviewrave.com", company: "ReviewRave Inc", role: "PLATFORM_ADMIN", status: "Active" },
-    { id: 4, name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Active" },
-    { id: 5, name: "agent", email: "agent@gmail.com", company: "Joko", role: "RESOLUTION_AGENT", status: "Active" },
-    { id: 6, name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
+  const [users] = useState([
+    { id: "#1", name: "Brand Manager", email: "manager@brand.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Active" },
+    { id: "#3", name: "Platform Admin", email: "admin@reviewrave.com", company: "ReviewRave Inc", role: "PLATFORM_ADMIN", status: "Active" },
+    { id: "#4", name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Active" },
+    { id: "#5", name: "agent", email: "agent@gmail.com", company: "Joko", role: "RESOLUTION_AGENT", status: "Active" },
+    { id: "#6", name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
   ]);
 
   // Tracked Products State
   const [products] = useState([
-    { name: "ProBook", category: "ELECTRONICS", totalReviews: 0, avgSentiment: 0.0 },
-    { name: "SaaS", category: "SOFTWARE", totalReviews: 0, avgSentiment: 0.0 },
-    { name: "Resort", category: "HOSPITALITY", totalReviews: 0, avgSentiment: 0.0 },
-    { name: "Tee", category: "RETAIL", totalReviews: 0, avgSentiment: 0.0 },
+    { name: "ProBook", category: "ELECTRONICS", totalReviews: 0, avgSentiment: 0 },
+    { name: "SaaS", category: "SOFTWARE", totalReviews: 0, avgSentiment: 0 },
+    { name: "Resort", category: "HOSPITALITY", totalReviews: 0, avgSentiment: 0 },
+    { name: "Tee", category: "RETAIL", totalReviews: 0, avgSentiment: 0 },
   ]);
 
   // Resolution Tickets State
@@ -864,16 +865,12 @@ export default function App() {
     { id: "#4", priority: "CRITICAL", status: "OPEN", snippet: "req..." },
   ]);
 
-  const toggleUserStatus = (id) => {
-    setUsers(users.map(u => u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u));
-  };
-
   return (
     <div style={styles.appWrapper}>
       {/* Search Header */}
       <div style={styles.topHeader}>
         <div style={styles.searchBox}>
-          <span>🔍</span> Search
+          🔍 Search
         </div>
       </div>
 
@@ -882,22 +879,47 @@ export default function App() {
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Register Account</h2>
+            
             <div style={styles.formGroup}>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <input style={styles.input} type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
-                <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={styles.label}>First Name</label>
+                  <input style={styles.input} type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Jane" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={styles.label}>Last Name</label>
+                  <input style={styles.input} type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" />
+                </div>
               </div>
-              <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company Name" />
-              <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email Address" />
-              <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-              <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
-                <option value="BRAND_MANAGER">Brand Manager</option>
-                <option value="RESOLUTION_AGENT">Resolution Agent</option>
-                <option value="PLATFORM_ADMIN">Platform Admin</option>
-              </select>
-              <button style={styles.blueBtn} onClick={() => setCurrentPage("login")}>Create Account</button>
+
+              <div>
+                <label style={styles.label}>Company Name</label>
+                <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp (Optional)" />
+              </div>
+
+              <div>
+                <label style={styles.label}>Email Address</label>
+                <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="manager@gmail.com" />
+              </div>
+
+              <div>
+                <label style={styles.label}>Password (min 8 chars)</label>
+                <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              </div>
+
+              <div>
+                <label style={styles.label}>Select Role</label>
+                <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="Brand Manager">Brand Manager</option>
+                  <option value="Resolution Agent">Resolution Agent</option>
+                  <option value="Platform Admin">Platform Admin</option>
+                </select>
+              </div>
+
+              <button style={styles.blueBtn} onClick={() => setCurrentPage("dashboard")}>Create Account</button>
             </div>
-            <p style={{ marginTop: "15px", fontSize: "13px" }}>
+
+            <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
               Already have an account? <span style={styles.linkText} onClick={() => setCurrentPage("login")}>Login here</span>
             </p>
           </div>
@@ -909,19 +931,29 @@ export default function App() {
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Login to ReviewRave</h2>
+            
             <div style={styles.formGroup}>
-              <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email Address" />
-              <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+              <div>
+                <label style={styles.label}>Email Address</label>
+                <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="manager@gmail.com" />
+              </div>
+
+              <div>
+                <label style={styles.label}>Password</label>
+                <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              </div>
+
               <button style={styles.blueBtn} onClick={() => setCurrentPage("dashboard")}>Login</button>
             </div>
-            <p style={{ marginTop: "15px", fontSize: "13px" }}>
+
+            <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
               Don't have an account? <span style={styles.linkText} onClick={() => setCurrentPage("register")}>Register here</span>
             </p>
           </div>
         </div>
       )}
 
-      {/* 3. LIGHT THEME DASHBOARD */}
+      {/* 3. DASHBOARD PAGE */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardContainer}>
           {/* Navigation Bar */}
@@ -933,6 +965,7 @@ export default function App() {
                   ...styles.navItem,
                   borderBottom: activeNav === item ? "2px solid #2563eb" : "none",
                   fontWeight: activeNav === item ? "600" : "normal",
+                  color: activeNav === item ? "#ffffff" : "#94a3b8",
                 }}
                 onClick={() => setActiveNav(item)}
               >
@@ -942,32 +975,30 @@ export default function App() {
           </div>
 
           <div style={styles.mainContent}>
-            {/* TAB 1: HOME / PLATFORM OVERVIEW */}
+            {/* HOME / OVERVIEW */}
             {activeNav === "Home" && (
               <div>
                 <h2 style={styles.pageHeading}>Platform Overview</h2>
                 
-                {/* Metric Cards */}
                 <div style={styles.metricsGrid}>
                   <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
-                    <span style={styles.metricLabel}>Total Users</span>
+                    <span style={styles.metricLabel}>TOTAL USERS</span>
                     <h3 style={styles.metricVal}>8</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
-                    <span style={styles.metricLabel}>Tracked Products</span>
+                    <span style={styles.metricLabel}>TRACKED PRODUCTS</span>
                     <h3 style={styles.metricVal}>12</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
-                    <span style={styles.metricLabel}>Active Tickets</span>
+                    <span style={styles.metricLabel}>ACTIVE TICKETS</span>
                     <h3 style={styles.metricVal}>3</h3>
                   </div>
                   <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
-                    <span style={styles.metricLabel}>Active Sentiment</span>
+                    <span style={styles.metricLabel}>ACTIVE SENTIMENT</span>
                     <h3 style={styles.metricVal}>3.8</h3>
                   </div>
                 </div>
 
-                {/* Donut Chart & Timeline */}
                 <div style={styles.rowGrid}>
                   <div style={styles.card}>
                     <h4 style={styles.cardTitle}>Global User Roles</h4>
@@ -984,16 +1015,16 @@ export default function App() {
                   <div style={styles.card}>
                     <h4 style={styles.cardTitle}>Recent Timeline</h4>
                     <ul style={styles.timelineList}>
-                      <li>🔵 New brand manager registered Brand Corp <br/><small style={{color:"#94a3b8"}}>1 hour ago</small></li>
-                      <li>🔵 System wide review ingestion completed <br/><small style={{color:"#94a3b8"}}>3 hours ago</small></li>
-                      <li>🔵 Critical ticket auto-assigned to Agent Smith <br/><small style={{color:"#94a3b8"}}>5 hours ago</small></li>
+                      <li><span style={{ color: "#2563eb" }}>●</span> New brand manager registered Brand Corp<br/><span style={styles.timeText}>1 hour ago</span></li>
+                      <li><span style={{ color: "#2563eb" }}>●</span> System wide review ingestion completed<br/><span style={styles.timeText}>3 hours ago</span></li>
+                      <li><span style={{ color: "#2563eb" }}>●</span> Critical ticket auto-assigned to Agent Smith<br/><span style={styles.timeText}>5 hours ago</span></li>
                     </ul>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* TAB 2: USERS MANAGEMENT */}
+            {/* USERS TAB */}
             {activeNav === "Users" && (
               <div style={styles.card}>
                 <h2 style={styles.pageHeading}>User Management</h2>
@@ -1004,17 +1035,15 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map(u => (
-                      <tr key={u.id} style={styles.tableRow}>
-                        <td>#{u.id}</td>
+                    {users.map((u, i) => (
+                      <tr key={i} style={styles.tableRow}>
+                        <td>{u.id}</td>
                         <td>{u.name}</td>
                         <td>{u.email}</td>
                         <td>{u.company}</td>
                         <td><span style={styles.roleBadge}>{u.role}</span></td>
-                        <td><span style={styles.statusActive}>{u.status}</span></td>
-                        <td>
-                          <button style={styles.actionBtn} onClick={() => toggleUserStatus(u.id)}>Toggle Status</button>
-                        </td>
+                        <td><span style={styles.statusBadge}>{u.status}</span></td>
+                        <td><button style={styles.actionBtn}>Toggle Status</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -1022,10 +1051,13 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 3: PRODUCTS */}
+            {/* PRODUCTS TAB */}
             {activeNav === "Products" && (
               <div style={styles.card}>
                 <h2 style={styles.pageHeading}>Tracked Products</h2>
+                <div style={{ marginBottom: "15px" }}>
+                  <input style={{ ...styles.input, width: "300px" }} type="text" placeholder="Search products by name or category..." />
+                </div>
                 <table style={styles.table}>
                   <thead>
                     <tr style={styles.tableHeader}>
@@ -1033,15 +1065,13 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((p, idx) => (
-                      <tr key={idx} style={styles.tableRow}>
+                    {products.map((p, i) => (
+                      <tr key={i} style={styles.tableRow}>
                         <td>{p.name}</td>
                         <td>{p.category}</td>
                         <td>{p.totalReviews}</td>
                         <td>{p.avgSentiment}</td>
-                        <td>
-                          <button style={styles.actionBtn}>Edit</button>
-                        </td>
+                        <td><button style={styles.actionBtn}>Edit</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -1049,10 +1079,16 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 4: REVIEWS & TICKETS */}
+            {/* REVIEWS & TICKETS TAB */}
             {(activeNav === "Reviews" || activeNav === "Insights") && (
               <div style={styles.card}>
-                <h2 style={styles.pageHeading}>Resolution Tickets</h2>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+                  <h2 style={styles.pageHeading}>Resolution Tickets</h2>
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button style={styles.tabToggleActive}>My Tickets</button>
+                    <button style={styles.tabToggle}>Available Tickets</button>
+                  </div>
+                </div>
                 <table style={styles.table}>
                   <thead>
                     <tr style={styles.tableHeader}>
@@ -1060,15 +1096,13 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tickets.map(t => (
-                      <tr key={t.id} style={styles.tableRow}>
+                    {tickets.map((t, i) => (
+                      <tr key={i} style={styles.tableRow}>
                         <td>{t.id}</td>
-                        <td><span style={{ color: t.priority === "CRITICAL" ? "red" : "orange" }}>{t.priority}</span></td>
+                        <td style={{ color: t.priority === "CRITICAL" ? "#ef4444" : "#f59e0b", fontWeight: "600" }}>{t.priority}</td>
                         <td>{t.status}</td>
                         <td>{t.snippet}</td>
-                        <td>
-                          <button style={styles.actionBtn}>Claim Ticket</button>
-                        </td>
+                        <td><button style={styles.actionBtn}>Claim Ticket</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -1089,38 +1123,42 @@ export default function App() {
 }
 
 const styles = {
-  appWrapper: { backgroundColor: "#e2e8f0", minHeight: "100vh", fontFamily: "sans-serif", paddingBottom: "70px" },
-  topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "center", borderBottom: "1px solid #cbd5e1" },
-  searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "300px", textAlign: "center" },
-  authContainer: { display: "flex", justifyContent: "center", alignItems: "center", height: "80vh" },
-  authCard: { backgroundColor: "#ffffff", padding: "30px", borderRadius: "8px", width: "360px", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" },
-  authTitle: { textAlign: "center", marginBottom: "20px", color: "#1e293b" },
-  formGroup: { display: "flex", flexDirection: "column", gap: "12px" },
-  input: { padding: "10px", borderRadius: "4px", border: "1px solid #cbd5e1", outline: "none", fontSize: "14px" },
-  blueBtn: { backgroundColor: "#2563eb", color: "#fff", border: "none", padding: "10px", borderRadius: "4px", fontWeight: "bold", cursor: "pointer" },
-  linkText: { color: "#2563eb", cursor: "pointer", textDecoration: "underline" },
+  appWrapper: { backgroundColor: "#eef2f6", minHeight: "100vh", fontFamily: "Segoe UI, sans-serif", paddingBottom: "60px" },
+  topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "center", borderBottom: "1px solid #e2e8f0" },
+  searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "320px", textAlign: "center" },
+  authContainer: { display: "flex", justifyContent: "center", alignItems: "center", paddingTop: "40px" },
+  authCard: { backgroundColor: "#ffffff", padding: "32px", borderRadius: "8px", width: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", border: "1px solid #e2e8f0" },
+  authTitle: { textAlign: "center", marginBottom: "24px", color: "#1e293b", fontSize: "22px", fontWeight: "600" },
+  formGroup: { display: "flex", flexDirection: "column", gap: "14px" },
+  label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
+  input: { width: "100%", padding: "8px 12px", borderRadius: "4px", border: "1px solid #cbd5e1", backgroundColor: "#f8fafc", fontSize: "14px", outline: "none", boxSizing: "border-box" },
+  blueBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "10px", borderRadius: "4px", fontWeight: "600", cursor: "pointer", marginTop: "10px", fontSize: "14px" },
+  linkText: { color: "#3b82f6", cursor: "pointer", fontWeight: "500" },
   dashboardContainer: { width: "95%", maxWidth: "1100px", margin: "20px auto" },
-  navbar: { backgroundColor: "#1e293b", color: "#f8fafc", display: "flex", gap: "25px", padding: "12px 20px", borderRadius: "4px 4px 0 0" },
-  navItem: { cursor: "pointer", fontSize: "14px", paddingBottom: "2px" },
-  mainContent: { backgroundColor: "#f8fafc", padding: "20px", borderRadius: "0 0 4px 4px", border: "1px solid #cbd5e1" },
-  pageHeading: { margin: "0 0 20px 0", color: "#1e293b", fontSize: "20px" },
-  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px", marginBottom: "20px" },
-  card: { backgroundColor: "#ffffff", padding: "18px", borderRadius: "6px", border: "1px solid #e2e8f0" },
-  metricLabel: { color: "#64748b", fontSize: "12px", textTransform: "uppercase" },
-  metricVal: { margin: "8px 0 0 0", fontSize: "24px", color: "#0f172a" },
+  navbar: { backgroundColor: "#1e293b", display: "flex", gap: "25px", padding: "12px 24px", borderRadius: "6px 6px 0 0" },
+  navItem: { cursor: "pointer", fontSize: "14px", paddingBottom: "4px" },
+  mainContent: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "0 0 6px 6px", border: "1px solid #e2e8f0", borderTop: "none" },
+  pageHeading: { margin: "0 0 20px 0", color: "#1e293b", fontSize: "18px", fontWeight: "600" },
+  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" },
+  card: { backgroundColor: "#ffffff", padding: "20px", borderRadius: "6px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" },
+  metricLabel: { color: "#64748b", fontSize: "11px", fontWeight: "600", letterSpacing: "0.5px" },
+  metricVal: { margin: "10px 0 0 0", fontSize: "26px", color: "#0f172a", fontWeight: "700" },
   rowGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
-  cardTitle: { margin: "0 0 15px 0", color: "#334155" },
-  chartWrapper: { display: "flex", alignItems: "center", gap: "20px" },
-  donutChart: { width: "100px", height: "100px", borderRadius: "50%", background: "conic-gradient(#ef4444 0% 25%, #2563eb 25% 70%, #10b981 70% 100%)" },
-  chartLegend: { fontSize: "13px", lineHeight: "1.8", color: "#475569" },
-  timelineList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px", lineHeight: "1.8", color: "#334155" },
+  cardTitle: { margin: "0 0 16px 0", color: "#334155", fontSize: "15px" },
+  chartWrapper: { display: "flex", alignItems: "center", gap: "24px" },
+  donutChart: { width: "110px", height: "110px", borderRadius: "50%", background: "conic-gradient(#ef4444 0% 25%, #3b82f6 25% 70%, #10b981 70% 100%)" },
+  chartLegend: { fontSize: "13px", lineHeight: "2", color: "#475569" },
+  timelineList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px", lineHeight: "1.6", color: "#334155" },
+  timeText: { color: "#94a3b8", fontSize: "12px" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
-  tableHeader: { backgroundColor: "#f1f5f9", textAlign: "left", color: "#475569" },
-  tableRow: { borderBottom: "1px solid #e2e8f0", color: "#334155" },
-  roleBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "3px 6px", borderRadius: "4px", fontSize: "11px" },
-  statusActive: { backgroundColor: "#dcfce7", color: "#15803d", padding: "3px 6px", borderRadius: "4px", fontSize: "11px" },
-  actionBtn: { backgroundColor: "#2563eb", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
-  bottomBar: { position: "fixed", bottom: 0, left: 0, right: 0, height: "50px", backgroundColor: "#ffffff", display: "flex", gap: "15px", padding: "8px 20px", borderTop: "1px solid #cbd5e1" },
-  pullBtn: { flex: 1, backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: "pointer" },
-  checkBtn: { flex: 1, backgroundColor: "#2563eb", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: "pointer" }
+  tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0" },
+  tableRow: { borderBottom: "1px solid #f1f5f9", color: "#334155" },
+  roleBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
+  statusBadge: { backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: "4px", fontSize: "11px", fontWeight: "600" },
+  actionBtn: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "500" },
+  tabToggleActive: { backgroundColor: "#3b82f6", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
+  tabToggle: { backgroundColor: "#f1f5f9", color: "#475569", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
+  bottomBar: { position: "fixed", bottom: 0, left: 0, right: 0, height: "48px", backgroundColor: "#ffffff", display: "flex", gap: "12px", padding: "8px 16px", borderTop: "1px solid #cbd5e1", boxSizing: "border-box" },
+  pullBtn: { flex: 1, backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" },
+  checkBtn: { flex: 1, backgroundColor: "#3b82f6", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "600", cursor: "pointer" }
 };
