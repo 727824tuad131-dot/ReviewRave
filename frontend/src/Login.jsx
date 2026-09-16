@@ -630,6 +630,36 @@
 
 import React, { useState } from "react";
 
+const styles = {
+  pageContainer: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "radial-gradient(circle at top, #1e293b 0%, #0f172a 100%)",
+    fontFamily: "'Inter', sans-serif",
+    color: "#f8fafc",
+    padding: "20px",
+  },
+  glassCard: {
+    width: "100%",
+    maxWidth: "460px",
+    background: "rgba(30, 41, 59, 0.8)",
+    backdropFilter: "blur(16px)",
+    borderRadius: "16px",
+    padding: "32px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+  },
+  heading: { color: "#f8fafc", textAlign: "center", marginBottom: "24px" },
+  formGroup: { display: "flex", flexDirection: "column", gap: "16px" },
+  label: { display: "block", color: "#94a3b8", fontSize: "13px", marginBottom: "6px" },
+  input: { width: "100%", padding: "10px 14px", borderRadius: "8px", border: "1px solid #334155", backgroundColor: "#0f172a", color: "#f8fafc", outline: "none", boxSizing: "border-box" },
+  primaryBtn: { width: "100%", padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "#2563eb", color: "#ffffff", fontWeight: "600", cursor: "pointer", marginTop: "10px" },
+  footerText: { textAlign: "center", color: "#94a3b8", fontSize: "13px", marginTop: "20px" },
+  link: { color: "#38bdf8", textDecoration: "none" }
+};
+
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
 

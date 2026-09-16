@@ -276,6 +276,30 @@
 
 import React from "react";
 
+const styles = {
+  dashboardContainer: { padding: "24px", backgroundColor: "#0f172a", minHeight: "100vh", color: "#f8fafc", fontFamily: "'Inter', sans-serif" },
+  title: { fontSize: "22px", marginBottom: "20px", color: "#f8fafc" },
+  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" },
+  metricCard: { background: "#1e293b", padding: "16px", borderRadius: "8px" },
+  metricTitle: { color: "#94a3b8", fontSize: "13px" },
+  metricVal: { fontSize: "24px", marginTop: "8px", margin: 0 },
+  dashboardGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
+  chartCard: { background: "#1e293b", borderRadius: "12px", padding: "20px", border: "1px solid #334155" },
+  cardHeader: { margin: "0 0 16px 0", color: "#f8fafc" },
+  pieContainer: { display: "flex", alignItems: "center", gap: "20px" },
+  cssPie: {
+    width: "100px",
+    height: "100px",
+    borderRadius: "50%",
+    background: "conic-gradient(#ef4444 0% 12%, #3b82f6 12% 57%, #10b981 57% 100%)",
+  },
+  legendList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px" },
+  timelineItem: { display: "flex", gap: "12px", marginBottom: "16px" },
+  blueDot: { width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", marginTop: "6px" },
+  timelineText: { margin: 0, fontSize: "13px", color: "#e2e8f0" },
+  timeText: { color: "#64748b", fontSize: "11px" }
+};
+
 const AdminDashboard = () => {
   return (
     <div style={styles.dashboardContainer}>
