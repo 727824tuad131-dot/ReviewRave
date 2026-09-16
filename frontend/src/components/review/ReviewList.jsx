@@ -153,10 +153,8 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Registration submitted successfully:", formData);
-    
-    // Direct-a Login page-ku navigate aagum:
-    navigate("/");
+    alert("Registration Successful!");
+    navigate("/"); // Direct-a login page-ku send pannum
   };
 
   return (
@@ -217,7 +215,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label style={styles.label}>Password (min 8 chars)</label>
+            <label style={styles.label}>Password</label>
             <input
               type="password"
               name="password"
@@ -225,7 +223,6 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               style={styles.input}
-              minLength={8}
               required
             />
           </div>
