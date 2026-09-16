@@ -831,13 +831,10 @@ import React, { useState } from "react";
 export default function App() {
   // Navigation & Role States
   const [currentPage, setCurrentPage] = useState("dashboard"); 
-  const [selectedRole, setSelectedRole] = useState("Brand Manager"); // Set to Brand Manager as in screenshot
-  const [activeTab, setActiveTab] = useState("Tracked Products");
+  const [selectedRole, setSelectedRole] = useState("Brand Manager"); 
+  const [activeTab, setActiveTab] = useState("Sentiment Insights");
 
   // Auth Form States
-  const [firstName, setFirstName] = useState("John");
-  const [lastName, setLastName] = useState("Doe");
-  const [company, setCompany] = useState("Acme Corp");
   const [email, setEmail] = useState("manager@gmail.com");
   const [password, setPassword] = useState("12345678");
 
@@ -862,15 +859,11 @@ export default function App() {
     { id: 3, name: "SaaS Platform Pro", category: "Software", status: "Active", totalReviews: 45, positiveRate: "90%", rating: 4.7 },
   ]);
 
-  const [users, setUsers] = useState([
-    { id: "#001", name: "John Doe", email: "john@reviewrave.com", role: "BRAND_MANAGER", status: "Active" },
-    { id: "#002", name: "Support Agent", email: "agent@reviewrave.com", role: "RESOLUTION_AGENT", status: "Active" },
-    { id: "#003", name: "Admin User", email: "admin@reviewrave.com", role: "PLATFORM_ADMIN", status: "Active" },
-  ]);
-
-  const [tickets, setTickets] = useState([
-    { id: "#102", priority: "HIGH", status: "OPEN", snippet: "Hello, product stopped working after two weeks...", assignedTo: null },
-    { id: "#103", priority: "HIGH", status: "OPEN", snippet: "Feedback regarding battery drainage...", assignedTo: null },
+  const [reviewsList] = useState([
+    { id: 101, user: "Alex Mercer", product: "Acme Smart Watch", rating: "5/5", sentiment: "Positive", comment: "The battery life is amazing! Lasted almost 3 days on a single charge." },
+    { id: 102, user: "Samantha Paul", product: "Acme Wireless Earbuds", rating: "2/5", sentiment: "Negative", comment: "The Bluetooth connectivity keeps dropping during calls." },
+    { id: 103, user: "David Miller", product: "SaaS Platform Pro", rating: "4/5", sentiment: "Positive", comment: "Great UI interface, made our team workflow 2x faster." },
+    { id: 104, user: "Elena Rostova", product: "Acme Smart Watch", rating: "3/5", sentiment: "Neutral", comment: "Good design but step counter isn't very accurate." }
   ]);
 
   // Toast Helper
@@ -883,19 +876,10 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
-    if (selectedRole === "Brand Manager") setActiveTab("Tracked Products");
-    else if (selectedRole === "Resolution Agent") setActiveTab("Resolution Tickets");
-    else setActiveTab("Overview");
+    setActiveTab("Tracked Products");
     showToast(`Logged in successfully!`);
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    setCurrentPage("login");
-    showToast(`Registered successfully! Please login.`);
-  };
-
-  // HANDLE ADD PRODUCT
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!newProdName.trim()) return;
@@ -915,7 +899,6 @@ export default function App() {
     showToast(`Product "${newProdName}" added successfully!`);
   };
 
-  // HANDLE EDIT PRODUCT
   const handleOpenEditModal = (product) => {
     setEditingProductId(product.id);
     setEditProdName(product.name);
@@ -944,7 +927,7 @@ export default function App() {
       {/* Toast Alert */}
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* 1. LOGIN PAGE */}
+      {/* LOGIN PAGE */}
       {currentPage === "login" && (
         <div style={styles.authWrapper}>
           <div style={styles.authCard}>
@@ -981,7 +964,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 2. DASHBOARD */}
+      {/* DASHBOARD */}
       {currentPage === "dashboard" && (
         <div style={{ minHeight: "100vh" }}>
           {/* Header */}
@@ -1020,6 +1003,7 @@ export default function App() {
 
           {/* Main Body */}
           <main style={styles.mainContainer}>
+            {/* 1. TRACKED PRODUCTS TAB */}
             {activeTab === "Tracked Products" && (
               <div>
                 <div style={styles.sectionHeader}>
@@ -1027,7 +1011,6 @@ export default function App() {
                     <h2 style={styles.heading}>Tracked Products</h2>
                     <span style={styles.subHeading}>Monitor customer feedback and sentiment</span>
                   </div>
-                  {/* TRIGGER FOR ADD PRODUCT MODAL */}
                   <button onClick={() => setIsAddProductOpen(true)} style={styles.primaryBtnWidth}>
                     + Add Product
                   </button>
@@ -1071,11 +1054,116 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            {/* 2. SENTIMENT INSIGHTS TAB */}
+            {activeTab === "Sentiment Insights" && (
+              <div>
+                <div style={styles.sectionHeader}>
+                  <div>
+                    <h2 style={styles.heading}>Sentiment Insights</h2>
+                    <span style={styles.subHeading}>AI-driven sentiment breakdown of feedback</span>
+                  </div>
+                </div>
+
+                <div style={styles.statsGrid}>
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>Positive Feedback</span>
+                    <div style={{ ...styles.statVal, color: "#16a34a" }}>78%</div>
+                  </div>
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>Neutral Feedback</span>
+                    <div style={{ ...styles.statVal, color: "#d97706" }}>14%</div>
+                  </div>
+                  <div style={styles.statCard}>
+                    <span style={styles.statLabel}>Negative Feedback</span>
+                    <div style={{ ...styles.statVal, color: "#dc2626" }}>8%</div>
+                  </div>
+                </div>
+
+                <div style={styles.cardBox}>
+                  <h3 style={{ fontSize: "15px", fontWeight: "700", marginBottom: "15px" }}>Sentiment Distribution</h3>
+                  <div style={{ height: "12px", backgroundColor: "#e2e8f0", borderRadius: "6px", display: "flex", overflow: "hidden" }}>
+                    <div style={{ width: "78%", backgroundColor: "#22c55e" }} title="78% Positive" />
+                    <div style={{ width: "14%", backgroundColor: "#f59e0b" }} title="14% Neutral" />
+                    <div style={{ width: "8%", backgroundColor: "#ef4444" }} title="8% Negative" />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "16px" }}>
+                  <div style={styles.cardBox}>
+                    <h3 style={{ fontSize: "14px", fontWeight: "700", color: "#16a34a", marginBottom: "10px" }}>💚 Top Positive Drivers</h3>
+                    <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: "#475569", lineHeight: "1.8" }}>
+                      <li>Battery Performance & Fast Charging</li>
+                      <li>Smooth UI & Clean Design</li>
+                      <li>Fast Support Response Time</li>
+                    </ul>
+                  </div>
+
+                  <div style={styles.cardBox}>
+                    <h3 style={{ fontSize: "14px", fontWeight: "700", color: "#dc2626", marginBottom: "10px" }}>💔 Top Customer Pain Points</h3>
+                    <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: "#475569", lineHeight: "1.8" }}>
+                      <li>Bluetooth Connection Drops</li>
+                      <li>Accurate Step Tracking Calibration</li>
+                      <li>Shipping Delay in Rural Areas</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. REVIEWS TAB */}
+            {activeTab === "Reviews" && (
+              <div>
+                <div style={styles.sectionHeader}>
+                  <div>
+                    <h2 style={styles.heading}>Customer Reviews</h2>
+                    <span style={styles.subHeading}>Recent review entries from connected platforms</span>
+                  </div>
+                </div>
+
+                <div style={styles.tableCard}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr style={styles.tableHeader}>
+                        <th style={styles.th}>Customer</th>
+                        <th style={styles.th}>Product</th>
+                        <th style={styles.th}>Rating</th>
+                        <th style={styles.th}>Sentiment</th>
+                        <th style={styles.th}>Feedback Comment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reviewsList.map((r) => (
+                        <tr key={r.id} style={styles.tableRow}>
+                          <td style={{ ...styles.td, fontWeight: "700" }}>{r.user}</td>
+                          <td style={styles.td}>{r.product}</td>
+                          <td style={styles.td}>{r.rating}</td>
+                          <td style={styles.td}>
+                            <span
+                              style={
+                                r.sentiment === "Positive"
+                                  ? styles.activeTag
+                                  : r.sentiment === "Negative"
+                                  ? styles.critBadge
+                                  : styles.highBadge
+                              }
+                            >
+                              {r.sentiment}
+                            </span>
+                          </td>
+                          <td style={styles.td}>{r.comment}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </main>
         </div>
       )}
 
-      {/* 3. ADD PRODUCT MODAL (FIXED & ADDED HERE) */}
+      {/* ADD PRODUCT MODAL */}
       {isAddProductOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -1117,7 +1205,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. EDIT PRODUCT MODAL */}
+      {/* EDIT PRODUCT MODAL */}
       {isEditProductOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -1190,7 +1278,16 @@ const styles = {
   statVal: { fontSize: "24px", fontWeight: "700", marginTop: "4px" },
   gridContainer: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" },
   productCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  cardBox: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "20px", borderRadius: "12px" },
+  tableCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
+  table: { width: "100%", borderCollapse: "collapse", fontSize: "12px" },
+  tableHeader: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" },
+  th: { padding: "12px", textAlign: "left", color: "#64748b", fontWeight: "600" },
+  tableRow: { borderBottom: "1px solid #f1f5f9" },
+  td: { padding: "12px", color: "#334155" },
   activeTag: { backgroundColor: "#dcfce7", color: "#15803d", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" },
+  critBadge: { backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
+  highBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
   toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "10px 16px", borderRadius: "8px", fontSize: "13px", zIndex: 1000 },
   modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
   modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "340px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" },
