@@ -474,7 +474,6 @@ import {
   deleteProduct,
 } from "../../store/slices/productSlice";
 
-
 const ProductList = () => {
   const dispatch = useDispatch();
 
@@ -487,8 +486,11 @@ const ProductList = () => {
     [productsState.items]
   );
 
-  const loading = productsState.loading || false;
-  const error = productsState.error || null;
+  // Match productSlice state names
+  const loading = productsState.isLoading || false;
+  const error = productsState.isError
+    ? "Unable to load products"
+    : null;
 
   const [showForm, setShowForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -500,7 +502,6 @@ const ProductList = () => {
     role === "BRAND_MANAGER" ||
     role === "PLATFORM_ADMIN";
 
-
   /* ===============================
      GET PRODUCTS
      =============================== */
@@ -508,7 +509,6 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-
 
   /* ===============================
      CATEGORIES
@@ -521,7 +521,6 @@ const ProductList = () => {
     "SOFTWARE",
     "FOOD",
   ];
-
 
   /* ===============================
      FILTER PRODUCTS
@@ -540,7 +539,6 @@ const ProductList = () => {
     });
   }, [products, selectedCategory]);
 
-
   /* ===============================
      ADD PRODUCT
      =============================== */
@@ -550,7 +548,6 @@ const ProductList = () => {
     setShowForm(true);
   };
 
-
   /* ===============================
      EDIT PRODUCT
      =============================== */
@@ -559,7 +556,6 @@ const ProductList = () => {
     setSelectedProduct(product);
     setShowForm(true);
   };
-
 
   /* ===============================
      DELETE PRODUCT
@@ -575,7 +571,6 @@ const ProductList = () => {
     }
   };
 
-
   /* ===============================
      CLOSE FORM
      =============================== */
@@ -584,7 +579,6 @@ const ProductList = () => {
     setShowForm(false);
     setSelectedProduct(null);
   };
-
 
   /* ===============================
      SENTIMENT
@@ -618,7 +612,6 @@ const ProductList = () => {
     return value;
   };
 
-
   /* ===============================
      CATEGORY CLASS
      =============================== */
@@ -629,7 +622,6 @@ const ProductList = () => {
       .replace(/\s+/g, "-")}`;
   };
 
-
   /* ===============================
      LOADING
      =============================== */
@@ -637,27 +629,20 @@ const ProductList = () => {
   if (loading && products.length === 0) {
     return (
       <div className="rr-dashboard">
-
         <aside className="rr-sidebar">
           <SidebarContent />
         </aside>
 
         <main className="rr-dashboard-main">
-
           <div className="rr-loading">
             <div className="rr-spinner"></div>
 
-            <p>
-              Loading products...
-            </p>
+            <p>Loading products...</p>
           </div>
-
         </main>
-
       </div>
     );
   }
-
 
   /* ===============================
      MAIN UI
@@ -671,11 +656,8 @@ const ProductList = () => {
           =============================== */}
 
       <aside className="rr-sidebar">
-
         <SidebarContent />
-
       </aside>
-
 
       {/* ===============================
           MAIN CONTENT
@@ -686,13 +668,9 @@ const ProductList = () => {
         {/* Decorative shapes */}
 
         <div className="rr-shape rr-shape-one"></div>
-
         <div className="rr-shape rr-shape-two"></div>
-
         <div className="rr-shape rr-shape-three"></div>
-
         <div className="rr-shape rr-shape-four"></div>
-
 
         {/* ===============================
             PAGE HEADER
@@ -701,22 +679,17 @@ const ProductList = () => {
         <div className="rr-page-header">
 
           <div>
-
             <div className="rr-eyebrow">
               CUSTOMER INTELLIGENCE
             </div>
 
-            <h1>
-              Tracked Products
-            </h1>
+            <h1>Tracked Products</h1>
 
             <p>
               Catalog of registered products actively
               tracked across feedback channels
             </p>
-
           </div>
-
 
           {canManageProducts && (
             <button
@@ -725,13 +698,10 @@ const ProductList = () => {
               onClick={handleAddProduct}
             >
               <span>+</span>
-
               Add Product
             </button>
           )}
-
         </div>
-
 
         {/* ===============================
             ERROR
@@ -742,18 +712,10 @@ const ProductList = () => {
             className="rr-error"
             role="alert"
           >
-
-            <span>
-              !
-            </span>
-
-            {typeof error === "string"
-              ? error
-              : "Unable to load products"}
-
+            <span>!</span>
+            {error}
           </div>
         )}
-
 
         {/* ===============================
             CATEGORY FILTER
@@ -762,7 +724,6 @@ const ProductList = () => {
         <div className="rr-category-filter">
 
           {categories.map((category) => (
-
             <button
               key={category}
               type="button"
@@ -775,17 +736,13 @@ const ProductList = () => {
                 setSelectedCategory(category)
               }
             >
-
               {category === "ALL"
                 ? "All Categories"
                 : category}
-
             </button>
-
           ))}
 
         </div>
-
 
         {/* ===============================
             EMPTY STATE
@@ -808,20 +765,14 @@ const ProductList = () => {
               customer reviews and sentiment.
             </p>
 
-
             {canManageProducts && (
               <button
                 type="button"
                 className="rr-add-product"
                 onClick={handleAddProduct}
               >
-
-                <span>
-                  +
-                </span>
-
+                <span>+</span>
                 Add Product
-
               </button>
             )}
 
@@ -834,7 +785,6 @@ const ProductList = () => {
              =============================== */
 
           <div className="rr-product-card">
-
 
             {/* TABLE HEADER */}
 
@@ -862,7 +812,6 @@ const ProductList = () => {
 
             </div>
 
-
             {/* TABLE BODY */}
 
             <div className="rr-table-body">
@@ -875,7 +824,6 @@ const ProductList = () => {
                 const category =
                   product.category || "GENERAL";
 
-
                 const sentimentClass =
                   sentiment === null
                     ? "neutral"
@@ -885,14 +833,11 @@ const ProductList = () => {
                     ? "medium"
                     : "negative";
 
-
                 return (
-
                   <div
                     className="rr-product-row"
                     key={product.id}
                   >
-
 
                     {/* PRODUCT NAME */}
 
@@ -903,7 +848,6 @@ const ProductList = () => {
                           category
                         )}`}
                       >
-
                         {String(category)
                           .toUpperCase()
                           .includes("ELECTRONICS")
@@ -917,9 +861,7 @@ const ProductList = () => {
                               .includes("FASHION")
                           ? "◇"
                           : "✦"}
-
                       </div>
-
 
                       <strong>
                         {product.name ||
@@ -927,7 +869,6 @@ const ProductList = () => {
                       </strong>
 
                     </div>
-
 
                     {/* CATEGORY */}
 
@@ -938,13 +879,10 @@ const ProductList = () => {
                           category
                         )}`}
                       >
-
                         {category}
-
                       </span>
 
                     </div>
-
 
                     {/* TOTAL REVIEWS */}
 
@@ -955,7 +893,6 @@ const ProductList = () => {
                         0}
 
                     </div>
-
 
                     {/* SENTIMENT */}
 
@@ -968,15 +905,12 @@ const ProductList = () => {
                       <span
                         className={`sentiment-${sentimentClass}`}
                       >
-
                         {sentiment !== null
                           ? sentiment.toFixed(1)
                           : "—"}
-
                       </span>
 
                     </div>
-
 
                     {/* ACTION */}
 
@@ -984,7 +918,6 @@ const ProductList = () => {
 
                       {canManageProducts && (
                         <>
-
                           <button
                             type="button"
                             className="rr-edit"
@@ -992,11 +925,8 @@ const ProductList = () => {
                               handleEditProduct(product)
                             }
                           >
-
                             ✎ Edit
-
                           </button>
-
 
                           <button
                             type="button"
@@ -1007,47 +937,44 @@ const ProductList = () => {
                               )
                             }
                           >
-
                             × Delete
-
                           </button>
-
                         </>
                       )}
 
                     </div>
 
                   </div>
-
                 );
               })}
 
             </div>
-
           </div>
-
         )}
-
 
         {/* ===============================
             PRODUCT FORM
             =============================== */}
 
         {showForm && (
-
           <ProductForm
+            mode={
+              selectedProduct
+                ? "edit"
+                : "create"
+            }
+            productId={
+              selectedProduct?.id
+            }
             product={selectedProduct}
             onClose={handleCloseForm}
           />
-
         )}
 
       </main>
-
     </div>
   );
 };
-
 
 /* =========================================================
    SIDEBAR
@@ -1059,7 +986,6 @@ const SidebarContent = () => {
 
   return (
     <>
-
       {/* LOGO */}
 
       <div className="rr-side-logo">
@@ -1068,9 +994,7 @@ const SidebarContent = () => {
           R
         </div>
 
-
         <div>
-
           <strong>
             ReviewRave
           </strong>
@@ -1078,16 +1002,13 @@ const SidebarContent = () => {
           <span>
             SOCIAL SENTIMENT PLATFORM
           </span>
-
         </div>
 
       </div>
 
-
       {/* NAVIGATION */}
 
       <nav className="rr-sidebar-nav">
-
 
         <NavItem
           to="/"
@@ -1096,13 +1017,11 @@ const SidebarContent = () => {
           end
         />
 
-
         <NavItem
           to="/insights"
           icon="⌁"
           text="Sentiment Analysis"
         />
-
 
         <NavItem
           to="/reviews"
@@ -1110,25 +1029,20 @@ const SidebarContent = () => {
           text="Reviews"
         />
 
-
         {(role === "BRAND_MANAGER" ||
           role === "PLATFORM_ADMIN") && (
-
           <NavItem
             to="/products"
             icon="◇"
             text="Tracked Products"
           />
-
         )}
-
 
         <NavItem
           to="/tickets"
           icon="▤"
           text="Reports"
         />
-
 
         <NavItem
           to="/settings"
@@ -1137,11 +1051,9 @@ const SidebarContent = () => {
         />
 
       </nav>
-
     </>
   );
 };
-
 
 /* =========================================================
    NAV ITEM
@@ -1155,7 +1067,6 @@ const NavItem = ({
 }) => {
 
   return (
-
     <NavLink
       to={to}
       end={end}
@@ -1165,7 +1076,6 @@ const NavItem = ({
           : "rr-nav-item"
       }
     >
-
       <span className="rr-nav-icon">
         {icon}
       </span>
@@ -1173,11 +1083,8 @@ const NavItem = ({
       <span>
         {text}
       </span>
-
     </NavLink>
-
   );
 };
-
 
 export default ProductList;
