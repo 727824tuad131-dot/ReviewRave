@@ -826,12 +826,16 @@
 
 
 import React, { useState } from "react";
+import ReviewForm from "./components/review/ReviewForm";
+import ReviewList from "./components/review/ReviewList";
+import TicketForm from "./components/ticket/TicketForm";
+import UserList from "./components/user/UserList";
 
 export default function App() {
-  // Current Active Page: 'register', 'login', 'dashboard'
   const [currentPage, setCurrentPage] = useState("register");
+  const [activeTab, setActiveTab] = useState("users");
 
-  // Form Input States
+  // Form States
   const [firstName, setFirstName] = useState("Jane");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
@@ -839,45 +843,35 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
   const [role, setRole] = useState("BRAND_MANAGER");
 
-  // Create Account Button Click Handler
   const handleCreateAccount = () => {
     if (!firstName || !lastName || !email || !password) {
       alert("Please fill in all required fields!");
       return;
     }
-
-    // Success Message Alert
-    alert(`Account Created Successfully for ${firstName} ${lastName}!`);
-    
-    // Automatically Go to Login Page
+    alert(`Account Created Successfully!`);
     setCurrentPage("login");
   };
 
-  // Login Button Click Handler
   const handleLogin = () => {
     if (!email || !password) {
       alert("Please enter Email and Password!");
       return;
     }
-    
-    // Direct to Dashboard
     setCurrentPage("dashboard");
   };
 
   return (
     <div style={styles.pageContainer}>
-      {/* ---------------- 1. REGISTER PAGE ---------------- */}
+      {/* 1. REGISTER PAGE */}
       {currentPage === "register" && (
         <div style={styles.glassCard}>
           <h2 style={styles.heading}>Register Account</h2>
-
           <div style={styles.formGroup}>
             <div style={styles.row}>
               <div style={{ flex: 1 }}>
                 <label style={styles.label}>First Name</label>
                 <input
                   type="text"
-                  placeholder="Jane"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   style={styles.input}
@@ -887,7 +881,6 @@ export default function App() {
                 <label style={styles.label}>Last Name</label>
                 <input
                   type="text"
-                  placeholder="Doe"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   style={styles.input}
@@ -899,7 +892,6 @@ export default function App() {
               <label style={styles.label}>Company Name</label>
               <input
                 type="text"
-                placeholder="Acme Corp (Optional)"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 style={styles.input}
@@ -910,7 +902,6 @@ export default function App() {
               <label style={styles.label}>Email Address</label>
               <input
                 type="email"
-                placeholder="manager@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={styles.input}
@@ -921,7 +912,6 @@ export default function App() {
               <label style={styles.label}>Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={styles.input}
@@ -941,12 +931,7 @@ export default function App() {
               </select>
             </div>
 
-            {/* Direct onClick Event - No Form Block Issue */}
-            <button
-              type="button"
-              onClick={handleCreateAccount}
-              style={styles.primaryBtn}
-            >
+            <button type="button" onClick={handleCreateAccount} style={styles.primaryBtn}>
               Create Account
             </button>
           </div>
@@ -960,17 +945,15 @@ export default function App() {
         </div>
       )}
 
-      {/* ---------------- 2. LOGIN PAGE ---------------- */}
+      {/* 2. LOGIN PAGE */}
       {currentPage === "login" && (
         <div style={styles.glassCard}>
           <h2 style={styles.heading}>Login to ReviewRave</h2>
-
           <div style={styles.formGroup}>
             <div>
               <label style={styles.label}>Email Address</label>
               <input
                 type="email"
-                placeholder="manager@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={styles.input}
@@ -981,62 +964,68 @@ export default function App() {
               <label style={styles.label}>Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={styles.input}
               />
             </div>
 
-            <button
-              type="button"
-              onClick={handleLogin}
-              style={styles.primaryBtn}
-            >
+            <button type="button" onClick={handleLogin} style={styles.primaryBtn}>
               Login
             </button>
           </div>
 
           <p style={styles.footerText}>
             Don't have an account?{" "}
-            <span
-              onClick={() => setCurrentPage("register")}
-              style={styles.link}
-            >
+            <span onClick={() => setCurrentPage("register")} style={styles.link}>
               Register here
             </span>
           </p>
         </div>
       )}
 
-      {/* ---------------- 3. DASHBOARD PAGE ---------------- */}
+      {/* 3. FULL DASHBOARD WITH TABS & COMPONENTS */}
       {currentPage === "dashboard" && (
-        <div style={{ width: "100%", maxWidth: "900px" }}>
+        <div style={styles.dashboardLayout}>
           <div style={styles.navBar}>
             <h2>ReviewRave Workspace</h2>
-            <button
-              onClick={() => setCurrentPage("login")}
-              style={styles.logoutBtn}
-            >
+            <button onClick={() => setCurrentPage("login")} style={styles.logoutBtn}>
               Logout
             </button>
           </div>
 
-          <h3 style={{ marginBottom: "20px" }}>Platform Overview</h3>
+          {/* Navigation Tabs */}
+          <div style={styles.tabBar}>
+            <button
+              style={activeTab === "users" ? styles.activeTabBtn : styles.tabBtn}
+              onClick={() => setActiveTab("users")}
+            >
+              User Management
+            </button>
+            <button
+              style={activeTab === "reviews" ? styles.activeTabBtn : styles.tabBtn}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Reviews Management
+            </button>
+            <button
+              style={activeTab === "tickets" ? styles.activeTabBtn : styles.tabBtn}
+              onClick={() => setActiveTab("tickets")}
+            >
+              Support Tickets
+            </button>
+          </div>
 
-          <div style={styles.metricsGrid}>
-            <div style={{ ...styles.metricCard, borderLeft: "4px solid #2563eb" }}>
-              <small>Total Users</small>
-              <h2>8</h2>
-            </div>
-            <div style={{ ...styles.metricCard, borderLeft: "4px solid #10b981" }}>
-              <small>Tracked Products</small>
-              <h2>12</h2>
-            </div>
-            <div style={{ ...styles.metricCard, borderLeft: "4px solid #ef4444" }}>
-              <small>Active Tickets</small>
-              <h2>3</h2>
-            </div>
+          {/* Component Dynamic Rendering */}
+          <div style={styles.contentArea}>
+            {activeTab === "users" && <UserList />}
+            {activeTab === "reviews" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <ReviewForm />
+                <ReviewList />
+              </div>
+            )}
+            {activeTab === "tickets" && <TicketForm />}
           </div>
         </div>
       )}
@@ -1044,18 +1033,16 @@ export default function App() {
   );
 }
 
-// ---------------- STYLES OBJECT ----------------
 const styles = {
   pageContainer: {
     minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "#0f172a",
     fontFamily: "'Inter', sans-serif",
     color: "#f8fafc",
     padding: "20px",
-    boxSizing: "border-box",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   glassCard: {
     width: "100%",
@@ -1069,12 +1056,7 @@ const styles = {
   heading: { color: "#f8fafc", textAlign: "center", marginBottom: "24px" },
   formGroup: { display: "flex", flexDirection: "column", gap: "16px" },
   row: { display: "flex", gap: "12px" },
-  label: {
-    display: "block",
-    color: "#94a3b8",
-    fontSize: "13px",
-    marginBottom: "6px",
-  },
+  label: { display: "block", color: "#94a3b8", fontSize: "13px", marginBottom: "6px" },
   input: {
     width: "100%",
     padding: "10px 14px",
@@ -1106,13 +1088,9 @@ const styles = {
     cursor: "pointer",
     marginTop: "10px",
   },
-  footerText: {
-    textAlign: "center",
-    color: "#94a3b8",
-    fontSize: "13px",
-    marginTop: "20px",
-  },
+  footerText: { textAlign: "center", color: "#94a3b8", fontSize: "13px", marginTop: "20px" },
   link: { color: "#38bdf8", cursor: "pointer", textDecoration: "underline" },
+  dashboardLayout: { width: "100%", maxWidth: "1000px", alignSelf: "flex-start" },
   navBar: {
     display: "flex",
     justifyContent: "space-between",
@@ -1120,7 +1098,7 @@ const styles = {
     padding: "16px 24px",
     backgroundColor: "#1e293b",
     borderRadius: "8px",
-    marginBottom: "24px",
+    marginBottom: "20px",
   },
   logoutBtn: {
     padding: "8px 16px",
@@ -1130,10 +1108,23 @@ const styles = {
     borderRadius: "6px",
     cursor: "pointer",
   },
-  metricsGrid: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" },
-  metricCard: {
+  tabBar: { display: "flex", gap: "12px", marginBottom: "20px" },
+  tabBtn: {
+    padding: "10px 18px",
     backgroundColor: "#1e293b",
-    padding: "20px",
-    borderRadius: "8px",
+    color: "#94a3b8",
+    border: "1px solid #334155",
+    borderRadius: "6px",
+    cursor: "pointer",
   },
+  activeTabBtn: {
+    padding: "10px 18px",
+    backgroundColor: "#2563eb",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "6px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  contentArea: { backgroundColor: "#1e293b", padding: "24px", borderRadius: "8px" },
 };
