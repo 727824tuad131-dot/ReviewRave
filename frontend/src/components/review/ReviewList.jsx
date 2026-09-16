@@ -102,7 +102,6 @@
 
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const styles = {
   pageContainer: {
@@ -136,8 +135,7 @@ const styles = {
   link: { color: "#38bdf8", cursor: "pointer", textDecoration: "underline" }
 };
 
-const Register = () => {
-  const navigate = useNavigate();
+const Register = ({ onRegisterSuccess, onGoToLogin }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -151,17 +149,21 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Registration Successful!");
-    navigate("/"); // Direct-a login page-ku send pannum
+  const handleFormSubmit = (e) => {
+    e.preventDefault(); // Default browser reload-ah stop panrum
+    alert("Account Created Successfully!");
+    
+    // Parent component-kku success pass panrum
+    if (onRegisterSuccess) {
+      onRegisterSuccess(formData);
+    }
   };
 
   return (
     <div style={styles.pageContainer}>
       <div style={styles.glassCard}>
         <h2 style={styles.heading}>Register Account</h2>
-        <form onSubmit={handleSubmit} style={styles.formGroup}>
+        <form onSubmit={handleFormSubmit} style={styles.formGroup}>
           <div style={styles.row}>
             <div style={{ flex: 1 }}>
               <label style={styles.label}>First Name</label>
@@ -248,7 +250,7 @@ const Register = () => {
 
         <p style={styles.footerText}>
           Already have an account?{" "}
-          <span onClick={() => navigate("/")} style={styles.link}>
+          <span onClick={onGoToLogin} style={styles.link}>
             Login here
           </span>
         </p>
