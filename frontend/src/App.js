@@ -829,10 +829,11 @@
 import React, { useState } from "react";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState("dashboard");
-  const [activeNav, setActiveNav] = useState("Products");
+  // Page Flow State: 'register' -> 'login' -> 'dashboard'
+  const [currentPage, setCurrentPage] = useState("register");
+  const [activeNav, setActiveNav] = useState("Home");
 
-  // Auth States
+  // Registration Form States
   const [firstName, setFirstName] = useState("Jane");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
@@ -850,7 +851,7 @@ export default function App() {
   const [newProdCategory, setNewProdCategory] = useState("ELECTRONICS");
   const [toastMessage, setToastMessage] = useState("");
 
-  // Users Table Data
+  // Users Data
   const [users, setUsers] = useState([
     { id: "#1", name: "Brand Manager", email: "manager@brandcorp.com", company: "Brand Corp", role: "BRAND_MANAGER", status: "Active" },
     { id: "#2", name: "Support Agent", email: "agent@reviewrave.com", company: "ReviewRave Support", role: "RESOLUTION_AGENT", status: "Inactive" },
@@ -882,7 +883,22 @@ export default function App() {
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  // Button Handlers
+  // Auth Submit Handlers
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    // Register panna udane Login page-ku Redirect aagum
+    setCurrentPage("login");
+    showNotification("Registration successful! Please login to continue.");
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    // Login panna udane Dashboard open aagum
+    setCurrentPage("dashboard");
+    showNotification("Login successful! Welcome to ReviewRave.");
+  };
+
+  // Data Action Handlers
   const handleToggleUserStatus = (userId) => {
     setUsers((prev) =>
       prev.map((user) => {
@@ -898,7 +914,7 @@ export default function App() {
 
   const handleDeleteProduct = (productId, name) => {
     setProducts((prev) => prev.filter((p) => p.id !== productId));
-    showNotification(`Product "${name}" deleted successfully!`);
+    showNotification(`Product "${name}" deleted!`);
   };
 
   const handleAddProduct = (e) => {
@@ -914,7 +930,7 @@ export default function App() {
     setProducts([...products, newProd]);
     setNewProdName("");
     setIsAddProductOpen(false);
-    showNotification(`Product "${newProdName}" added successfully!`);
+    showNotification(`Product "${newProdName}" added!`);
   };
 
   const handleSaveProduct = (e) => {
@@ -958,17 +974,18 @@ export default function App() {
       <div style={styles.topHeader}>
         <div style={styles.searchBox}>🔍 Search</div>
         {currentPage === "dashboard" && (
-          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out"); }}>
+          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
             Logout
           </button>
         )}
       </div>
 
+      {/* 1. REGISTER PAGE */}
       {currentPage === "register" && (
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Register Account</h2>
-            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Account Created!"); }}>
+            <form onSubmit={handleRegisterSubmit}>
               <div style={styles.formGroup}>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <div style={{ flex: 1 }}>
@@ -1010,11 +1027,12 @@ export default function App() {
         </div>
       )}
 
+      {/* 2. LOGIN PAGE */}
       {currentPage === "login" && (
         <div style={styles.authContainer}>
           <div style={styles.authCard}>
             <h2 style={styles.authTitle}>Login to ReviewRave</h2>
-            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage("dashboard"); showNotification("Welcome back!"); }}>
+            <form onSubmit={handleLoginSubmit}>
               <div style={styles.formGroup}>
                 <div>
                   <label style={styles.label}>Email Address</label>
@@ -1034,6 +1052,7 @@ export default function App() {
         </div>
       )}
 
+      {/* 3. DASHBOARD PAGE */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardContainer}>
           <div style={styles.navbar}>
@@ -1320,6 +1339,7 @@ export default function App() {
         </div>
       )}
 
+      {/* STICKY BOTTOM ACTIONS */}
       <div style={styles.bottomBar}>
         <button style={styles.pullBtn} onClick={() => showNotification("Data Sync Completed!")}>Pull</button>
         <button style={styles.checkBtn} onClick={() => showNotification("System Verification Passed!")}>Check Verify</button>
