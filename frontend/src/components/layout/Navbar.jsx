@@ -272,27 +272,23 @@
 // export default Navbar;
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const role =
-    localStorage.getItem("role");
+  const role = localStorage.getItem("role");
 
   const email =
     localStorage.getItem("email") ||
     "user@reviewrave.com";
-
 
   /* ===============================
      ROLE NAME
      =============================== */
 
   const getRoleName = () => {
-
     if (role === "PLATFORM_ADMIN") {
       return "Platform Admin";
     }
@@ -304,123 +300,264 @@ const Navbar = () => {
     return "Brand Manager";
   };
 
+  /* ===============================
+     NAVIGATION
+     =============================== */
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
   /* ===============================
      LOGOUT
      =============================== */
 
   const handleLogout = () => {
-
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
+    localStorage.removeItem("userId");
 
-    navigate(
-      "/login",
-      { replace: true }
-    );
+    navigate("/login", {
+      replace: true,
+    });
   };
 
+  /* ===============================
+     ACTIVE PAGE
+     =============================== */
+
+  const isActive = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+
+    return location.pathname === path;
+  };
+
+  /* ===============================
+     ROLE BASED MENU
+     =============================== */
+
+  const getNavigationItems = () => {
+    /* BRAND MANAGER */
+
+    if (role === "BRAND_MANAGER") {
+      return [
+        {
+          label: "Home",
+          path: "/",
+        },
+        {
+          label: "Products",
+          path: "/products",
+        },
+        {
+          label: "Reviews",
+          path: "/reviews",
+        },
+        {
+          label: "Insights",
+          path: "/insights",
+        },
+      ];
+    }
+
+    /* RESOLUTION AGENT */
+
+    if (role === "RESOLUTION_AGENT") {
+      return [
+        {
+          label: "Home",
+          path: "/",
+        },
+        {
+          label: "Tickets",
+          path: "/tickets",
+        },
+      ];
+    }
+
+    /* PLATFORM ADMIN */
+
+    if (role === "PLATFORM_ADMIN") {
+      return [
+        {
+          label: "Home",
+          path: "/",
+        },
+        {
+          label: "Users",
+          path: "/admin",
+        },
+        {
+          label: "Products",
+          path: "/products",
+        },
+        {
+          label: "Tickets",
+          path: "/tickets",
+        },
+        {
+          label: "Insights",
+          path: "/insights",
+        },
+      ];
+    }
+
+    /* FALLBACK */
+
+    return [
+      {
+        label: "Home",
+        path: "/",
+      },
+    ];
+  };
+
+  const navigationItems = getNavigationItems();
 
   return (
+    <header className="rr-header">
 
-    <header className="rr-topbar">
+      {/* =====================================
+          TOP HEADER
+          ===================================== */}
 
+      <div className="rr-topbar">
 
-      {/* ===============================
-          REVIEWRAVE BRAND
-          =============================== */}
+        {/* =====================================
+            BRAND
+            ===================================== */}
 
-      <div className="rr-brand">
+        <div
+          className="rr-brand"
+          onClick={() => handleNavigation("/")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              handleNavigation("/");
+            }
+          }}
+        >
 
-        <div className="rr-logo-mark">
-          R
+          <div className="rr-logo-mark">
+            R
+          </div>
+
+          <div className="rr-brand-text">
+
+            <div className="rr-brand-name">
+              ReviewRave
+            </div>
+
+            <div className="rr-brand-subtitle">
+              SOCIAL SENTIMENT PLATFORM
+            </div>
+
+          </div>
+
         </div>
 
 
-        <div>
+        {/* =====================================
+            USER AREA
+            ===================================== */}
 
-          <div className="rr-brand-name">
-            ReviewRave
+        <div className="rr-user-area">
+
+          {/* NOTIFICATION */}
+
+          <button
+            type="button"
+            className="rr-notification"
+            aria-label="Notifications"
+            title="Notifications"
+          >
+            ♧
+
+            <span className="notification-dot"></span>
+          </button>
+
+
+          {/* AVATAR */}
+
+          <div className="rr-avatar">
+            {email
+              .charAt(0)
+              .toUpperCase()}
           </div>
 
-          <div className="rr-brand-subtitle">
-            SOCIAL SENTIMENT PLATFORM
+
+          {/* USER DETAILS */}
+
+          <div className="rr-user-details">
+
+            <strong>
+              {email.split("@")[0]}
+            </strong>
+
+            <span>
+              {getRoleName()}
+            </span>
+
           </div>
+
+
+          {/* LOGOUT */}
+
+          <button
+            type="button"
+            className="rr-user-arrow"
+            onClick={handleLogout}
+            title="Logout"
+            aria-label="Logout"
+          >
+            ⌄
+          </button>
 
         </div>
 
       </div>
 
 
-      {/* ===============================
-          USER AREA
-          =============================== */}
+      {/* =====================================
+          NAVIGATION BAR
+          ===================================== */}
 
-      <div className="rr-user-area">
+      <nav
+        className="rr-navigation"
+        aria-label="Main navigation"
+      >
 
+        <div className="rr-navigation-inner">
 
-        {/* NOTIFICATION */}
+          {navigationItems.map((item) => (
 
-        <button
-          type="button"
-          className="rr-notification"
-          aria-label="Notifications"
-        >
+            <button
+              key={item.path}
+              type="button"
+              className={`rr-nav-item ${
+                isActive(item.path)
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() =>
+                handleNavigation(item.path)
+              }
+            >
+              {item.label}
+            </button>
 
-          ♧
-
-          <span className="notification-dot"></span>
-
-        </button>
-
-
-        {/* AVATAR */}
-
-        <div className="rr-avatar">
-
-          {email
-            .charAt(0)
-            .toUpperCase()}
-
-        </div>
-
-
-        {/* USER DETAILS */}
-
-        <div className="rr-user-details">
-
-          <strong>
-            {email.split("@")[0]}
-          </strong>
-
-          <span>
-            {getRoleName()}
-          </span>
+          ))}
 
         </div>
 
-
-        {/* LOGOUT */}
-
-        <button
-          type="button"
-          className="rr-user-arrow"
-          onClick={handleLogout}
-          title="Logout"
-          aria-label="Logout"
-        >
-
-          ⌄
-
-        </button>
-
-      </div>
+      </nav>
 
     </header>
-
   );
 };
-
 
 export default Navbar;
