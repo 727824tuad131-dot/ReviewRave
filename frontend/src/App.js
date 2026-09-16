@@ -825,21 +825,22 @@
 // export default App;
 
 
-
 import React, { useState } from "react";
 
 export default function App() {
-  // Page Flow State: 'register' -> 'login' -> 'dashboard'
-  const [currentPage, setCurrentPage] = useState("register");
+  // Navigation Flow State: 'register' -> 'login' -> 'dashboard'
+  const [currentPage, setCurrentPage] = useState("login");
   const [activeNav, setActiveNav] = useState("Home");
 
-  // Registration Form States
+  // Auth States
   const [firstName, setFirstName] = useState("Jane");
   const [lastName, setLastName] = useState("Doe");
   const [company, setCompany] = useState("Acme Corp");
   const [email, setEmail] = useState("manager@gmail.com");
   const [password, setPassword] = useState("12345678");
-  const [role, setRole] = useState("Brand Manager");
+  
+  // Selected Role State ('Platform Admin', 'Brand Manager', 'Resolution Agent')
+  const [selectedRole, setSelectedRole] = useState("Brand Manager");
 
   // Filter & Modal States
   const [productSearch, setProductSearch] = useState("");
@@ -859,19 +860,17 @@ export default function App() {
     { id: "#4", name: "manager", email: "manager@gmail.com", company: "manager@gmail.com", role: "BRAND_MANAGER", status: "Inactive" },
     { id: "#5", name: "agent", email: "agent@gmail.com", company: "Joko", role: "RESOLUTION_AGENT", status: "Active" },
     { id: "#6", name: "admin", email: "admin@gmail.com", company: "Acca", role: "PLATFORM_ADMIN", status: "Active" },
-    { id: "#7", name: "manager", email: "manager@gmail.com", company: "manager", role: "BRAND_MANAGER", status: "Active" },
-    { id: "#8", name: "Brand Manager", email: "brand@test.com", company: "TestingTest", role: "BRAND_MANAGER", status: "Active" },
   ]);
 
-  // Tracked Products Data
+  // Products Data
   const [products, setProducts] = useState([
-    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 0, avgSentiment: 0.0 },
-    { id: 2, name: "SaaS", category: "SOFTWARE", totalReviews: 0, avgSentiment: 0.0 },
-    { id: 3, name: "Resort", category: "HOSPITALITY", totalReviews: 0, avgSentiment: 0.0 },
-    { id: 4, name: "Tee", category: "RETAIL", totalReviews: 0, avgSentiment: 0.0 },
+    { id: 1, name: "ProBook", category: "ELECTRONICS", totalReviews: 12, avgSentiment: 4.2 },
+    { id: 2, name: "SaaS Platform", category: "SOFTWARE", totalReviews: 45, avgSentiment: 3.8 },
+    { id: 3, name: "Grand Resort", category: "HOSPITALITY", totalReviews: 8, avgSentiment: 4.5 },
+    { id: 4, name: "Urban Tee", category: "RETAIL", totalReviews: 23, avgSentiment: 3.1 },
   ]);
 
-  // Resolution Tickets Data
+  // Tickets Data
   const [tickets, setTickets] = useState([
     { id: "#2", priority: "HIGH", status: "OPEN", snippet: "hello...", assignedTo: null },
     { id: "#3", priority: "HIGH", status: "OPEN", snippet: "hahaha...", assignedTo: null },
@@ -886,19 +885,17 @@ export default function App() {
   // Auth Submit Handlers
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
-    // Register panna udane Login page-ku Redirect aagum
     setCurrentPage("login");
-    showNotification("Registration successful! Please login to continue.");
+    showNotification(`Registered as ${selectedRole}! Now login.`);
   };
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    // Login panna udane Dashboard open aagum
     setCurrentPage("dashboard");
-    showNotification("Login successful! Welcome to ReviewRave.");
+    showNotification(`Logged in as ${selectedRole}`);
   };
 
-  // Data Action Handlers
+  // User Actions
   const handleToggleUserStatus = (userId) => {
     setUsers((prev) =>
       prev.map((user) => {
@@ -912,6 +909,7 @@ export default function App() {
     );
   };
 
+  // Product Actions
   const handleDeleteProduct = (productId, name) => {
     setProducts((prev) => prev.filter((p) => p.id !== productId));
     showNotification(`Product "${name}" deleted!`);
@@ -925,7 +923,7 @@ export default function App() {
       name: newProdName,
       category: newProdCategory,
       totalReviews: 0,
-      avgSentiment: 0.0,
+      avgSentiment: 5.0,
     };
     setProducts([...products, newProd]);
     setNewProdName("");
@@ -942,6 +940,7 @@ export default function App() {
     setEditingProduct(null);
   };
 
+  // Ticket Actions
   const handleClaimTicket = (ticketId) => {
     setTickets((prev) =>
       prev.map((t) => {
@@ -972,11 +971,14 @@ export default function App() {
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
       <div style={styles.topHeader}>
-        <div style={styles.searchBox}>🔍 Search</div>
+        <div style={styles.searchBox}>🔍 Search System</div>
         {currentPage === "dashboard" && (
-          <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
-            Logout
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <span style={styles.roleTag}>Logged in as: <b>{selectedRole}</b></span>
+            <button style={styles.logoutBtn} onClick={() => { setCurrentPage("login"); showNotification("Logged out successfully"); }}>
+              Logout
+            </button>
+          </div>
         )}
       </div>
 
@@ -999,22 +1001,22 @@ export default function App() {
                 </div>
                 <div>
                   <label style={styles.label}>Company Name</label>
-                  <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp (Optional)" />
+                  <input style={styles.input} type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp" />
                 </div>
                 <div>
                   <label style={styles.label}>Email Address</label>
                   <input style={styles.input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                  <label style={styles.label}>Password (min 8 chars)</label>
+                  <label style={styles.label}>Password</label>
                   <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
                 </div>
                 <div>
-                  <label style={styles.label}>Select Role</label>
-                  <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
+                  <label style={styles.label}>Select Role Dashboard</label>
+                  <select style={styles.input} value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                    <option value="Platform Admin">Platform Admin</option>
                     <option value="Brand Manager">Brand Manager</option>
                     <option value="Resolution Agent">Resolution Agent</option>
-                    <option value="Platform Admin">Platform Admin</option>
                   </select>
                 </div>
                 <button type="submit" style={styles.blueBtn}>Create Account</button>
@@ -1042,7 +1044,15 @@ export default function App() {
                   <label style={styles.label}>Password</label>
                   <input style={styles.input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
-                <button type="submit" style={styles.blueBtn}>Login</button>
+                <div>
+                  <label style={styles.label}>Choose Role to Access Dashboard</label>
+                  <select style={{ ...styles.input, backgroundColor: "#eff6ff", borderColor: "#93c5fd" }} value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                    <option value="Platform Admin">Platform Admin</option>
+                    <option value="Brand Manager">Brand Manager</option>
+                    <option value="Resolution Agent">Resolution Agent</option>
+                  </select>
+                </div>
+                <button type="submit" style={styles.blueBtn}>Login to {selectedRole} Dashboard</button>
               </div>
             </form>
             <p style={{ marginTop: "18px", fontSize: "13px", textAlign: "center", color: "#64748b" }}>
@@ -1052,7 +1062,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 3. DASHBOARD PAGE */}
+      {/* 3. DYNAMIC ROLE DASHBOARD */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardContainer}>
           <div style={styles.navbar}>
@@ -1075,48 +1085,83 @@ export default function App() {
           <div style={styles.mainContent}>
             {activeNav === "Home" && (
               <div>
-                <h2 style={styles.pageHeading}>Platform Overview</h2>
-                <div style={styles.metricsGrid}>
-                  <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
-                    <span style={styles.metricLabel}>TOTAL USERS</span>
-                    <h3 style={styles.metricVal}>{users.length}</h3>
-                  </div>
-                  <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
-                    <span style={styles.metricLabel}>TRACKED PRODUCTS</span>
-                    <h3 style={styles.metricVal}>{products.length}</h3>
-                  </div>
-                  <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
-                    <span style={styles.metricLabel}>ACTIVE TICKETS</span>
-                    <h3 style={styles.metricVal}>{tickets.length}</h3>
-                  </div>
-                  <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
-                    <span style={styles.metricLabel}>ACTIVE SENTIMENT</span>
-                    <h3 style={styles.metricVal}>3.8</h3>
-                  </div>
-                </div>
-
-                <div style={styles.rowGrid}>
-                  <div style={styles.card}>
-                    <h4 style={styles.cardTitle}>Global User Roles</h4>
-                    <div style={styles.chartWrapper}>
-                      <div style={styles.donutChart}></div>
-                      <div style={styles.chartLegend}>
-                        <div><span style={{ color: "#ef4444" }}>●</span> Admin (25%)</div>
-                        <div><span style={{ color: "#2563eb" }}>●</span> Brand Managers (45%)</div>
-                        <div><span style={{ color: "#10b981" }}>●</span> Agents (30%)</div>
+                <h2 style={styles.pageHeading}>{selectedRole} Dashboard</h2>
+                
+                {/* ROLE 1: PLATFORM ADMIN DASHBOARD VIEW */}
+                {selectedRole === "Platform Admin" && (
+                  <>
+                    <div style={styles.metricsGrid}>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
+                        <span style={styles.metricLabel}>TOTAL SYSTEM USERS</span>
+                        <h3 style={styles.metricVal}>{users.length}</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
+                        <span style={styles.metricLabel}>ALL PRODUCTS</span>
+                        <h3 style={styles.metricVal}>{products.length}</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
+                        <span style={styles.metricLabel}>SYSTEM TICKETS</span>
+                        <h3 style={styles.metricVal}>{tickets.length}</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
+                        <span style={styles.metricLabel}>SYSTEM HEALTH</span>
+                        <h3 style={styles.metricVal}>99.9%</h3>
                       </div>
                     </div>
-                  </div>
+                    <div style={styles.card}>
+                      <h4 style={styles.cardTitle}>Platform Administration Controls</h4>
+                      <p style={{ fontSize: "14px", color: "#64748b" }}>You have full administrative privileges to manage all system users, product entries, and platform permissions.</p>
+                    </div>
+                  </>
+                )}
 
-                  <div style={styles.card}>
-                    <h4 style={styles.cardTitle}>Recent Timeline</h4>
-                    <ul style={styles.timelineList}>
-                      <li><span style={{ color: "#2563eb" }}>●</span> New brand manager registered Brand Corp<br/><span style={styles.timeText}>1 hour ago</span></li>
-                      <li><span style={{ color: "#2563eb" }}>●</span> System wide review ingestion completed<br/><span style={styles.timeText}>3 hours ago</span></li>
-                      <li><span style={{ color: "#2563eb" }}>●</span> Critical ticket auto-assigned to Agent Smith<br/><span style={styles.timeText}>5 hours ago</span></li>
-                    </ul>
-                  </div>
-                </div>
+                {/* ROLE 2: BRAND MANAGER DASHBOARD VIEW */}
+                {selectedRole === "Brand Manager" && (
+                  <>
+                    <div style={styles.metricsGrid}>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
+                        <span style={styles.metricLabel}>MANAGED PRODUCTS</span>
+                        <h3 style={styles.metricVal}>{products.length}</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
+                        <span style={styles.metricLabel}>AVG BRAND SENTIMENT</span>
+                        <h3 style={styles.metricVal}>4.1</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #f59e0b" }}>
+                        <span style={styles.metricLabel}>CUSTOMER REVIEWS</span>
+                        <h3 style={styles.metricVal}>88</h3>
+                      </div>
+                    </div>
+                    <div style={styles.card}>
+                      <h4 style={styles.cardTitle}>Brand Performance Overview</h4>
+                      <p style={{ fontSize: "14px", color: "#64748b" }}>Monitor product reviews, manage catalog offerings, and optimize brand perception metrics.</p>
+                    </div>
+                  </>
+                )}
+
+                {/* ROLE 3: RESOLUTION AGENT DASHBOARD VIEW */}
+                {selectedRole === "Resolution Agent" && (
+                  <>
+                    <div style={styles.metricsGrid}>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #ef4444" }}>
+                        <span style={styles.metricLabel}>OPEN QUEUE TICKETS</span>
+                        <h3 style={styles.metricVal}>{tickets.length}</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #10b981" }}>
+                        <span style={styles.metricLabel}>MY RESOLVED TICKETS</span>
+                        <h3 style={styles.metricVal}>14</h3>
+                      </div>
+                      <div style={{ ...styles.card, borderLeft: "4px solid #2563eb" }}>
+                        <span style={styles.metricLabel}>AVG RESPONSE TIME</span>
+                        <h3 style={styles.metricVal}>18 mins</h3>
+                      </div>
+                    </div>
+                    <div style={styles.card}>
+                      <h4 style={styles.cardTitle}>Agent Support Portal</h4>
+                      <p style={{ fontSize: "14px", color: "#64748b" }}>Claim escalated customer tickets, process negative feedback responses, and resolve support requests.</p>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -1271,22 +1316,11 @@ export default function App() {
               <div style={styles.formGroup}>
                 <div>
                   <label style={styles.label}>Product Name</label>
-                  <input
-                    style={styles.input}
-                    type="text"
-                    placeholder="e.g. Laptop Pro"
-                    value={newProdName}
-                    onChange={(e) => setNewProdName(e.target.value)}
-                    required
-                  />
+                  <input style={styles.input} type="text" placeholder="e.g. Laptop Pro" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} required />
                 </div>
                 <div>
                   <label style={styles.label}>Category</label>
-                  <select
-                    style={styles.input}
-                    value={newProdCategory}
-                    onChange={(e) => setNewProdCategory(e.target.value)}
-                  >
+                  <select style={styles.input} value={newProdCategory} onChange={(e) => setNewProdCategory(e.target.value)}>
                     <option value="ELECTRONICS">ELECTRONICS</option>
                     <option value="SOFTWARE">SOFTWARE</option>
                     <option value="HOSPITALITY">HOSPITALITY</option>
@@ -1312,22 +1346,11 @@ export default function App() {
               <div style={styles.formGroup}>
                 <div>
                   <label style={styles.label}>Category</label>
-                  <input
-                    style={styles.input}
-                    type="text"
-                    value={editingProduct.category}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
-                  />
+                  <input style={styles.input} type="text" value={editingProduct.category} onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })} />
                 </div>
                 <div>
                   <label style={styles.label}>Avg Sentiment</label>
-                  <input
-                    style={styles.input}
-                    type="number"
-                    step="0.1"
-                    value={editingProduct.avgSentiment}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) || 0 })}
-                  />
+                  <input style={styles.input} type="number" step="0.1" value={editingProduct.avgSentiment} onChange={(e) => setEditingProduct({ ...editingProduct, avgSentiment: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                   <button type="submit" style={styles.blueBtn}>Save Changes</button>
@@ -1353,6 +1376,7 @@ const styles = {
   topHeader: { backgroundColor: "#ffffff", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e8f0" },
   searchBox: { color: "#64748b", fontSize: "14px", backgroundColor: "#f1f5f9", padding: "6px 20px", borderRadius: "6px", width: "320px", textAlign: "center", margin: "0 auto" },
   logoutBtn: { backgroundColor: "#ef4444", color: "#ffffff", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
+  roleTag: { fontSize: "12px", color: "#475569" },
   authContainer: { display: "flex", justifyContent: "center", alignItems: "center", paddingTop: "40px" },
   authCard: { backgroundColor: "#ffffff", padding: "32px", borderRadius: "8px", width: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)", border: "1px solid #e2e8f0" },
   authTitle: { textAlign: "center", marginBottom: "24px", color: "#1e293b", fontSize: "22px", fontWeight: "600" },
@@ -1371,13 +1395,6 @@ const styles = {
   card: { backgroundColor: "#ffffff", padding: "20px", borderRadius: "6px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" },
   metricLabel: { color: "#64748b", fontSize: "11px", fontWeight: "600", letterSpacing: "0.5px" },
   metricVal: { margin: "10px 0 0 0", fontSize: "26px", color: "#0f172a", fontWeight: "700" },
-  rowGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
-  cardTitle: { margin: "0 0 16px 0", color: "#334155", fontSize: "15px" },
-  chartWrapper: { display: "flex", alignItems: "center", gap: "24px" },
-  donutChart: { width: "110px", height: "110px", borderRadius: "50%", background: "conic-gradient(#ef4444 0% 25%, #2563eb 25% 70%, #10b981 70% 100%)" },
-  chartLegend: { fontSize: "13px", lineHeight: "2", color: "#475569" },
-  timelineList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px", lineHeight: "1.6", color: "#334155" },
-  timeText: { color: "#94a3b8", fontSize: "12px" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
   tableHeader: { backgroundColor: "#f8fafc", textAlign: "left", color: "#475569", borderBottom: "1px solid #e2e8f0", padding: "10px 8px" },
   tableRow: { borderBottom: "1px solid #f1f5f9", color: "#334155" },
