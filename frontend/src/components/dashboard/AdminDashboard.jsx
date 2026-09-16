@@ -238,35 +238,109 @@
 // export default AdminDashboard;
 
 
-import React from 'react';
-import StatCards from './StatCards';
-import DomainChart from './DomainChart';
-import RecentActivity from './RecentActivity';
+// import React from 'react';
+// import StatCards from './StatCards';
+// import DomainChart from './DomainChart';
+// import RecentActivity from './RecentActivity';
+
+// const AdminDashboard = () => {
+//   return (
+//     <div className="admin-dashboard" data-testid="admin-dashboard">
+//       <div style={{ marginBottom: '1.75rem' }}>
+//         <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.35rem 0', color: '#0f172a' }}>
+//           Platform Overview
+//         </h1>
+//         <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
+//           Monitor system metrics, sentiment dynamics, and active operations across ReviewRave
+//         </p>
+//       </div>
+
+//       <StatCards />
+
+//       <div
+//         className="dashboard-grid"
+//         style={{
+//           display: 'grid',
+//           gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+//           gap: '1.5rem',
+//         }}
+//       >
+//         <DomainChart />
+//         <RecentActivity />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminDashboard;
+
+import React from "react";
 
 const AdminDashboard = () => {
   return (
-    <div className="admin-dashboard" data-testid="admin-dashboard">
-      <div style={{ marginBottom: '1.75rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.35rem 0', color: '#0f172a' }}>
-          Platform Overview
-        </h1>
-        <p style={{ margin: 0, color: '#64748b', fontSize: '0.95rem' }}>
-          Monitor system metrics, sentiment dynamics, and active operations across ReviewRave
-        </p>
+    <div style={styles.dashboardContainer}>
+      <h2 style={styles.title}>Platform Overview</h2>
+
+      {/* Metrics Row */}
+      <div style={styles.metricsGrid}>
+        <div style={{ ...styles.metricCard, borderLeft: "4px solid #3b82f6" }}>
+          <span style={styles.metricTitle}>Total Users</span>
+          <h3 style={styles.metricVal}>8</h3>
+        </div>
+        <div style={{ ...styles.metricCard, borderLeft: "4px solid #10b981" }}>
+          <span style={styles.metricTitle}>Total Products</span>
+          <h3 style={styles.metricVal}>12</h3>
+        </div>
+        <div style={{ ...styles.metricCard, borderLeft: "4px solid #ef4444" }}>
+          <span style={styles.metricTitle}>Active Tickets</span>
+          <h3 style={styles.metricVal}>3</h3>
+        </div>
+        <div style={{ ...styles.metricCard, borderLeft: "4px solid #f59e0b" }}>
+          <span style={styles.metricTitle}>System Health</span>
+          <h3 style={styles.metricVal}>98%</h3>
+        </div>
       </div>
 
-      <StatCards />
+      {/* Section Content */}
+      <div style={styles.dashboardGrid}>
+        {/* Global User Roles Chart Box */}
+        <div style={styles.chartCard}>
+          <h4 style={styles.cardHeader}>Global User Roles</h4>
+          <div style={styles.pieContainer}>
+            <div style={styles.cssPie}></div>
+            <ul style={styles.legendList}>
+              <li style={{ color: "#ef4444" }}>● Admin (12%)</li>
+              <li style={{ color: "#3b82f6" }}>● Brand Manager (45%)</li>
+              <li style={{ color: "#10b981" }}>● Agent (43%)</li>
+            </ul>
+          </div>
+        </div>
 
-      <div
-        className="dashboard-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
-        <DomainChart />
-        <RecentActivity />
+        {/* Timeline Box */}
+        <div style={styles.chartCard}>
+          <h4 style={styles.cardHeader}>Recent Timeline</h4>
+          <div style={styles.timelineItem}>
+            <div style={styles.blueDot}></div>
+            <div>
+              <p style={styles.timelineText}>New brand manager registered: Brand Corp</p>
+              <small style={styles.timeText}>1 hour ago</small>
+            </div>
+          </div>
+          <div style={styles.timelineItem}>
+            <div style={styles.blueDot}></div>
+            <div>
+              <p style={styles.timelineText}>Ticket #402 status resolution completed</p>
+              <small style={styles.timeText}>3 hours ago</small>
+            </div>
+          </div>
+          <div style={styles.timelineItem}>
+            <div style={styles.blueDot}></div>
+            <div>
+              <p style={styles.timelineText}>Critical ticket auto-assigned to Agent Smith</p>
+              <small style={styles.timeText}>5 hours ago</small>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
