@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getInsights } from "../../store/slices/insightSlice";
@@ -28,21 +28,24 @@ const InsightList = () => {
     (state) => state.products || {}
   );
 
-  /*
-    Your productSlice exports:
-    getProducts
-    createProduct
-    updateProduct
-    deleteProduct
-    reset
+  /* =========================
+     PRODUCTS
+     ========================= */
 
-    So we use getProducts(), NOT fetchProducts().
-  */
+  const products = useMemo(() => {
+    return (
+      productState.items ||
+      productState.products ||
+      []
+    );
+  }, [
+    productState.items,
+    productState.products,
+  ]);
 
-  const products =
-    productState.items ||
-    productState.products ||
-    [];
+  /* =========================
+     PRODUCT LOADING
+     ========================= */
 
   const productsLoading =
     productState.loading ||
@@ -89,14 +92,19 @@ const InsightList = () => {
         getInsights(selectedProduct)
       );
     }
-  }, [dispatch, selectedProduct]);
+  }, [
+    dispatch,
+    selectedProduct,
+  ]);
 
   /* =========================
      PRODUCT CHANGE
      ========================= */
 
   const handleProductChange = (event) => {
-    setSelectedProduct(event.target.value);
+    setSelectedProduct(
+      event.target.value
+    );
   };
 
   /* =========================
@@ -142,9 +150,7 @@ const InsightList = () => {
 
       <div className="insight-selector-section">
 
-        <label
-          htmlFor="insight-product"
-        >
+        <label htmlFor="insight-product">
           Select Product
         </label>
 
@@ -193,7 +199,7 @@ const InsightList = () => {
 
 
       {/* =========================
-          LOADING INSIGHTS
+          INSIGHT LOADING
           ========================= */}
 
       {isLoading &&
@@ -222,7 +228,7 @@ const InsightList = () => {
 
 
       {/* =========================
-          INSIGHTS
+          INSIGHTS CONTENT
           ========================= */}
 
       {!isLoading &&
@@ -231,7 +237,7 @@ const InsightList = () => {
           <div className="insights-container">
 
             {/* =========================
-                SUMMARY
+                SENTIMENT SUMMARY
                 ========================= */}
 
             <div className="insight-summary-section">
