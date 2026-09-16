@@ -829,9 +829,9 @@ import React, { useState } from "react";
 
 export default function App() {
   // Navigation & Role States
-  const [currentPage, setCurrentPage] = useState("login"); // 'login' | 'register' | 'dashboard'
-  const [selectedRole, setSelectedRole] = useState("Brand Manager"); // 'Brand Manager' | 'Resolution Agent' | 'Platform Admin'
-  const [activeTab, setActiveTab] = useState("Tracked Products");
+  const [currentPage, setCurrentPage] = useState("dashboard"); // 'login' | 'register' | 'dashboard'
+  const [selectedRole, setSelectedRole] = useState("Platform Admin"); // Defaulting to Platform Admin based on current UI
+  const [activeTab, setActiveTab] = useState("Products");
 
   // Auth Form States
   const [firstName, setFirstName] = useState("John");
@@ -841,17 +841,20 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
 
   // Filter & Search States
-  const [productSearch, setProductSearch] = useState("");
-  const [userSearch, setUserSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("Acme Smart Watch");
   const [ticketTab, setTicketTab] = useState("Available Tickets");
-  const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
   const [toastMessage, setToastMessage] = useState("");
 
-  // Modal States
+  // Add Product Modal States
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("Electronics");
+
+  // EDIT Product Modal States
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editProdName, setEditProdName] = useState("");
+  const [editProdCategory, setEditProdCategory] = useState("Electronics");
 
   // Selected Ticket for Agent Resolution
   const [activeTicketForResolution, setActiveTicketForResolution] = useState(null);
@@ -917,6 +920,26 @@ export default function App() {
     showToast(`Product "${newProdName}" added successfully!`);
   };
 
+  // OPEN EDIT MODAL WITH DATA
+  const handleOpenEditModal = (product) => {
+    setEditingProductId(product.id);
+    setEditProdName(product.name);
+    setEditProdCategory(product.category);
+    setIsEditProductOpen(true);
+  };
+
+  // SAVE EDITED PRODUCT
+  const handleSaveEditProduct = (e) => {
+    e.preventDefault();
+    setProducts(
+      products.map((p) =>
+        p.id === editingProductId ? { ...p, name: editProdName, category: editProdCategory } : p
+      )
+    );
+    setIsEditProductOpen(false);
+    showToast("Product updated successfully!");
+  };
+
   const handleDeleteProduct = (id) => {
     setProducts(products.filter((p) => p.id !== id));
     showToast("Product deleted!");
@@ -952,7 +975,6 @@ export default function App() {
       {currentPage === "login" && (
         <div style={styles.authWrapper}>
           <div style={styles.authCard}>
-            {/* Left Hero */}
             <div style={styles.authLeft}>
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "30px" }}>
@@ -971,7 +993,6 @@ export default function App() {
               <span style={{ fontSize: "11px", color: "#a5b4fc" }}>© 2026 ReviewRave. Customer Intelligence Platform</span>
             </div>
 
-            {/* Right Form */}
             <div style={styles.authRight}>
               <h3 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" }}>Login to ReviewRave</h3>
               <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 20px 0" }}>Sign in to your account</p>
@@ -1197,8 +1218,8 @@ export default function App() {
                             <button onClick={() => setActiveTab("Reviews")} style={styles.secondaryBtn}>
                               Reviews
                             </button>
-                            <button onClick={() => setActiveTab("Sentiment Insights")} style={styles.primaryBtnSmall}>
-                              Insights
+                            <button onClick={() => handleOpenEditModal(p)} style={styles.secondaryBtn}>
+                              Edit
                             </button>
                             <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
                               🗑️
@@ -1210,73 +1231,6 @@ export default function App() {
                       <div onClick={() => setIsAddProductOpen(true)} style={styles.addDashedCard}>
                         <div style={styles.plusIcon}>+</div>
                         <span style={{ fontWeight: "600", fontSize: "13px" }}>Add Another Product</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "Sentiment Insights" && (
-                  <div>
-                    <h2 style={styles.heading}>Sentiment Insights</h2>
-                    <div style={{ ...styles.statCard, marginBottom: "20px" }}>
-                      <label style={styles.label}>Select Product</label>
-                      <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} style={{ ...styles.input, width: "250px" }}>
-                        {products.map((p) => (
-                          <option key={p.id} value={p.name}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div style={styles.statsGrid}>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Positive</span>
-                        <div style={{ ...styles.statVal, color: "#16a34a" }}>78%</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Neutral</span>
-                        <div style={{ ...styles.statVal, color: "#d97706" }}>12%</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Negative</span>
-                        <div style={{ ...styles.statVal, color: "#dc2626" }}>10%</div>
-                      </div>
-                      <div style={styles.statCard}>
-                        <span style={styles.statLabel}>Total Reviews</span>
-                        <div style={styles.statVal}>324</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "Reviews" && (
-                  <div>
-                    <h2 style={styles.heading}>Customer Reviews</h2>
-                    <div style={{ ...styles.statCard, maxWidth: "500px" }}>
-                      <div style={styles.formStack}>
-                        <div>
-                          <label style={styles.label}>Product</label>
-                          <select style={styles.input}>
-                            {products.map((p) => (
-                              <option key={p.id}>{p.name}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label style={styles.label}>Platform</label>
-                          <select style={styles.input}>
-                            <option>Google Reviews</option>
-                            <option>Amazon</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label style={styles.label}>Review Content</label>
-                          <textarea rows={4} style={styles.input} placeholder="Type customer review here..."></textarea>
-                        </div>
-                        <button onClick={() => showToast("Review submitted!")} style={styles.primaryBtn}>
-                          Submit Review
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -1432,6 +1386,7 @@ export default function App() {
                   </div>
                 )}
 
+                {/* PRODUCTS TABLE WITH EDIT BUTTON ADDED */}
                 {activeTab === "Products" && (
                   <div style={styles.tableCard}>
                     <table style={styles.table}>
@@ -1450,9 +1405,14 @@ export default function App() {
                             <td style={styles.td}>{p.category}</td>
                             <td style={styles.td}>{p.totalReviews}</td>
                             <td style={{ ...styles.td, textAlign: "right" }}>
-                              <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
-                                Delete
-                              </button>
+                              <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                                <button onClick={() => handleOpenEditModal(p)} style={styles.editBtn}>
+                                  Edit
+                                </button>
+                                <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
+                                  Delete
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -1496,11 +1456,42 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* EDIT PRODUCT MODAL */}
+      {isEditProductOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Edit Product</h3>
+            <form onSubmit={handleSaveEditProduct} style={styles.formStack}>
+              <div>
+                <label style={styles.label}>Product Name</label>
+                <input type="text" value={editProdName} onChange={(e) => setEditProdName(e.target.value)} style={styles.input} required />
+              </div>
+              <div>
+                <label style={styles.label}>Category</label>
+                <select value={editProdCategory} onChange={(e) => setEditProdCategory(e.target.value)} style={styles.input}>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Audio">Audio</option>
+                  <option value="Software">Software</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button type="submit" style={styles.primaryBtn}>
+                  Update Product
+                </button>
+                <button type="button" onClick={() => setIsEditProductOpen(false)} style={styles.secondaryBtn}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// INLINE STYLES DEFINITION (Guarantees Perfect visual layout like design image)
+// INLINE STYLES DEFINITION
 const styles = {
   appWrapper: { fontFamily: "Segoe UI, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
   authWrapper: { minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f1f5f9", padding: "20px" },
@@ -1517,8 +1508,9 @@ const styles = {
   primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
   primaryBtnSmall: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  editBtn: { backgroundColor: "#e0e7ff", color: "#4338ca", border: "none", padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   greenBtn: { backgroundColor: "#16a34a", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
-  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "5px 8px", borderRadius: "6px", cursor: "pointer" },
+  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
   linkText: { color: "#4f46e5", fontWeight: "600", cursor: "pointer" },
   navbar: { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" },
   navTab: { border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: "600", cursor: "pointer" },
@@ -1528,7 +1520,7 @@ const styles = {
   heading: { fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" },
   subHeading: { fontSize: "12px", color: "#64748b" },
   sectionHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" },
-  statsGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" },
+  statsGrid: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" },
   statCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px" },
   statLabel: { fontSize: "12px", color: "#94a3b8", fontWeight: "600" },
   statVal: { fontSize: "24px", fontWeight: "700", marginTop: "4px" },
