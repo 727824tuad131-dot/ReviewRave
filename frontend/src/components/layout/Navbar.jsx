@@ -284,10 +284,6 @@ const Navbar = () => {
     localStorage.getItem("email") ||
     "user@reviewrave.com";
 
-  /* ===============================
-     ROLE NAME
-     =============================== */
-
   const getRoleName = () => {
     if (role === "PLATFORM_ADMIN") {
       return "Platform Admin";
@@ -300,32 +296,18 @@ const Navbar = () => {
     return "Brand Manager";
   };
 
-  /* ===============================
-     NAVIGATION
-     =============================== */
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
-
-  /* ===============================
-     LOGOUT
-     =============================== */
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
     localStorage.removeItem("userId");
 
-    navigate("/login", {
-      replace: true,
-    });
+    navigate("/login", { replace: true });
   };
 
-  /* ===============================
-     ACTIVE PAGE
-     =============================== */
+  const goTo = (path) => {
+    navigate(path);
+  };
 
   const isActive = (path) => {
     if (path === "/") {
@@ -335,109 +317,119 @@ const Navbar = () => {
     return location.pathname === path;
   };
 
-  /* ===============================
-     ROLE BASED MENU
-     =============================== */
+  /* =====================================================
+     BRAND MANAGER MENU
+     ===================================================== */
 
-  const getNavigationItems = () => {
-    /* BRAND MANAGER */
+  const brandManagerMenu = [
+    {
+      icon: "⌂",
+      label: "Dashboard",
+      path: "/",
+    },
+    {
+      icon: "⌁",
+      label: "Sentiment Analysis",
+      path: "/insights",
+    },
+    {
+      icon: "▢",
+      label: "Reviews",
+      path: "/reviews",
+    },
+    {
+      icon: "◇",
+      label: "Tracked Products",
+      path: "/products",
+    },
+    {
+      icon: "▤",
+      label: "Reports",
+      path: "/tickets",
+    },
+    {
+      icon: "⚙",
+      label: "Settings",
+      path: "/settings",
+    },
+  ];
 
-    if (role === "BRAND_MANAGER") {
-      return [
-        {
-          label: "Home",
-          path: "/",
-        },
-        {
-          label: "Products",
-          path: "/products",
-        },
-        {
-          label: "Reviews",
-          path: "/reviews",
-        },
-        {
-          label: "Insights",
-          path: "/insights",
-        },
-      ];
-    }
+  /* =====================================================
+     RESOLUTION AGENT MENU
+     ===================================================== */
 
-    /* RESOLUTION AGENT */
+  const resolutionAgentMenu = [
+    {
+      icon: "⌂",
+      label: "Dashboard",
+      path: "/",
+    },
+    {
+      icon: "▤",
+      label: "Resolution Tickets",
+      path: "/tickets",
+    },
+  ];
 
-    if (role === "RESOLUTION_AGENT") {
-      return [
-        {
-          label: "Home",
-          path: "/",
-        },
-        {
-          label: "Tickets",
-          path: "/tickets",
-        },
-      ];
-    }
+  /* =====================================================
+     PLATFORM ADMIN MENU
+     ===================================================== */
 
-    /* PLATFORM ADMIN */
+  const platformAdminMenu = [
+    {
+      icon: "⌂",
+      label: "Dashboard",
+      path: "/",
+    },
+    {
+      icon: "♙",
+      label: "Users",
+      path: "/admin",
+    },
+    {
+      icon: "◇",
+      label: "Tracked Products",
+      path: "/products",
+    },
+    {
+      icon: "▤",
+      label: "Tickets",
+      path: "/tickets",
+    },
+    {
+      icon: "⌁",
+      label: "Insights",
+      path: "/insights",
+    },
+  ];
 
-    if (role === "PLATFORM_ADMIN") {
-      return [
-        {
-          label: "Home",
-          path: "/",
-        },
-        {
-          label: "Users",
-          path: "/admin",
-        },
-        {
-          label: "Products",
-          path: "/products",
-        },
-        {
-          label: "Tickets",
-          path: "/tickets",
-        },
-        {
-          label: "Insights",
-          path: "/insights",
-        },
-      ];
-    }
+  let menu = brandManagerMenu;
 
-    /* FALLBACK */
+  if (role === "RESOLUTION_AGENT") {
+    menu = resolutionAgentMenu;
+  }
 
-    return [
-      {
-        label: "Home",
-        path: "/",
-      },
-    ];
-  };
-
-  const navigationItems = getNavigationItems();
+  if (role === "PLATFORM_ADMIN") {
+    menu = platformAdminMenu;
+  }
 
   return (
     <header className="rr-header">
 
-      {/* =====================================
-          TOP HEADER
-          ===================================== */}
+      {/* =================================================
+          TOP BRAND HEADER
+          ================================================= */}
 
       <div className="rr-topbar">
 
-        {/* =====================================
-            BRAND
-            ===================================== */}
-
         <div
           className="rr-brand"
-          onClick={() => handleNavigation("/")}
+          onClick={() => goTo("/")}
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
-              handleNavigation("/");
+              goTo("/");
             }
           }}
         >
@@ -461,13 +453,11 @@ const Navbar = () => {
         </div>
 
 
-        {/* =====================================
-            USER AREA
-            ===================================== */}
+        {/* =================================================
+            USER SECTION
+            ================================================= */}
 
         <div className="rr-user-area">
-
-          {/* NOTIFICATION */}
 
           <button
             type="button"
@@ -476,21 +466,12 @@ const Navbar = () => {
             title="Notifications"
           >
             ♧
-
             <span className="notification-dot"></span>
           </button>
 
-
-          {/* AVATAR */}
-
           <div className="rr-avatar">
-            {email
-              .charAt(0)
-              .toUpperCase()}
+            {email.charAt(0).toUpperCase()}
           </div>
-
-
-          {/* USER DETAILS */}
 
           <div className="rr-user-details">
 
@@ -503,9 +484,6 @@ const Navbar = () => {
             </span>
 
           </div>
-
-
-          {/* LOGOUT */}
 
           <button
             type="button"
@@ -522,9 +500,9 @@ const Navbar = () => {
       </div>
 
 
-      {/* =====================================
-          NAVIGATION BAR
-          ===================================== */}
+      {/* =================================================
+          NAVIGATION
+          ================================================= */}
 
       <nav
         className="rr-navigation"
@@ -533,7 +511,7 @@ const Navbar = () => {
 
         <div className="rr-navigation-inner">
 
-          {navigationItems.map((item) => (
+          {menu.map((item) => (
 
             <button
               key={item.path}
@@ -543,11 +521,17 @@ const Navbar = () => {
                   ? "active"
                   : ""
               }`}
-              onClick={() =>
-                handleNavigation(item.path)
-              }
+              onClick={() => goTo(item.path)}
             >
-              {item.label}
+
+              <span className="rr-nav-icon">
+                {item.icon}
+              </span>
+
+              <span>
+                {item.label}
+              </span>
+
             </button>
 
           ))}
