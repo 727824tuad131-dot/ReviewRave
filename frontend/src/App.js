@@ -831,7 +831,7 @@ export default function App() {
   // Navigation & Role States
   const [currentPage, setCurrentPage] = useState("login"); // 'login' | 'register' | 'dashboard'
   const [selectedRole, setSelectedRole] = useState("Brand Manager"); // 'Brand Manager' | 'Resolution Agent' | 'Platform Admin'
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState("Tracked Products");
 
   // Auth Form States
   const [firstName, setFirstName] = useState("John");
@@ -844,7 +844,7 @@ export default function App() {
   const [productSearch, setProductSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("Acme Smart Watch");
-  const [ticketTab, setTicketTab] = useState("Available Tickets"); // 'Available Tickets' | 'My Tasks' | 'Resolved'
+  const [ticketTab, setTicketTab] = useState("Available Tickets");
   const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
   const [toastMessage, setToastMessage] = useState("");
 
@@ -853,11 +853,11 @@ export default function App() {
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("Electronics");
 
-  // Selected Ticket for Agent Resolution Note
+  // Selected Ticket for Agent Resolution
   const [activeTicketForResolution, setActiveTicketForResolution] = useState(null);
   const [resolutionNote, setResolutionNote] = useState("");
 
-  // Sample Data States
+  // Data States
   const [products, setProducts] = useState([
     { id: 1, name: "Acme Smart Watch", category: "Electronics", status: "Active", totalReviews: 324, positiveRate: "82%", rating: 4.3 },
     { id: 2, name: "Acme Wireless Earbuds", category: "Audio", status: "Active", totalReviews: 120, positiveRate: "78%", rating: 4.1 },
@@ -872,12 +872,12 @@ export default function App() {
   ]);
 
   const [tickets, setTickets] = useState([
-    { id: "#102", priority: "HIGH", status: "OPEN", snippet: "Hello, product stopped working after two weeks...", assignedTo: null, resolutionNote: "" },
-    { id: "#103", priority: "HIGH", status: "OPEN", snippet: "Feedback regarding battery drainage...", assignedTo: null, resolutionNote: "" },
-    { id: "#104", priority: "CRITICAL", status: "OPEN", snippet: "Bad build quality and late delivery...", assignedTo: null, resolutionNote: "" },
+    { id: "#102", priority: "HIGH", status: "OPEN", snippet: "Hello, product stopped working after two weeks...", assignedTo: null },
+    { id: "#103", priority: "HIGH", status: "OPEN", snippet: "Feedback regarding battery drainage...", assignedTo: null },
+    { id: "#104", priority: "CRITICAL", status: "OPEN", snippet: "Bad build quality and late delivery...", assignedTo: null },
   ]);
 
-  // Utility Toast Notification
+  // Toast Function
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
@@ -887,14 +887,16 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
-    setActiveTab(selectedRole === "Brand Manager" ? "Tracked Products" : selectedRole === "Resolution Agent" ? "Resolution Tickets" : "Overview");
+    if (selectedRole === "Brand Manager") setActiveTab("Tracked Products");
+    else if (selectedRole === "Resolution Agent") setActiveTab("Resolution Tickets");
+    else setActiveTab("Overview");
     showToast(`Logged in as ${selectedRole}`);
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     setCurrentPage("login");
-    showToast("Registration successful! Please login.");
+    showToast("Registered successfully! Please login.");
   };
 
   const handleAddProduct = (e) => {
@@ -921,121 +923,86 @@ export default function App() {
   };
 
   const handleToggleUserStatus = (id) => {
-    setUsers(
-      users.map((u) => (u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u))
-    );
+    setUsers(users.map((u) => (u.id === id ? { ...u, status: u.status === "Active" ? "Inactive" : "Active" } : u)));
     showToast("User status updated!");
   };
 
   const handleClaimTicket = (ticketId) => {
-    setTickets(
-      tickets.map((t) => (t.id === ticketId ? { ...t, assignedTo: "Current Agent", status: "INVESTIGATING" } : t))
-    );
-    showToast(`Ticket ${ticketId} assigned to you!`);
+    setTickets(tickets.map((t) => (t.id === ticketId ? { ...t, assignedTo: "Current Agent", status: "INVESTIGATING" } : t)));
+    showToast(`Ticket ${ticketId} assigned!`);
   };
 
   const handleResolveTicket = (ticketId) => {
     if (!resolutionNote.trim()) {
-      showToast("Please enter resolution notes before resolving.");
+      showToast("Please enter resolution notes.");
       return;
     }
-    setTickets(
-      tickets.map((t) =>
-        t.id === ticketId ? { ...t, status: "RESOLVED", resolutionNote: resolutionNote } : t
-      )
-    );
+    setTickets(tickets.map((t) => (t.id === ticketId ? { ...t, status: "RESOLVED" } : t)));
     setResolutionNote("");
     setActiveTicketForResolution(null);
-    showToast(`Ticket ${ticketId} marked as Resolved!`);
+    showToast(`Ticket ${ticketId} resolved!`);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
-          <span>ℹ️</span> {toastMessage}
-        </div>
-      )}
+    <div style={styles.appWrapper}>
+      {/* Toast Alert */}
+      {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* 1. LOGIN PAGE (IMAGE MATCHING SPLIT LAYOUT) */}
+      {/* 1. LOGIN PAGE */}
       {currentPage === "login" && (
-        <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-          <div className="bg-white rounded-2xl shadow-xl flex flex-col md:flex-row max-w-4xl w-full overflow-hidden border border-slate-200">
-            {/* Left Hero Panel */}
-            <div className="bg-indigo-600 p-8 text-white md:w-5/12 flex flex-col justify-between">
+        <div style={styles.authWrapper}>
+          <div style={styles.authCard}>
+            {/* Left Hero */}
+            <div style={styles.authLeft}>
               <div>
-                <div className="flex items-center gap-2 mb-8">
-                  <div className="w-8 h-8 bg-white text-indigo-600 rounded-lg flex items-center justify-center font-bold text-lg">R</div>
-                  <span className="font-bold text-xl tracking-tight">ReviewRave</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "30px" }}>
+                  <div style={styles.logoBox}>R</div>
+                  <span style={{ fontSize: "20px", fontWeight: "700" }}>ReviewRave</span>
                 </div>
-                <h2 className="text-2xl font-bold mb-4">Turn customer feedback into action</h2>
-                <div className="space-y-4 text-indigo-100 text-sm">
-                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
-                    <span>📊</span> Sentiment Insights
-                  </div>
-                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
-                    <span>⚡</span> Smart Ticket Routing
-                  </div>
-                  <div className="flex items-center gap-3 bg-indigo-500/30 p-2.5 rounded-lg">
-                    <span>🎯</span> Track What Matters
-                  </div>
+                <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "20px" }}>
+                  Turn customer feedback into action
+                </h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={styles.featureBadge}>📊 Sentiment Insights</div>
+                  <div style={styles.featureBadge}>⚡ Smart Ticket Routing</div>
+                  <div style={styles.featureBadge}>🎯 Track What Matters</div>
                 </div>
               </div>
-              <div className="text-xs text-indigo-200 mt-8">© 2026 ReviewRave. Customer Intelligence Platform</div>
+              <span style={{ fontSize: "11px", color: "#a5b4fc" }}>© 2026 ReviewRave. Customer Intelligence Platform</span>
             </div>
 
-            {/* Right Login Form */}
-            <div className="p-8 md:w-7/12 flex flex-col justify-center">
-              <h3 className="text-2xl font-bold text-slate-900 mb-1">Login to ReviewRave</h3>
-              <p className="text-sm text-slate-500 mb-6">Sign in to your account</p>
+            {/* Right Form */}
+            <div style={styles.authRight}>
+              <h3 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" }}>Login to ReviewRave</h3>
+              <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 20px 0" }}>Sign in to your account</p>
 
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} style={styles.formStack}>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    required
-                  />
+                  <label style={styles.label}>Email Address</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    required
-                  />
+                  <label style={styles.label}>Password</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Select Role to Enter</label>
-                  <select
-                    value={selectedRole}
-                    onChange={(e) => setSelectedRole(e.target.value)}
-                    className="w-full px-3 py-2 bg-indigo-50 border border-indigo-300 text-indigo-900 font-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  >
+                  <label style={styles.label}>Select Role to Enter</label>
+                  <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.roleSelect}>
                     <option value="Brand Manager">Brand Manager</option>
                     <option value="Resolution Agent">Resolution Agent</option>
                     <option value="Platform Admin">Platform Admin</option>
                   </select>
                 </div>
-
-                <button type="submit" className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition">
+                <button type="submit" style={styles.primaryBtn}>
                   Login to {selectedRole} Dashboard
                 </button>
               </form>
 
-              <p className="text-xs text-slate-500 text-center mt-6">
+              <p style={{ fontSize: "12px", textAlign: "center", marginTop: "20px", color: "#64748b" }}>
                 Don't have an account?{" "}
-                <button onClick={() => setCurrentPage("register")} className="text-indigo-600 font-semibold hover:underline">
+                <span onClick={() => setCurrentPage("register")} style={styles.linkText}>
                   Register here
-                </button>
+                </span>
               </p>
             </div>
           </div>
@@ -1044,116 +1011,80 @@ export default function App() {
 
       {/* 2. REGISTER PAGE */}
       {currentPage === "register" && (
-        <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-slate-200">
-            <h3 className="text-2xl font-bold text-slate-900 mb-1">Register Account</h3>
-            <p className="text-sm text-slate-500 mb-6">Create a new ReviewRave user profile</p>
+        <div style={styles.authWrapper}>
+          <div style={{ ...styles.authRight, backgroundColor: "#fff", borderRadius: "12px", width: "400px", border: "1px solid #e2e8f0" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" }}>Register Account</h3>
+            <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 20px 0" }}>Create a new ReviewRave profile</p>
 
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
-                    required
-                  />
+            <form onSubmit={handleRegister} style={styles.formStack}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={styles.label}>First Name</label>
+                  <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} required />
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
-                    required
-                  />
+                <div style={{ flex: 1 }}>
+                  <label style={styles.label}>Last Name</label>
+                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} required />
                 </div>
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Company Name</label>
-                <input
-                  type="text"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
-                />
+                <label style={styles.label}>Company Name</label>
+                <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} style={styles.input} />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
-                  required
-                />
+                <label style={styles.label}>Email Address</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm"
-                  required
-                />
+                <label style={styles.label}>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Select Role</label>
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-medium"
-                >
+                <label style={styles.label}>Select Role</label>
+                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.input}>
                   <option value="Brand Manager">Brand Manager</option>
                   <option value="Resolution Agent">Resolution Agent</option>
                   <option value="Platform Admin">Platform Admin</option>
                 </select>
               </div>
-
-              <button type="submit" className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm">
+              <button type="submit" style={styles.primaryBtn}>
                 Create Account
               </button>
             </form>
 
-            <p className="text-xs text-slate-500 text-center mt-6">
+            <p style={{ fontSize: "12px", textAlign: "center", marginTop: "20px", color: "#64748b" }}>
               Already have an account?{" "}
-              <button onClick={() => setCurrentPage("login")} className="text-indigo-600 font-semibold hover:underline">
+              <span onClick={() => setCurrentPage("login")} style={styles.linkText}>
                 Login here
-              </button>
+              </span>
             </p>
           </div>
         </div>
       )}
 
-      {/* 3. DASHBOARD (MAIN SYSTEM ACCORDING TO IMAGE) */}
+      {/* 3. DASHBOARD SYSTEM */}
       {currentPage === "dashboard" && (
-        <div className="min-h-screen flex flex-col">
-          {/* Top Navbar */}
-          <header className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-indigo-600 text-white rounded-md flex items-center justify-center font-bold text-sm">R</div>
-                <span className="font-bold text-lg text-slate-900">ReviewRave</span>
+        <div style={{ minHeight: "100vh" }}>
+          {/* Header */}
+          <header style={styles.navbar}>
+            <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={styles.logoBox}>R</div>
+                <span style={{ fontWeight: "700", fontSize: "16px" }}>ReviewRave</span>
               </div>
 
-              {/* Dynamic Role Navigation Tabs */}
-              <nav className="hidden md:flex items-center gap-1">
+              {/* Navigation Tabs */}
+              <nav style={{ display: "flex", gap: "4px" }}>
                 {selectedRole === "Brand Manager" &&
-                  ["Tracked Products", "Sentiment Insights", "Reviews", "Settings"].map((tab) => (
+                  ["Tracked Products", "Sentiment Insights", "Reviews"].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
-                      }`}
+                      style={{
+                        ...styles.navTab,
+                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
+                        color: activeTab === tab ? "#4338ca" : "#475569",
+                      }}
                     >
                       {tab}
                     </button>
@@ -1167,9 +1098,11 @@ export default function App() {
                         setActiveTab(tab);
                         setTicketTab(tab);
                       }}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
-                      }`}
+                      style={{
+                        ...styles.navTab,
+                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
+                        color: activeTab === tab ? "#4338ca" : "#475569",
+                      }}
                     >
                       {tab}
                     </button>
@@ -1180,9 +1113,11 @@ export default function App() {
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition ${
-                        activeTab === tab ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-100"
-                      }`}
+                      style={{
+                        ...styles.navTab,
+                        backgroundColor: activeTab === tab ? "#e0e7ff" : "transparent",
+                        color: activeTab === tab ? "#4338ca" : "#475569",
+                      }}
                     >
                       {tab}
                     </button>
@@ -1190,236 +1125,170 @@ export default function App() {
               </nav>
             </div>
 
-            {/* User Info & Switcher Header */}
-            <div className="flex items-center gap-3">
-              <span className="text-xs bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full font-bold">
-                {selectedRole}
-              </span>
-              <button
-                onClick={() => setCurrentPage("login")}
-                className="text-xs text-slate-500 hover:text-red-600 font-semibold border border-slate-300 px-2.5 py-1 rounded-md"
-              >
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={styles.roleBadge}>{selectedRole}</span>
+              <button onClick={() => setCurrentPage("login")} style={styles.logoutBtn}>
                 Logout
               </button>
             </div>
           </header>
 
-          {/* MAIN ROLE DASHBOARD CONTAINER */}
-          <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
-            
-            {/* -------------------------------------------------------------------------------- */}
-            {/* ROLE 1: BRAND MANAGER DASHBOARD VIEWS */}
-            {/* -------------------------------------------------------------------------------- */}
+          {/* Body Content */}
+          <main style={styles.mainContainer}>
+            {/* BRAND MANAGER DASHBOARD */}
             {selectedRole === "Brand Manager" && (
               <>
-                {/* 1. Tracked Products View */}
                 {activeTab === "Tracked Products" && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
+                  <div>
+                    <div style={styles.sectionHeader}>
                       <div>
-                        <h1 className="text-xl font-bold text-slate-900">Tracked Products</h1>
-                        <p className="text-xs text-slate-500">Monitor customer feedback and sentiment</p>
+                        <h2 style={styles.heading}>Tracked Products</h2>
+                        <span style={styles.subHeading}>Monitor customer feedback and sentiment</span>
                       </div>
-                      <button
-                        onClick={() => setIsAddProductOpen(true)}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition"
-                      >
+                      <button onClick={() => setIsAddProductOpen(true)} style={styles.primaryBtnWidth}>
                         + Add Product
                       </button>
                     </div>
 
-                    {/* Metrics Bar */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span className="text-xs font-semibold text-slate-400">Tracked Products</span>
-                        <div className="text-2xl font-bold text-slate-900 mt-1">{products.length}</div>
+                    <div style={styles.statsGrid}>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Tracked Products</span>
+                        <div style={styles.statVal}>{products.length}</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span className="text-xs font-semibold text-slate-400">Total Reviews</span>
-                        <div className="text-2xl font-bold text-slate-900 mt-1">1,240</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Total Reviews</span>
+                        <div style={styles.statVal}>1,240</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span className="text-xs font-semibold text-slate-400">Positive Sentiment</span>
-                        <div className="text-2xl font-bold text-emerald-600 mt-1">78%</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Positive Sentiment</span>
+                        <div style={{ ...styles.statVal, color: "#16a34a" }}>78%</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <span className="text-xs font-semibold text-slate-400">Open Tickets</span>
-                        <div className="text-2xl font-bold text-amber-600 mt-1">5</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Open Tickets</span>
+                        <div style={{ ...styles.statVal, color: "#d97706" }}>5</div>
                       </div>
                     </div>
 
-                    {/* Product Cards Grid */}
-                    <div className="grid md:grid-cols-3 gap-4">
+                    <div style={styles.gridContainer}>
                       {products.map((p) => (
-                        <div key={p.id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div key={p.id} style={styles.productCard}>
                           <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="font-bold text-slate-900">{p.name}</h3>
-                              <span className="text-xs bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded">
-                                {p.status}
-                              </span>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <h4 style={{ margin: 0, fontWeight: "700" }}>{p.name}</h4>
+                              <span style={styles.activeTag}>{p.status}</span>
                             </div>
-                            <span className="text-xs text-slate-400">{p.category}</span>
-
-                            <div className="grid grid-cols-3 gap-2 mt-4 text-center bg-slate-50 p-3 rounded-lg">
+                            <span style={{ fontSize: "12px", color: "#94a3b8" }}>{p.category}</span>
+                            <div style={styles.prodStatsRow}>
                               <div>
-                                <div className="text-xs text-slate-400">Reviews</div>
-                                <div className="font-bold text-slate-800 text-sm">{p.totalReviews}</div>
+                                <div style={{ fontSize: "10px", color: "#64748b" }}>Reviews</div>
+                                <div style={{ fontWeight: "700" }}>{p.totalReviews}</div>
                               </div>
                               <div>
-                                <div className="text-xs text-slate-400">Positive</div>
-                                <div className="font-bold text-emerald-600 text-sm">{p.positiveRate}</div>
+                                <div style={{ fontSize: "10px", color: "#64748b" }}>Positive</div>
+                                <div style={{ fontWeight: "700", color: "#16a34a" }}>{p.positiveRate}</div>
                               </div>
                               <div>
-                                <div className="text-xs text-slate-400">Rating</div>
-                                <div className="font-bold text-indigo-600 text-sm">{p.rating}</div>
+                                <div style={{ fontSize: "10px", color: "#64748b" }}>Rating</div>
+                                <div style={{ fontWeight: "700", color: "#4f46e5" }}>{p.rating}</div>
                               </div>
                             </div>
                           </div>
-
-                          <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
-                            <button
-                              onClick={() => setActiveTab("Reviews")}
-                              className="flex-1 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                            >
-                              View Reviews
+                          <div style={{ display: "flex", gap: "6px", marginTop: "15px" }}>
+                            <button onClick={() => setActiveTab("Reviews")} style={styles.secondaryBtn}>
+                              Reviews
                             </button>
-                            <button
-                              onClick={() => setActiveTab("Sentiment Insights")}
-                              className="flex-1 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-semibold hover:bg-indigo-100"
-                            >
-                              View Insights
+                            <button onClick={() => setActiveTab("Sentiment Insights")} style={styles.primaryBtnSmall}>
+                              Insights
                             </button>
-                            <button
-                              onClick={() => handleDeleteProduct(p.id)}
-                              className="px-2 text-xs text-red-500 hover:bg-red-50 rounded"
-                            >
+                            <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
                               🗑️
                             </button>
                           </div>
                         </div>
                       ))}
 
-                      {/* Add another product quick box */}
-                      <div
-                        onClick={() => setIsAddProductOpen(true)}
-                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/20 transition min-h-[200px]"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold mb-2">+</div>
-                        <span className="font-semibold text-sm text-slate-700">Add Another Product</span>
-                        <span className="text-xs text-slate-400">Track a new product line</span>
+                      <div onClick={() => setIsAddProductOpen(true)} style={styles.addDashedCard}>
+                        <div style={styles.plusIcon}>+</div>
+                        <span style={{ fontWeight: "600", fontSize: "13px" }}>Add Another Product</span>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* 2. Sentiment Insights View */}
                 {activeTab === "Sentiment Insights" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-xl font-bold text-slate-900">Sentiment Insights</h1>
-                      <p className="text-xs text-slate-500">Understand customer sentiment across product lines</p>
-                    </div>
-
-                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                      <label className="block text-xs font-semibold text-slate-500 mb-1">Select Product</label>
-                      <select
-                        value={selectedProduct}
-                        onChange={(e) => setSelectedProduct(e.target.value)}
-                        className="w-full md:w-64 px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                      >
+                  <div>
+                    <h2 style={styles.heading}>Sentiment Insights</h2>
+                    <div style={{ ...styles.statCard, marginBottom: "20px" }}>
+                      <label style={styles.label}>Select Product</label>
+                      <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)} style={{ ...styles.input, width: "250px" }}>
                         {products.map((p) => (
-                          <option key={p.id} value={p.name}>{p.name}</option>
+                          <option key={p.id} value={p.name}>
+                            {p.name}
+                          </option>
                         ))}
                       </select>
                     </div>
 
-                    <div className="grid md:grid-cols-4 gap-4">
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-                        <div className="text-xs text-slate-400 font-semibold">Positive</div>
-                        <div className="text-2xl font-bold text-emerald-600 mt-1">78%</div>
+                    <div style={styles.statsGrid}>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Positive</span>
+                        <div style={{ ...styles.statVal, color: "#16a34a" }}>78%</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-                        <div className="text-xs text-slate-400 font-semibold">Neutral</div>
-                        <div className="text-2xl font-bold text-amber-500 mt-1">12%</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Neutral</span>
+                        <div style={{ ...styles.statVal, color: "#d97706" }}>12%</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-                        <div className="text-xs text-slate-400 font-semibold">Negative</div>
-                        <div className="text-2xl font-bold text-red-500 mt-1">10%</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Negative</span>
+                        <div style={{ ...styles.statVal, color: "#dc2626" }}>10%</div>
                       </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200 text-center">
-                        <div className="text-xs text-slate-400 font-semibold">Total Reviews</div>
-                        <div className="text-2xl font-bold text-slate-800 mt-1">324</div>
+                      <div style={styles.statCard}>
+                        <span style={styles.statLabel}>Total Reviews</span>
+                        <div style={styles.statVal}>324</div>
                       </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-xl border border-slate-200">
-                      <h3 className="font-bold text-slate-900 mb-2">Recommendation</h3>
-                      <p className="text-sm text-slate-600">Focus on improving battery life and increasing product durability based on negative sentiment trends.</p>
                     </div>
                   </div>
                 )}
 
-                {/* 3. Customer Reviews View */}
                 {activeTab === "Reviews" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-xl font-bold text-slate-900">Customer Reviews</h1>
-                      <p className="text-xs text-slate-500">Ingest customer feedback from supported platforms</p>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 space-y-4 max-w-2xl">
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-600 mb-1">Product</label>
-                        <select className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                          {products.map((p) => (
-                            <option key={p.id}>{p.name}</option>
-                          ))}
-                        </select>
+                  <div>
+                    <h2 style={styles.heading}>Customer Reviews</h2>
+                    <div style={{ ...styles.statCard, maxWidth: "500px" }}>
+                      <div style={styles.formStack}>
+                        <div>
+                          <label style={styles.label}>Product</label>
+                          <select style={styles.input}>
+                            {products.map((p) => (
+                              <option key={p.id}>{p.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label style={styles.label}>Platform</label>
+                          <select style={styles.input}>
+                            <option>Google Reviews</option>
+                            <option>Amazon</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={styles.label}>Review Content</label>
+                          <textarea rows={4} style={styles.input} placeholder="Type customer review here..."></textarea>
+                        </div>
+                        <button onClick={() => showToast("Review submitted!")} style={styles.primaryBtn}>
+                          Submit Review
+                        </button>
                       </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-600 mb-1">Source Platform</label>
-                        <select className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                          <option>Google Reviews</option>
-                          <option>Amazon</option>
-                          <option>Trustpilot</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-600 mb-1">Review Text</label>
-                        <textarea
-                          placeholder="Enter customer review..."
-                          rows={4}
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
-                        ></textarea>
-                      </div>
-
-                      <button
-                        onClick={() => showToast("Review submitted for processing!")}
-                        className="px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg text-xs hover:bg-indigo-700"
-                      >
-                        Submit Review
-                      </button>
                     </div>
                   </div>
                 )}
               </>
             )}
 
-            {/* -------------------------------------------------------------------------------- */}
-            {/* ROLE 2: RESOLUTION AGENT DASHBOARD VIEWS */}
-            {/* -------------------------------------------------------------------------------- */}
+            {/* RESOLUTION AGENT DASHBOARD */}
             {selectedRole === "Resolution Agent" && (
-              <div className="space-y-6">
-                <div>
-                  <h1 className="text-xl font-bold text-slate-900">Resolution Dashboard</h1>
-                  <p className="text-xs text-slate-500">Process customer escalation tickets, assign ownership, and record resolution notes</p>
-                </div>
-
-                {/* Agent Sub-tabs */}
-                <div className="flex gap-2 border-b border-slate-200 pb-2">
+              <div>
+                <h2 style={styles.heading}>Resolution Dashboard</h2>
+                <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
                   {["Available Tickets", "My Tasks", "Resolved"].map((tab) => (
                     <button
                       key={tab}
@@ -1427,43 +1296,30 @@ export default function App() {
                         setActiveTab(tab);
                         setTicketTab(tab);
                       }}
-                      className={`px-4 py-2 text-xs font-bold rounded-lg transition ${
-                        ticketTab === tab ? "bg-indigo-600 text-white" : "bg-white text-slate-600 border border-slate-200"
-                      }`}
+                      style={{
+                        ...styles.navTab,
+                        backgroundColor: ticketTab === tab ? "#4f46e5" : "#ffffff",
+                        color: ticketTab === tab ? "#ffffff" : "#475569",
+                        border: "1px solid #cbd5e1",
+                      }}
                     >
                       {tab}
                     </button>
                   ))}
                 </div>
 
-                {/* Filter Controls */}
-                <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
-                  <span className="text-xs font-semibold text-slate-500">Filter by Status:</span>
-                  <select
-                    value={ticketStatusFilter}
-                    onChange={(e) => setTicketStatusFilter(e.target.value)}
-                    className="px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-slate-50"
-                  >
-                    <option value="ALL font-semibold">ALL</option>
-                    <option value="OPEN">OPEN</option>
-                    <option value="INVESTIGATING">INVESTIGATING</option>
-                    <option value="RESOLVED">RESOLVED</option>
-                  </select>
-                </div>
-
-                {/* Ticket Table */}
-                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                  <table className="w-full text-left border-collapse text-xs">
+                <div style={styles.tableCard}>
+                  <table style={styles.table}>
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                        <th className="p-3">Ticket ID</th>
-                        <th className="p-3">Priority</th>
-                        <th className="p-3">Status</th>
-                        <th className="p-3">Review Snippet</th>
-                        <th className="p-3 text-right">Action</th>
+                      <tr style={styles.tableHeader}>
+                        <th style={styles.th}>Ticket ID</th>
+                        <th style={styles.th}>Priority</th>
+                        <th style={styles.th}>Status</th>
+                        <th style={styles.th}>Review Snippet</th>
+                        <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody>
                       {tickets
                         .filter((t) => {
                           if (ticketTab === "My Tasks") return t.assignedTo === "Current Agent" && t.status !== "RESOLVED";
@@ -1471,43 +1327,25 @@ export default function App() {
                           return t.assignedTo === null && t.status !== "RESOLVED";
                         })
                         .map((t) => (
-                          <tr key={t.id} className="hover:bg-slate-50">
-                            <td className="p-3 font-bold text-slate-800">{t.id}</td>
-                            <td className="p-3">
-                              <span
-                                className={`font-bold px-2 py-0.5 rounded text-[10px] ${
-                                  t.priority === "CRITICAL"
-                                    ? "bg-red-100 text-red-700"
-                                    : t.priority === "HIGH"
-                                    ? "bg-amber-100 text-amber-700"
-                                    : "bg-slate-100 text-slate-600"
-                                }`}
-                              >
-                                {t.priority}
-                              </span>
+                          <tr key={t.id} style={styles.tableRow}>
+                            <td style={{ ...styles.td, fontWeight: "700" }}>{t.id}</td>
+                            <td style={styles.td}>
+                              <span style={t.priority === "CRITICAL" ? styles.critBadge : styles.highBadge}>{t.priority}</span>
                             </td>
-                            <td className="p-3 font-semibold text-slate-600">{t.status}</td>
-                            <td className="p-3 max-w-xs truncate text-slate-500">{t.snippet}</td>
-                            <td className="p-3 text-right">
+                            <td style={styles.td}>{t.status}</td>
+                            <td style={styles.td}>{t.snippet}</td>
+                            <td style={{ ...styles.td, textAlign: "right" }}>
                               {ticketTab === "Available Tickets" && (
-                                <button
-                                  onClick={() => handleClaimTicket(t.id)}
-                                  className="px-3 py-1 bg-indigo-600 text-white rounded font-semibold text-xs hover:bg-indigo-700"
-                                >
-                                  Assign / Claim
+                                <button onClick={() => handleClaimTicket(t.id)} style={styles.primaryBtnSmall}>
+                                  Claim Ticket
                                 </button>
                               )}
                               {ticketTab === "My Tasks" && (
-                                <button
-                                  onClick={() => setActiveTicketForResolution(t)}
-                                  className="px-3 py-1 bg-emerald-600 text-white rounded font-semibold text-xs hover:bg-emerald-700"
-                                >
-                                  Resolve Ticket
+                                <button onClick={() => setActiveTicketForResolution(t)} style={styles.greenBtn}>
+                                  Resolve
                                 </button>
                               )}
-                              {ticketTab === "Resolved" && (
-                                <span className="text-emerald-600 font-bold">✓ Resolved</span>
-                              )}
+                              {ticketTab === "Resolved" && <span style={{ color: "#16a34a", fontWeight: "700" }}>✓ Resolved</span>}
                             </td>
                           </tr>
                         ))}
@@ -1515,31 +1353,21 @@ export default function App() {
                   </table>
                 </div>
 
-                {/* Resolution Notes Drawer / Card */}
                 {activeTicketForResolution && (
-                  <div className="bg-indigo-50 border border-indigo-200 p-5 rounded-xl space-y-3">
-                    <h3 className="font-bold text-slate-900 text-sm">
-                      Resolve Ticket {activeTicketForResolution.id}
-                    </h3>
-                    <p className="text-xs text-slate-600">"{activeTicketForResolution.snippet}"</p>
+                  <div style={{ ...styles.statCard, marginTop: "20px", backgroundColor: "#e0e7ff" }}>
+                    <h4 style={{ margin: "0 0 10px 0" }}>Resolve Ticket {activeTicketForResolution.id}</h4>
                     <textarea
                       value={resolutionNote}
                       onChange={(e) => setResolutionNote(e.target.value)}
-                      placeholder="Enter resolution details..."
+                      placeholder="Enter resolution notes..."
                       rows={3}
-                      className="w-full p-2.5 bg-white border border-indigo-200 rounded-lg text-xs"
+                      style={{ ...styles.input, marginBottom: "10px" }}
                     ></textarea>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleResolveTicket(activeTicketForResolution.id)}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700"
-                      >
-                        Resolve Ticket
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button onClick={() => handleResolveTicket(activeTicketForResolution.id)} style={styles.greenBtn}>
+                        Confirm Resolve
                       </button>
-                      <button
-                        onClick={() => setActiveTicketForResolution(null)}
-                        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300"
-                      >
+                      <button onClick={() => setActiveTicketForResolution(null)} style={styles.secondaryBtn}>
                         Cancel
                       </button>
                     </div>
@@ -1548,197 +1376,91 @@ export default function App() {
               </div>
             )}
 
-            {/* -------------------------------------------------------------------------------- */}
-            {/* ROLE 3: PLATFORM ADMIN DASHBOARD VIEWS */}
-            {/* -------------------------------------------------------------------------------- */}
+            {/* PLATFORM ADMIN DASHBOARD */}
             {selectedRole === "Platform Admin" && (
-              <>
-                {/* Admin Overview */}
+              <div>
+                <h2 style={styles.heading}>Platform Overview</h2>
                 {activeTab === "Overview" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-xl font-bold text-slate-900">Platform Overview</h1>
-                      <p className="text-xs text-slate-500">Manage users, products, tickets, and platform-wide activity</p>
+                  <div style={styles.statsGrid}>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>Total Users</span>
+                      <div style={styles.statVal}>{users.length}</div>
                     </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-white p-4 rounded-xl border border-slate-200">
-                        <span className="text-xs font-semibold text-slate-400">Total Users</span>
-                        <div className="text-2xl font-bold text-slate-900 mt-1">{users.length}</div>
-                      </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200">
-                        <span className="text-xs font-semibold text-slate-400">Total Products</span>
-                        <div className="text-2xl font-bold text-indigo-600 mt-1">{products.length}</div>
-                      </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200">
-                        <span className="text-xs font-semibold text-slate-400">Active Tickets</span>
-                        <div className="text-2xl font-bold text-amber-500 mt-1">{tickets.length}</div>
-                      </div>
-                      <div className="bg-white p-4 rounded-xl border border-slate-200">
-                        <span className="text-xs font-semibold text-slate-400">Resolved Today</span>
-                        <div className="text-2xl font-bold text-emerald-600 mt-1">14</div>
-                      </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>Total Products</span>
+                      <div style={styles.statVal}>{products.length}</div>
                     </div>
-
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="bg-white p-5 rounded-xl border border-slate-200">
-                        <h3 className="font-bold text-slate-900 text-sm mb-4">Global User Roles</h3>
-                        <div className="space-y-3 text-xs">
-                          <div className="flex justify-between items-center">
-                            <span className="text-slate-600">Brand Managers</span>
-                            <span className="font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">60%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-slate-600">Resolution Agents</span>
-                            <span className="font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">25%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-slate-600">Platform Admins</span>
-                            <span className="font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">15%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white p-5 rounded-xl border border-slate-200">
-                        <h3 className="font-bold text-slate-900 text-sm mb-4">Recent Timeline</h3>
-                        <ul className="space-y-2 text-xs text-slate-600">
-                          <li>• New brand manager registered 2h ago</li>
-                          <li>• System review ingestion completed 4h ago</li>
-                          <li>• Critical ticket assigned to agent</li>
-                        </ul>
-                      </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>System Health</span>
+                      <div style={{ ...styles.statVal, color: "#16a34a" }}>99.9%</div>
                     </div>
                   </div>
                 )}
 
-                {/* Admin User Management */}
                 {activeTab === "User Management" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-xl font-bold text-slate-900">User Management</h1>
-                      <p className="text-xs text-slate-500">Manage platform users and account status</p>
-                    </div>
-
-                    <div className="bg-white p-4 rounded-xl border border-slate-200">
-                      <input
-                        type="text"
-                        placeholder="Search users by name or email..."
-                        value={userSearch}
-                        onChange={(e) => setUserSearch(e.target.value)}
-                        className="w-full md:w-80 px-3 py-1.5 border border-slate-300 rounded-lg text-xs"
-                      />
-                    </div>
-
-                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                      <table className="w-full text-left border-collapse text-xs">
-                        <thead>
-                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                            <th className="p-3">ID</th>
-                            <th className="p-3">Name</th>
-                            <th className="p-3">Email</th>
-                            <th className="p-3">Role</th>
-                            <th className="p-3">Status</th>
-                            <th className="p-3 text-right">Action</th>
+                  <div style={styles.tableCard}>
+                    <table style={styles.table}>
+                      <thead>
+                        <tr style={styles.tableHeader}>
+                          <th style={styles.th}>ID</th>
+                          <th style={styles.th}>Name</th>
+                          <th style={styles.th}>Email</th>
+                          <th style={styles.th}>Role</th>
+                          <th style={styles.th}>Status</th>
+                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((u) => (
+                          <tr key={u.id} style={styles.tableRow}>
+                            <td style={styles.td}>{u.id}</td>
+                            <td style={{ ...styles.td, fontWeight: "700" }}>{u.name}</td>
+                            <td style={styles.td}>{u.email}</td>
+                            <td style={styles.td}>{u.role}</td>
+                            <td style={styles.td}>
+                              <span style={u.status === "Active" ? styles.activeTag : styles.critBadge}>{u.status}</span>
+                            </td>
+                            <td style={{ ...styles.td, textAlign: "right" }}>
+                              <button onClick={() => handleToggleUserStatus(u.id)} style={styles.secondaryBtn}>
+                                Toggle Status
+                              </button>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {users
-                            .filter(
-                              (u) =>
-                                u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-                                u.email.toLowerCase().includes(userSearch.toLowerCase())
-                            )
-                            .map((u) => (
-                              <tr key={u.id} className="hover:bg-slate-50">
-                                <td className="p-3 text-slate-400">{u.id}</td>
-                                <td className="p-3 font-bold text-slate-800">{u.name}</td>
-                                <td className="p-3 text-slate-500">{u.email}</td>
-                                <td className="p-3">
-                                  <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-semibold text-[10px]">
-                                    {u.role}
-                                  </span>
-                                </td>
-                                <td className="p-3">
-                                  <span
-                                    className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                                      u.status === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
-                                    }`}
-                                  >
-                                    {u.status}
-                                  </span>
-                                </td>
-                                <td className="p-3 text-right">
-                                  <button
-                                    onClick={() => handleToggleUserStatus(u.id)}
-                                    className="px-3 py-1 border border-slate-300 rounded text-slate-700 font-semibold text-xs hover:bg-slate-100"
-                                  >
-                                    Toggle Status
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 )}
 
-                {/* Admin Products View */}
                 {activeTab === "Products" && (
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h1 className="text-xl font-bold text-slate-900">Tracked Products</h1>
-                        <p className="text-xs text-slate-500">Manage all tracked products across the platform</p>
-                      </div>
-                      <button
-                        onClick={() => setIsAddProductOpen(true)}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700"
-                      >
-                        + Add Product
-                      </button>
-                    </div>
-
-                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                      <table className="w-full text-left border-collapse text-xs">
-                        <thead>
-                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase">
-                            <th className="p-3">Name</th>
-                            <th className="p-3">Category</th>
-                            <th className="p-3">Reviews</th>
-                            <th className="p-3">Rating</th>
-                            <th className="p-3">Status</th>
-                            <th className="p-3 text-right">Action</th>
+                  <div style={styles.tableCard}>
+                    <table style={styles.table}>
+                      <thead>
+                        <tr style={styles.tableHeader}>
+                          <th style={styles.th}>Product Name</th>
+                          <th style={styles.th}>Category</th>
+                          <th style={styles.th}>Reviews</th>
+                          <th style={{ ...styles.th, textAlign: "right" }}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map((p) => (
+                          <tr key={p.id} style={styles.tableRow}>
+                            <td style={{ ...styles.td, fontWeight: "700" }}>{p.name}</td>
+                            <td style={styles.td}>{p.category}</td>
+                            <td style={styles.td}>{p.totalReviews}</td>
+                            <td style={{ ...styles.td, textAlign: "right" }}>
+                              <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>
+                                Delete
+                              </button>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                          {products.map((p) => (
-                            <tr key={p.id} className="hover:bg-slate-50">
-                              <td className="p-3 font-bold text-slate-800">{p.name}</td>
-                              <td className="p-3 text-slate-500">{p.category}</td>
-                              <td className="p-3 font-semibold">{p.totalReviews}</td>
-                              <td className="p-3 text-indigo-600 font-bold">{p.rating}</td>
-                              <td className="p-3">
-                                <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold text-[10px]">
-                                  {p.status}
-                                </span>
-                              </td>
-                              <td className="p-3 text-right">
-                                <button
-                                  onClick={() => handleDeleteProduct(p.id)}
-                                  className="px-3 py-1 bg-red-50 text-red-600 rounded font-semibold hover:bg-red-100"
-                                >
-                                  Delete
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </main>
         </div>
@@ -1746,45 +1468,27 @@ export default function App() {
 
       {/* ADD PRODUCT MODAL */}
       {isAddProductOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full space-y-4">
-            <h3 className="font-bold text-slate-900 text-base">Add New Product</h3>
-            <form onSubmit={handleAddProduct} className="space-y-3">
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Add New Product</h3>
+            <form onSubmit={handleAddProduct} style={styles.formStack}>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Acme Smart Headphones"
-                  value={newProdName}
-                  onChange={(e) => setNewProdName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
-                  required
-                />
+                <label style={styles.label}>Product Name</label>
+                <input type="text" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} style={styles.input} required />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Category</label>
-                <select
-                  value={newProdCategory}
-                  onChange={(e) => setNewProdCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
-                >
+                <label style={styles.label}>Category</label>
+                <select value={newProdCategory} onChange={(e) => setNewProdCategory(e.target.value)} style={styles.input}>
                   <option value="Electronics">Electronics</option>
                   <option value="Audio">Audio</option>
                   <option value="Software">Software</option>
-                  <option value="Retail">Retail</option>
                 </select>
               </div>
-
-              <div className="flex gap-2 pt-2">
-                <button type="submit" className="flex-1 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700">
-                  Save Product
+              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                <button type="submit" style={styles.primaryBtn}>
+                  Save
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsAddProductOpen(false)}
-                  className="flex-1 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200"
-                >
+                <button type="button" onClick={() => setIsAddProductOpen(false)} style={styles.secondaryBtn}>
                   Cancel
                 </button>
               </div>
@@ -1795,3 +1499,54 @@ export default function App() {
     </div>
   );
 }
+
+// INLINE STYLES DEFINITION (Guarantees Perfect visual layout like design image)
+const styles = {
+  appWrapper: { fontFamily: "Segoe UI, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
+  authWrapper: { minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f1f5f9", padding: "20px" },
+  authCard: { display: "flex", backgroundColor: "#ffffff", borderRadius: "16px", overflow: "hidden", maxWidth: "850px", width: "100%", border: "1px solid #e2e8f0", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" },
+  authLeft: { backgroundColor: "#4f46e5", color: "#ffffff", padding: "40px", width: "45%", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  authRight: { padding: "40px", width: "55%", display: "flex", flexDirection: "column", justify: "center" },
+  logoBox: { width: "28px", height: "28px", backgroundColor: "#4f46e5", color: "#fff", borderRadius: "6px", display: "flex", alignItems: "center", justifyCenter: "center", fontWeight: "bold" },
+  featureBadge: { backgroundColor: "rgba(255,255,255,0.15)", padding: "10px 14px", borderRadius: "8px", fontSize: "13px" },
+  formStack: { display: "flex", flexDirection: "column", gap: "14px" },
+  label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
+  input: { width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", boxSizing: "border-box", outline: "none" },
+  roleSelect: { width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #a5b4fc", backgroundColor: "#e0e7ff", color: "#312e81", fontWeight: "600", fontSize: "13px" },
+  primaryBtn: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "10px 16px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
+  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "8px 14px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "12px" },
+  primaryBtnSmall: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  greenBtn: { backgroundColor: "#16a34a", color: "#ffffff", border: "none", padding: "5px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "5px 8px", borderRadius: "6px", cursor: "pointer" },
+  linkText: { color: "#4f46e5", fontWeight: "600", cursor: "pointer" },
+  navbar: { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" },
+  navTab: { border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "13px", fontWeight: "600", cursor: "pointer" },
+  roleBadge: { backgroundColor: "#e0e7ff", color: "#3730a3", padding: "4px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: "700" },
+  logoutBtn: { backgroundColor: "transparent", border: "1px solid #cbd5e1", padding: "4px 10px", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
+  mainContainer: { maxWidth: "1100px", margin: "24px auto", padding: "0 20px" },
+  heading: { fontSize: "20px", fontWeight: "700", margin: "0 0 4px 0" },
+  subHeading: { fontSize: "12px", color: "#64748b" },
+  sectionHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" },
+  statsGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" },
+  statCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px" },
+  statLabel: { fontSize: "12px", color: "#94a3b8", fontWeight: "600" },
+  statVal: { fontSize: "24px", fontWeight: "700", marginTop: "4px" },
+  gridContainer: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" },
+  productCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  activeTag: { backgroundColor: "#dcfce7", color: "#15803d", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" },
+  prodStatsRow: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "6px", backgroundColor: "#f8fafc", padding: "8px", borderRadius: "8px", marginTop: "12px", textAlign: "center" },
+  addDashedCard: { border: "2px dashed #cbd5e1", borderRadius: "12px", display: "flex", flexDirection: "column", alignItems: "center", justifyCenter: "center", padding: "24px", cursor: "pointer", color: "#64748b" },
+  plusIcon: { width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#e0e7ff", color: "#4f46e5", display: "flex", alignItems: "center", justifyCenter: "center", fontWeight: "bold", marginBottom: "8px" },
+  tableCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
+  table: { width: "100%", borderCollapse: "collapse", fontSize: "12px" },
+  tableHeader: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" },
+  th: { padding: "12px", textAlign: "left", color: "#64748b", fontWeight: "600" },
+  tableRow: { borderBottom: "1px solid #f1f5f9" },
+  td: { padding: "12px", color: "#334155" },
+  critBadge: { backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
+  highBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
+  toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "10px 16px", borderRadius: "8px", fontSize: "13px", zIndex: 1000 },
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center" },
+  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "320px" },
+};
