@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeNotification } from "./store/slices/notificationSlice";
+import { removeNotification } from "../../store/slices/notificationSlice";
 
 const NotificationStack = () => {
   const dispatch = useDispatch();
