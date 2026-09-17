@@ -274,95 +274,907 @@
 
 // export default AdminDashboard;
 
+// import React from "react";
+
+// const styles = {
+//   dashboardContainer: { padding: "24px", backgroundColor: "#0f172a", minHeight: "100vh", color: "#f8fafc", fontFamily: "'Inter', sans-serif" },
+//   title: { fontSize: "22px", marginBottom: "20px", color: "#f8fafc" },
+//   metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" },
+//   metricCard: { background: "#1e293b", padding: "16px", borderRadius: "8px" },
+//   metricTitle: { color: "#94a3b8", fontSize: "13px" },
+//   metricVal: { fontSize: "24px", marginTop: "8px", margin: 0 },
+//   dashboardGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
+//   chartCard: { background: "#1e293b", borderRadius: "12px", padding: "20px", border: "1px solid #334155" },
+//   cardHeader: { margin: "0 0 16px 0", color: "#f8fafc" },
+//   pieContainer: { display: "flex", alignItems: "center", gap: "20px" },
+//   cssPie: {
+//     width: "100px",
+//     height: "100px",
+//     borderRadius: "50%",
+//     background: "conic-gradient(#ef4444 0% 12%, #3b82f6 12% 57%, #10b981 57% 100%)",
+//   },
+//   legendList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px" },
+//   timelineItem: { display: "flex", gap: "12px", marginBottom: "16px" },
+//   blueDot: { width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", marginTop: "6px" },
+//   timelineText: { margin: 0, fontSize: "13px", color: "#e2e8f0" },
+//   timeText: { color: "#64748b", fontSize: "11px" }
+// };
+
+// const AdminDashboard = () => {
+//   return (
+//     <div style={styles.dashboardContainer}>
+//       <h2 style={styles.title}>Platform Overview</h2>
+
+//       {/* Metrics Row */}
+//       <div style={styles.metricsGrid}>
+//         <div style={{ ...styles.metricCard, borderLeft: "4px solid #3b82f6" }}>
+//           <span style={styles.metricTitle}>Total Users</span>
+//           <h3 style={styles.metricVal}>8</h3>
+//         </div>
+//         <div style={{ ...styles.metricCard, borderLeft: "4px solid #10b981" }}>
+//           <span style={styles.metricTitle}>Total Products</span>
+//           <h3 style={styles.metricVal}>12</h3>
+//         </div>
+//         <div style={{ ...styles.metricCard, borderLeft: "4px solid #ef4444" }}>
+//           <span style={styles.metricTitle}>Active Tickets</span>
+//           <h3 style={styles.metricVal}>3</h3>
+//         </div>
+//         <div style={{ ...styles.metricCard, borderLeft: "4px solid #f59e0b" }}>
+//           <span style={styles.metricTitle}>System Health</span>
+//           <h3 style={styles.metricVal}>98%</h3>
+//         </div>
+//       </div>
+
+//       {/* Section Content */}
+//       <div style={styles.dashboardGrid}>
+//         {/* Global User Roles Chart Box */}
+//         <div style={styles.chartCard}>
+//           <h4 style={styles.cardHeader}>Global User Roles</h4>
+//           <div style={styles.pieContainer}>
+//             <div style={styles.cssPie}></div>
+//             <ul style={styles.legendList}>
+//               <li style={{ color: "#ef4444" }}>● Admin (12%)</li>
+//               <li style={{ color: "#3b82f6" }}>● Brand Manager (45%)</li>
+//               <li style={{ color: "#10b981" }}>● Agent (43%)</li>
+//             </ul>
+//           </div>
+//         </div>
+
+//         {/* Timeline Box */}
+//         <div style={styles.chartCard}>
+//           <h4 style={styles.cardHeader}>Recent Timeline</h4>
+//           <div style={styles.timelineItem}>
+//             <div style={styles.blueDot}></div>
+//             <div>
+//               <p style={styles.timelineText}>New brand manager registered: Brand Corp</p>
+//               <small style={styles.timeText}>1 hour ago</small>
+//             </div>
+//           </div>
+//           <div style={styles.timelineItem}>
+//             <div style={styles.blueDot}></div>
+//             <div>
+//               <p style={styles.timelineText}>Ticket #402 status resolution completed</p>
+//               <small style={styles.timeText}>3 hours ago</small>
+//             </div>
+//           </div>
+//           <div style={styles.timelineItem}>
+//             <div style={styles.blueDot}></div>
+//             <div>
+//               <p style={styles.timelineText}>Critical ticket auto-assigned to Agent Smith</p>
+//               <small style={styles.timeText}>5 hours ago</small>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminDashboard;
 import React from "react";
 
 const styles = {
-  dashboardContainer: { padding: "24px", backgroundColor: "#0f172a", minHeight: "100vh", color: "#f8fafc", fontFamily: "'Inter', sans-serif" },
-  title: { fontSize: "22px", marginBottom: "20px", color: "#f8fafc" },
-  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" },
-  metricCard: { background: "#1e293b", padding: "16px", borderRadius: "8px" },
-  metricTitle: { color: "#94a3b8", fontSize: "13px" },
-  metricVal: { fontSize: "24px", marginTop: "8px", margin: 0 },
-  dashboardGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" },
-  chartCard: { background: "#1e293b", borderRadius: "12px", padding: "20px", border: "1px solid #334155" },
-  cardHeader: { margin: "0 0 16px 0", color: "#f8fafc" },
-  pieContainer: { display: "flex", alignItems: "center", gap: "20px" },
-  cssPie: {
-    width: "100px",
-    height: "100px",
-    borderRadius: "50%",
-    background: "conic-gradient(#ef4444 0% 12%, #3b82f6 12% 57%, #10b981 57% 100%)",
+  dashboardContainer: {
+    padding: "28px",
+    backgroundColor: "#f8fafc",
+    minHeight: "100vh",
+    color: "#0f172a",
+    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
-  legendList: { listStyle: "none", padding: 0, margin: 0, fontSize: "13px" },
-  timelineItem: { display: "flex", gap: "12px", marginBottom: "16px" },
-  blueDot: { width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", marginTop: "6px" },
-  timelineText: { margin: 0, fontSize: "13px", color: "#e2e8f0" },
-  timeText: { color: "#64748b", fontSize: "11px" }
+
+  // HEADER
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "28px",
+    flexWrap: "wrap",
+    gap: "16px",
+  },
+
+  titleSection: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+
+  title: {
+    fontSize: "25px",
+    fontWeight: "750",
+    margin: 0,
+    color: "#0f172a",
+    letterSpacing: "-0.5px",
+  },
+
+  subtitle: {
+    margin: 0,
+    fontSize: "13px",
+    color: "#64748b",
+  },
+
+  headerStatus: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+    padding: "8px 13px",
+    borderRadius: "8px",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#475569",
+  },
+
+  statusDot: {
+    width: "8px",
+    height: "8px",
+    borderRadius: "50%",
+    backgroundColor: "#22c55e",
+  },
+
+  // METRICS
+  metricsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "18px",
+    marginBottom: "24px",
+  },
+
+  metricCard: {
+    backgroundColor: "#ffffff",
+    padding: "20px",
+    borderRadius: "12px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.04)",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+  },
+
+  metricTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: "14px",
+  },
+
+  metricTitle: {
+    color: "#64748b",
+    fontSize: "12px",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: "0.4px",
+  },
+
+  metricIcon: {
+    width: "34px",
+    height: "34px",
+    borderRadius: "8px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "16px",
+    fontWeight: "700",
+  },
+
+  metricVal: {
+    fontSize: "27px",
+    fontWeight: "750",
+    margin: 0,
+    color: "#0f172a",
+  },
+
+  metricBottom: {
+    display: "flex",
+    alignItems: "center",
+    gap: "7px",
+    marginTop: "8px",
+  },
+
+  positiveTrend: {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "#16a34a",
+  },
+
+  neutralTrend: {
+    fontSize: "11px",
+    fontWeight: "600",
+    color: "#64748b",
+  },
+
+  trendText: {
+    fontSize: "11px",
+    color: "#94a3b8",
+  },
+
+  // MAIN GRID
+  mainGrid: {
+    display: "grid",
+    gridTemplateColumns: "1.15fr 0.85fr",
+    gap: "20px",
+    marginBottom: "20px",
+  },
+
+  card: {
+    backgroundColor: "#ffffff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "12px",
+    padding: "22px",
+    boxShadow: "0 2px 8px rgba(15, 23, 42, 0.035)",
+  },
+
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "22px",
+  },
+
+  cardTitle: {
+    margin: 0,
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+
+  cardDescription: {
+    margin: "4px 0 0",
+    fontSize: "11px",
+    color: "#94a3b8",
+  },
+
+  viewButton: {
+    border: "none",
+    backgroundColor: "#eef2ff",
+    color: "#4338ca",
+    fontSize: "11px",
+    fontWeight: "700",
+    padding: "7px 11px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+
+  // ROLE CHART
+  roleContent: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    gap: "30px",
+  },
+
+  pieWrapper: {
+    position: "relative",
+    width: "155px",
+    height: "155px",
+    flexShrink: 0,
+  },
+
+  cssPie: {
+    width: "155px",
+    height: "155px",
+    borderRadius: "50%",
+    background:
+      "conic-gradient(#4f46e5 0% 45%, #10b981 45% 88%, #f59e0b 88% 100%)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  pieInner: {
+    width: "105px",
+    height: "105px",
+    borderRadius: "50%",
+    backgroundColor: "#ffffff",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  pieNumber: {
+    fontSize: "22px",
+    fontWeight: "750",
+    color: "#0f172a",
+  },
+
+  pieLabel: {
+    fontSize: "10px",
+    color: "#94a3b8",
+    marginTop: "2px",
+  },
+
+  legendList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    minWidth: "180px",
+  },
+
+  legendItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "15px",
+    fontSize: "12px",
+  },
+
+  legendLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    color: "#475569",
+  },
+
+  legendDot: {
+    width: "9px",
+    height: "9px",
+    borderRadius: "50%",
+  },
+
+  legendValue: {
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+
+  // TIMELINE
+  timeline: {
+    display: "flex",
+    flexDirection: "column",
+  },
+
+  timelineItem: {
+    display: "flex",
+    gap: "13px",
+    position: "relative",
+    paddingBottom: "22px",
+  },
+
+  timelineLine: {
+    position: "absolute",
+    left: "4px",
+    top: "12px",
+    bottom: 0,
+    width: "1px",
+    backgroundColor: "#e2e8f0",
+  },
+
+  blueDot: {
+    width: "9px",
+    height: "9px",
+    borderRadius: "50%",
+    backgroundColor: "#4f46e5",
+    marginTop: "4px",
+    flexShrink: 0,
+    zIndex: 1,
+  },
+
+  timelineContent: {
+    flex: 1,
+  },
+
+  timelineText: {
+    margin: 0,
+    fontSize: "12px",
+    lineHeight: "1.5",
+    color: "#334155",
+    fontWeight: "500",
+  },
+
+  timeText: {
+    display: "block",
+    marginTop: "5px",
+    color: "#94a3b8",
+    fontSize: "10px",
+  },
+
+  // BOTTOM GRID
+  bottomGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "20px",
+  },
+
+  // SYSTEM HEALTH
+  healthList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+
+  healthItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  healthLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+
+  healthIcon: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "7px",
+    backgroundColor: "#f1f5f9",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "14px",
+  },
+
+  healthName: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#334155",
+  },
+
+  healthStatus: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "11px",
+    color: "#16a34a",
+    fontWeight: "700",
+  },
+
+  smallGreenDot: {
+    width: "7px",
+    height: "7px",
+    borderRadius: "50%",
+    backgroundColor: "#22c55e",
+  },
+
+  // QUICK ACTIONS
+  actionGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "10px",
+  },
+
+  actionButton: {
+    padding: "14px",
+    backgroundColor: "#f8fafc",
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    cursor: "pointer",
+    textAlign: "left",
+    transition: "all 0.2s ease",
+  },
+
+  actionIcon: {
+    fontSize: "17px",
+    marginBottom: "8px",
+  },
+
+  actionTitle: {
+    display: "block",
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "#334155",
+  },
+
+  actionDescription: {
+    display: "block",
+    marginTop: "3px",
+    fontSize: "10px",
+    color: "#94a3b8",
+  },
+
+  // RESPONSIVE
+  "@media (max-width: 900px)": {
+    metricsGrid: {
+      gridTemplateColumns: "repeat(2, 1fr)",
+    },
+
+    mainGrid: {
+      gridTemplateColumns: "1fr",
+    },
+  },
 };
 
 const AdminDashboard = () => {
   return (
     <div style={styles.dashboardContainer}>
-      <h2 style={styles.title}>Platform Overview</h2>
+      {/* ================= HEADER ================= */}
+      <div style={styles.header}>
+        <div style={styles.titleSection}>
+          <h2 style={styles.title}>Platform Overview</h2>
 
-      {/* Metrics Row */}
-      <div style={styles.metricsGrid}>
-        <div style={{ ...styles.metricCard, borderLeft: "4px solid #3b82f6" }}>
-          <span style={styles.metricTitle}>Total Users</span>
-          <h3 style={styles.metricVal}>8</h3>
+          <p style={styles.subtitle}>
+            Monitor ReviewRave platform activity and system performance
+          </p>
         </div>
-        <div style={{ ...styles.metricCard, borderLeft: "4px solid #10b981" }}>
-          <span style={styles.metricTitle}>Total Products</span>
-          <h3 style={styles.metricVal}>12</h3>
-        </div>
-        <div style={{ ...styles.metricCard, borderLeft: "4px solid #ef4444" }}>
-          <span style={styles.metricTitle}>Active Tickets</span>
-          <h3 style={styles.metricVal}>3</h3>
-        </div>
-        <div style={{ ...styles.metricCard, borderLeft: "4px solid #f59e0b" }}>
-          <span style={styles.metricTitle}>System Health</span>
-          <h3 style={styles.metricVal}>98%</h3>
+
+        <div style={styles.headerStatus}>
+          <span style={styles.statusDot}></span>
+          All systems operational
         </div>
       </div>
 
-      {/* Section Content */}
-      <div style={styles.dashboardGrid}>
-        {/* Global User Roles Chart Box */}
-        <div style={styles.chartCard}>
-          <h4 style={styles.cardHeader}>Global User Roles</h4>
-          <div style={styles.pieContainer}>
-            <div style={styles.cssPie}></div>
+      {/* ================= METRICS ================= */}
+      <div style={styles.metricsGrid}>
+        {/* USERS */}
+        <div style={styles.metricCard}>
+          <div style={styles.metricTop}>
+            <span style={styles.metricTitle}>Total Users</span>
+
+            <div
+              style={{
+                ...styles.metricIcon,
+                backgroundColor: "#eef2ff",
+                color: "#4f46e5",
+              }}
+            >
+              👥
+            </div>
+          </div>
+
+          <h3 style={styles.metricVal}>8</h3>
+
+          <div style={styles.metricBottom}>
+            <span style={styles.positiveTrend}>+12.5%</span>
+            <span style={styles.trendText}>vs last month</span>
+          </div>
+        </div>
+
+        {/* PRODUCTS */}
+        <div style={styles.metricCard}>
+          <div style={styles.metricTop}>
+            <span style={styles.metricTitle}>Total Products</span>
+
+            <div
+              style={{
+                ...styles.metricIcon,
+                backgroundColor: "#ecfdf5",
+                color: "#059669",
+              }}
+            >
+              📦
+            </div>
+          </div>
+
+          <h3 style={styles.metricVal}>12</h3>
+
+          <div style={styles.metricBottom}>
+            <span style={styles.positiveTrend}>+8.3%</span>
+            <span style={styles.trendText}>vs last month</span>
+          </div>
+        </div>
+
+        {/* TICKETS */}
+        <div style={styles.metricCard}>
+          <div style={styles.metricTop}>
+            <span style={styles.metricTitle}>Active Tickets</span>
+
+            <div
+              style={{
+                ...styles.metricIcon,
+                backgroundColor: "#fef2f2",
+                color: "#dc2626",
+              }}
+            >
+              🎫
+            </div>
+          </div>
+
+          <h3 style={styles.metricVal}>3</h3>
+
+          <div style={styles.metricBottom}>
+            <span style={styles.neutralTrend}>2 critical</span>
+            <span style={styles.trendText}>need attention</span>
+          </div>
+        </div>
+
+        {/* SYSTEM */}
+        <div style={styles.metricCard}>
+          <div style={styles.metricTop}>
+            <span style={styles.metricTitle}>System Health</span>
+
+            <div
+              style={{
+                ...styles.metricIcon,
+                backgroundColor: "#fffbeb",
+                color: "#d97706",
+              }}
+            >
+              ⚡
+            </div>
+          </div>
+
+          <h3 style={styles.metricVal}>98%</h3>
+
+          <div style={styles.metricBottom}>
+            <span style={styles.positiveTrend}>Excellent</span>
+            <span style={styles.trendText}>system status</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= MAIN SECTION ================= */}
+      <div style={styles.mainGrid}>
+        {/* USER ROLES */}
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
+            <div>
+              <h3 style={styles.cardTitle}>Global User Roles</h3>
+
+              <p style={styles.cardDescription}>
+                Distribution of registered platform users
+              </p>
+            </div>
+
+            <button style={styles.viewButton}>View Users</button>
+          </div>
+
+          <div style={styles.roleContent}>
+            <div style={styles.pieWrapper}>
+              <div style={styles.cssPie}>
+                <div style={styles.pieInner}>
+                  <span style={styles.pieNumber}>8</span>
+                  <span style={styles.pieLabel}>Total Users</span>
+                </div>
+              </div>
+            </div>
+
             <ul style={styles.legendList}>
-              <li style={{ color: "#ef4444" }}>● Admin (12%)</li>
-              <li style={{ color: "#3b82f6" }}>● Brand Manager (45%)</li>
-              <li style={{ color: "#10b981" }}>● Agent (43%)</li>
+              <li style={styles.legendItem}>
+                <div style={styles.legendLeft}>
+                  <span
+                    style={{
+                      ...styles.legendDot,
+                      backgroundColor: "#4f46e5",
+                    }}
+                  ></span>
+
+                  <span>Brand Manager</span>
+                </div>
+
+                <span style={styles.legendValue}>45%</span>
+              </li>
+
+              <li style={styles.legendItem}>
+                <div style={styles.legendLeft}>
+                  <span
+                    style={{
+                      ...styles.legendDot,
+                      backgroundColor: "#10b981",
+                    }}
+                  ></span>
+
+                  <span>Support Agent</span>
+                </div>
+
+                <span style={styles.legendValue}>43%</span>
+              </li>
+
+              <li style={styles.legendItem}>
+                <div style={styles.legendLeft}>
+                  <span
+                    style={{
+                      ...styles.legendDot,
+                      backgroundColor: "#f59e0b",
+                    }}
+                  ></span>
+
+                  <span>Platform Admin</span>
+                </div>
+
+                <span style={styles.legendValue}>12%</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Timeline Box */}
-        <div style={styles.chartCard}>
-          <h4 style={styles.cardHeader}>Recent Timeline</h4>
-          <div style={styles.timelineItem}>
-            <div style={styles.blueDot}></div>
+        {/* RECENT TIMELINE */}
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
             <div>
-              <p style={styles.timelineText}>New brand manager registered: Brand Corp</p>
-              <small style={styles.timeText}>1 hour ago</small>
+              <h3 style={styles.cardTitle}>Recent Activity</h3>
+
+              <p style={styles.cardDescription}>
+                Latest platform events
+              </p>
+            </div>
+
+            <button style={styles.viewButton}>View All</button>
+          </div>
+
+          <div style={styles.timeline}>
+            <div style={styles.timelineItem}>
+              <div style={styles.timelineLine}></div>
+
+              <div style={styles.blueDot}></div>
+
+              <div style={styles.timelineContent}>
+                <p style={styles.timelineText}>
+                  New brand manager registered: Brand Corp
+                </p>
+
+                <small style={styles.timeText}>
+                  1 hour ago
+                </small>
+              </div>
+            </div>
+
+            <div style={styles.timelineItem}>
+              <div style={styles.timelineLine}></div>
+
+              <div style={styles.blueDot}></div>
+
+              <div style={styles.timelineContent}>
+                <p style={styles.timelineText}>
+                  Ticket #402 resolution completed
+                </p>
+
+                <small style={styles.timeText}>
+                  3 hours ago
+                </small>
+              </div>
+            </div>
+
+            <div style={styles.timelineItem}>
+              <div style={styles.blueDot}></div>
+
+              <div style={styles.timelineContent}>
+                <p style={styles.timelineText}>
+                  Critical ticket auto-assigned to Support Agent
+                </p>
+
+                <small style={styles.timeText}>
+                  5 hours ago
+                </small>
+              </div>
             </div>
           </div>
-          <div style={styles.timelineItem}>
-            <div style={styles.blueDot}></div>
+        </div>
+      </div>
+
+      {/* ================= BOTTOM SECTION ================= */}
+      <div style={styles.bottomGrid}>
+        {/* SYSTEM HEALTH */}
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
             <div>
-              <p style={styles.timelineText}>Ticket #402 status resolution completed</p>
-              <small style={styles.timeText}>3 hours ago</small>
+              <h3 style={styles.cardTitle}>System Health</h3>
+
+              <p style={styles.cardDescription}>
+                Current service availability
+              </p>
             </div>
           </div>
-          <div style={styles.timelineItem}>
-            <div style={styles.blueDot}></div>
-            <div>
-              <p style={styles.timelineText}>Critical ticket auto-assigned to Agent Smith</p>
-              <small style={styles.timeText}>5 hours ago</small>
+
+          <div style={styles.healthList}>
+            <div style={styles.healthItem}>
+              <div style={styles.healthLeft}>
+                <div style={styles.healthIcon}>🗄️</div>
+
+                <span style={styles.healthName}>
+                  Database
+                </span>
+              </div>
+
+              <div style={styles.healthStatus}>
+                <span style={styles.smallGreenDot}></span>
+                Operational
+              </div>
             </div>
+
+            <div style={styles.healthItem}>
+              <div style={styles.healthLeft}>
+                <div style={styles.healthIcon}>🔐</div>
+
+                <span style={styles.healthName}>
+                  Authentication
+                </span>
+              </div>
+
+              <div style={styles.healthStatus}>
+                <span style={styles.smallGreenDot}></span>
+                Operational
+              </div>
+            </div>
+
+            <div style={styles.healthItem}>
+              <div style={styles.healthLeft}>
+                <div style={styles.healthIcon}>⚙️</div>
+
+                <span style={styles.healthName}>
+                  API Services
+                </span>
+              </div>
+
+              <div style={styles.healthStatus}>
+                <span style={styles.smallGreenDot}></span>
+                Operational
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* QUICK ACTIONS */}
+        <div style={styles.card}>
+          <div style={styles.cardHeader}>
+            <div>
+              <h3 style={styles.cardTitle}>Quick Actions</h3>
+
+              <p style={styles.cardDescription}>
+                Common administrative operations
+              </p>
+            </div>
+          </div>
+
+          <div style={styles.actionGrid}>
+            <button style={styles.actionButton}>
+              <div style={styles.actionIcon}>👤</div>
+
+              <span style={styles.actionTitle}>
+                Manage Users
+              </span>
+
+              <span style={styles.actionDescription}>
+                View and manage accounts
+              </span>
+            </button>
+
+            <button style={styles.actionButton}>
+              <div style={styles.actionIcon}>📦</div>
+
+              <span style={styles.actionTitle}>
+                Products
+              </span>
+
+              <span style={styles.actionDescription}>
+                Manage tracked products
+              </span>
+            </button>
+
+            <button style={styles.actionButton}>
+              <div style={styles.actionIcon}>🎫</div>
+
+              <span style={styles.actionTitle}>
+                Resolution Tickets
+              </span>
+
+              <span style={styles.actionDescription}>
+                Review support tickets
+              </span>
+            </button>
+
+            <button style={styles.actionButton}>
+              <div style={styles.actionIcon}>📊</div>
+
+              <span style={styles.actionTitle}>
+                Insights
+              </span>
+
+              <span style={styles.actionDescription}>
+                Analyze sentiment data
+              </span>
+            </button>
           </div>
         </div>
       </div>
