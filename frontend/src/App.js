@@ -1292,1279 +1292,1279 @@
 //   modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
 //   modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "340px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" },
 // };
-import React, { useState } from "react";
-
-export default function App() {
-  // Navigation & Role States
-  const [currentPage, setCurrentPage] = useState("dashboard");
-  const [selectedRole] = useState("Brand Manager");
-  const [activeTab, setActiveTab] = useState("Sentiment Insights");
-
-  // Auth Form States
-  const [email, setEmail] = useState("manager@gmail.com");
-  const [password, setPassword] = useState("12345678");
-
-  // Toast State
-  const [toastMessage, setToastMessage] = useState("");
-
-  // ADD Product Modal States
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [newProdName, setNewProdName] = useState("");
-  const [newProdCategory, setNewProdCategory] = useState("Electronics");
-
-  // EDIT Product Modal States
-  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
-  const [editingProductId, setEditingProductId] = useState(null);
-  const [editProdName, setEditProdName] = useState("");
-  const [editProdCategory, setEditProdCategory] = useState("Electronics");
-
-  // Data States
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Acme Smart Watch",
-      category: "Electronics",
-      status: "Active",
-      totalReviews: 324,
-      positiveRate: "82%",
-      rating: 4.3,
-    },
-    {
-      id: 2,
-      name: "Acme Wireless Earbuds",
-      category: "Audio",
-      status: "Active",
-      totalReviews: 120,
-      positiveRate: "78%",
-      rating: 4.1,
-    },
-    {
-      id: 3,
-      name: "SaaS Platform Pro",
-      category: "Software",
-      status: "Active",
-      totalReviews: 45,
-      positiveRate: "90%",
-      rating: 4.7,
-    },
-  ]);
-
-  const [reviewsList] = useState([
-    {
-      id: 101,
-      user: "Alex Mercer",
-      product: "Acme Smart Watch",
-      rating: "5/5",
-      sentiment: "Positive",
-      comment:
-        "The battery life is amazing! Lasted almost 3 days on a single charge.",
-    },
-    {
-      id: 102,
-      user: "Samantha Paul",
-      product: "Acme Wireless Earbuds",
-      rating: "2/5",
-      sentiment: "Negative",
-      comment:
-        "The Bluetooth connectivity keeps dropping during calls.",
-    },
-    {
-      id: 103,
-      user: "David Miller",
-      product: "SaaS Platform Pro",
-      rating: "4/5",
-      sentiment: "Positive",
-      comment:
-        "Great UI interface, made our team workflow 2x faster.",
-    },
-    {
-      id: 104,
-      user: "Elena Rostova",
-      product: "Acme Smart Watch",
-      rating: "3/5",
-      sentiment: "Neutral",
-      comment:
-        "Good design but step counter isn't very accurate.",
-    },
-  ]);
-
-  // Toast Helper
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000);
-  };
-
-  // Handlers
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setCurrentPage("dashboard");
-    setActiveTab("Tracked Products");
-    showToast(`Logged in successfully!`);
-  };
-
-  const handleAddProduct = (e) => {
-    e.preventDefault();
-
-    if (!newProdName.trim()) return;
-
-    const newProd = {
-      id: Date.now(),
-      name: newProdName,
-      category: newProdCategory,
-      status: "Active",
-      totalReviews: 0,
-      positiveRate: "100%",
-      rating: 5.0,
-    };
-
-    setProducts([...products, newProd]);
-    setNewProdName("");
-    setNewProdCategory("Electronics");
-    setIsAddProductOpen(false);
-
-    showToast(`Product "${newProdName}" added successfully!`);
-  };
-
-  const handleOpenEditModal = (product) => {
-    setEditingProductId(product.id);
-    setEditProdName(product.name);
-    setEditProdCategory(product.category);
-    setIsEditProductOpen(true);
-  };
-
-  const handleSaveEditProduct = (e) => {
-    e.preventDefault();
-
-    setProducts(
-      products.map((p) =>
-        p.id === editingProductId
-          ? {
-              ...p,
-              name: editProdName,
-              category: editProdCategory,
-            }
-          : p
-      )
-    );
-
-    setIsEditProductOpen(false);
-    showToast("Product updated successfully!");
-  };
-
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
-    showToast("Product deleted!");
-  };
-
-  return (
-    <div style={styles.appWrapper}>
-      {/* Toast Alert */}
-      {toastMessage && (
-        <div style={styles.toast}>{toastMessage}</div>
-      )}
-
-      {/* LOGIN PAGE */}
-      {currentPage === "login" && (
-        <div style={styles.authWrapper}>
-          <div style={styles.authCard}>
-            <div style={styles.authLeft}>
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    marginBottom: "30px",
-                  }}
-                >
-                  <div style={styles.logoBox}>R</div>
-
-                  <span
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "700",
-                    }}
-                  >
-                    ReviewRave
-                  </span>
-                </div>
-
-                <h2
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: "700",
-                    marginBottom: "20px",
-                  }}
-                >
-                  Turn customer feedback into action
-                </h2>
-              </div>
-
-              <span
-                style={{
-                  fontSize: "11px",
-                  color: "#a5b4fc",
-                }}
-              >
-                © 2026 ReviewRave.
-              </span>
-            </div>
-
-            <div style={styles.authRight}>
-              <h3
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "700",
-                  margin: "0 0 4px 0",
-                }}
-              >
-                Login to ReviewRave
-              </h3>
-
-              <form
-                onSubmit={handleLogin}
-                style={styles.formStack}
-              >
-                <div>
-                  <label style={styles.label}>
-                    Email Address
-                  </label>
-
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) =>
-                      setEmail(e.target.value)
-                    }
-                    style={styles.input}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={styles.label}>
-                    Password
-                  </label>
-
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) =>
-                      setPassword(e.target.value)
-                    }
-                    style={styles.input}
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  style={styles.primaryBtn}
-                >
-                  Login to Dashboard
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DASHBOARD */}
-      {currentPage === "dashboard" && (
-        <div style={{ minHeight: "100vh" }}>
-          {/* Header */}
-          <header style={styles.navbar}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "30px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <div style={styles.logoBox}>R</div>
-
-                <span
-                  style={{
-                    fontWeight: "700",
-                    fontSize: "16px",
-                  }}
-                >
-                  ReviewRave
-                </span>
-              </div>
-
-              {/* Navigation Tabs */}
-              <nav
-                style={{
-                  display: "flex",
-                  gap: "4px",
-                }}
-              >
-                {[
-                  "Tracked Products",
-                  "Sentiment Insights",
-                  "Reviews",
-                ].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    style={{
-                      ...styles.navTab,
-                      backgroundColor:
-                        activeTab === tab
-                          ? "#e0e7ff"
-                          : "transparent",
-                      color:
-                        activeTab === tab
-                          ? "#4338ca"
-                          : "#475569",
-                    }}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <span style={styles.roleBadge}>
-                {selectedRole}
-              </span>
-
-              <button
-                onClick={() => setCurrentPage("login")}
-                style={styles.logoutBtn}
-              >
-                Logout
-              </button>
-            </div>
-          </header>
-
-          {/* Main Body */}
-          <main style={styles.mainContainer}>
-            {/* TRACKED PRODUCTS TAB */}
-            {activeTab === "Tracked Products" && (
-              <div>
-                <div style={styles.sectionHeader}>
-                  <div>
-                    <h2 style={styles.heading}>
-                      Tracked Products
-                    </h2>
-
-                    <span style={styles.subHeading}>
-                      Monitor customer feedback and sentiment
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setIsAddProductOpen(true)
-                    }
-                    style={styles.primaryBtnWidth}
-                  >
-                    + Add Product
-                  </button>
-                </div>
-
-                <div style={styles.statsGrid}>
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Tracked Products
-                    </span>
-
-                    <div style={styles.statVal}>
-                      {products.length}
-                    </div>
-                  </div>
-
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Total Reviews
-                    </span>
-
-                    <div style={styles.statVal}>
-                      1,240
-                    </div>
-                  </div>
-
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Positive Sentiment
-                    </span>
-
-                    <div
-                      style={{
-                        ...styles.statVal,
-                        color: "#16a34a",
-                      }}
-                    >
-                      78%
-                    </div>
-                  </div>
-                </div>
-
-                <div style={styles.gridContainer}>
-                  {products.map((p) => (
-                    <div
-                      key={p.id}
-                      style={styles.productCard}
-                    >
-                      <div>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent:
-                              "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <h4
-                            style={{
-                              margin: 0,
-                              fontWeight: "700",
-                              fontSize: "15px",
-                            }}
-                          >
-                            {p.name}
-                          </h4>
-
-                          <span style={styles.activeTag}>
-                            {p.status}
-                          </span>
-                        </div>
-
-                        <span
-                          style={{
-                            fontSize: "12px",
-                            color: "#94a3b8",
-                          }}
-                        >
-                          {p.category}
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "6px",
-                          marginTop: "15px",
-                        }}
-                      >
-                        <button
-                          onClick={() =>
-                            handleOpenEditModal(p)
-                          }
-                          style={styles.secondaryBtn}
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleDeleteProduct(p.id)
-                          }
-                          style={styles.deleteIconBtn}
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* SENTIMENT INSIGHTS TAB */}
-            {activeTab === "Sentiment Insights" && (
-              <div>
-                <div style={styles.sectionHeader}>
-                  <div>
-                    <h2 style={styles.heading}>
-                      Sentiment Insights
-                    </h2>
-
-                    <span style={styles.subHeading}>
-                      AI-driven sentiment breakdown of feedback
-                    </span>
-                  </div>
-                </div>
-
-                <div style={styles.statsGrid}>
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Positive Feedback
-                    </span>
-
-                    <div
-                      style={{
-                        ...styles.statVal,
-                        color: "#16a34a",
-                      }}
-                    >
-                      78%
-                    </div>
-                  </div>
-
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Neutral Feedback
-                    </span>
-
-                    <div
-                      style={{
-                        ...styles.statVal,
-                        color: "#d97706",
-                      }}
-                    >
-                      14%
-                    </div>
-                  </div>
-
-                  <div style={styles.statCard}>
-                    <span style={styles.statLabel}>
-                      Negative Feedback
-                    </span>
-
-                    <div
-                      style={{
-                        ...styles.statVal,
-                        color: "#dc2626",
-                      }}
-                    >
-                      8%
-                    </div>
-                  </div>
-                </div>
-
-                <div style={styles.cardBox}>
-                  <h3
-                    style={{
-                      fontSize: "15px",
-                      fontWeight: "700",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    Sentiment Distribution
-                  </h3>
-
-                  <div
-                    style={{
-                      height: "12px",
-                      backgroundColor: "#e2e8f0",
-                      borderRadius: "6px",
-                      display: "flex",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "78%",
-                        backgroundColor: "#22c55e",
-                      }}
-                      title="78% Positive"
-                    />
-
-                    <div
-                      style={{
-                        width: "14%",
-                        backgroundColor: "#f59e0b",
-                      }}
-                      title="14% Neutral"
-                    />
-
-                    <div
-                      style={{
-                        width: "8%",
-                        backgroundColor: "#ef4444",
-                      }}
-                      title="8% Negative"
-                    />
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "16px",
-                    marginTop: "16px",
-                  }}
-                >
-                  <div style={styles.cardBox}>
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#16a34a",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      💚 Top Positive Drivers
-                    </h3>
-
-                    <ul
-                      style={{
-                        margin: 0,
-                        paddingLeft: "18px",
-                        fontSize: "13px",
-                        color: "#475569",
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      <li>
-                        Battery Performance & Fast Charging
-                      </li>
-                      <li>Smooth UI & Clean Design</li>
-                      <li>Fast Support Response Time</li>
-                    </ul>
-                  </div>
-
-                  <div style={styles.cardBox}>
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#dc2626",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      💔 Top Customer Pain Points
-                    </h3>
-
-                    <ul
-                      style={{
-                        margin: 0,
-                        paddingLeft: "18px",
-                        fontSize: "13px",
-                        color: "#475569",
-                        lineHeight: "1.8",
-                      }}
-                    >
-                      <li>Bluetooth Connection Drops</li>
-                      <li>
-                        Accurate Step Tracking Calibration
-                      </li>
-                      <li>
-                        Shipping Delay in Rural Areas
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* REVIEWS TAB */}
-            {activeTab === "Reviews" && (
-              <div>
-                <div style={styles.sectionHeader}>
-                  <div>
-                    <h2 style={styles.heading}>
-                      Customer Reviews
-                    </h2>
-
-                    <span style={styles.subHeading}>
-                      Recent review entries from connected
-                      platforms
-                    </span>
-                  </div>
-                </div>
-
-                <div style={styles.tableCard}>
-                  <table style={styles.table}>
-                    <thead>
-                      <tr style={styles.tableHeader}>
-                        <th style={styles.th}>Customer</th>
-                        <th style={styles.th}>Product</th>
-                        <th style={styles.th}>Rating</th>
-                        <th style={styles.th}>Sentiment</th>
-                        <th style={styles.th}>
-                          Feedback Comment
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {reviewsList.map((r) => (
-                        <tr
-                          key={r.id}
-                          style={styles.tableRow}
-                        >
-                          <td
-                            style={{
-                              ...styles.td,
-                              fontWeight: "700",
-                            }}
-                          >
-                            {r.user}
-                          </td>
-
-                          <td style={styles.td}>
-                            {r.product}
-                          </td>
-
-                          <td style={styles.td}>
-                            {r.rating}
-                          </td>
-
-                          <td style={styles.td}>
-                            <span
-                              style={
-                                r.sentiment === "Positive"
-                                  ? styles.activeTag
-                                  : r.sentiment ===
-                                    "Negative"
-                                  ? styles.critBadge
-                                  : styles.highBadge
-                              }
-                            >
-                              {r.sentiment}
-                            </span>
-                          </td>
-
-                          <td style={styles.td}>
-                            {r.comment}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </main>
-        </div>
-      )}
-
-      {/* ADD PRODUCT MODAL */}
-      {isAddProductOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard}>
-            <h3
-              style={{
-                margin: "0 0 15px 0",
-                fontSize: "18px",
-                fontWeight: "700",
-              }}
-            >
-              Add New Product
-            </h3>
-
-            <form
-              onSubmit={handleAddProduct}
-              style={styles.formStack}
-            >
-              <div>
-                <label style={styles.label}>
-                  Product Name
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. Acme Headphones"
-                  value={newProdName}
-                  onChange={(e) =>
-                    setNewProdName(e.target.value)
-                  }
-                  style={styles.input}
-                  required
-                />
-              </div>
-
-              <div>
-                <label style={styles.label}>
-                  Category
-                </label>
-
-                <select
-                  value={newProdCategory}
-                  onChange={(e) =>
-                    setNewProdCategory(e.target.value)
-                  }
-                  style={styles.input}
-                >
-                  <option value="Electronics">
-                    Electronics
-                  </option>
-
-                  <option value="Audio">Audio</option>
-
-                  <option value="Software">
-                    Software
-                  </option>
-                </select>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}
-              >
-                <button
-                  type="submit"
-                  style={{
-                    ...styles.primaryBtn,
-                    flex: 1,
-                  }}
-                >
-                  Save Product
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setIsAddProductOpen(false)
-                  }
-                  style={{
-                    ...styles.secondaryBtn,
-                    flex: 1,
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* EDIT PRODUCT MODAL */}
-      {isEditProductOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalCard}>
-            <h3
-              style={{
-                margin: "0 0 15px 0",
-                fontSize: "18px",
-                fontWeight: "700",
-              }}
-            >
-              Edit Product
-            </h3>
-
-            <form
-              onSubmit={handleSaveEditProduct}
-              style={styles.formStack}
-            >
-              <div>
-                <label style={styles.label}>
-                  Product Name
-                </label>
-
-                <input
-                  type="text"
-                  value={editProdName}
-                  onChange={(e) =>
-                    setEditProdName(e.target.value)
-                  }
-                  style={styles.input}
-                  required
-                />
-              </div>
-
-              <div>
-                <label style={styles.label}>
-                  Category
-                </label>
-
-                <select
-                  value={editProdCategory}
-                  onChange={(e) =>
-                    setEditProdCategory(e.target.value)
-                  }
-                  style={styles.input}
-                >
-                  <option value="Electronics">
-                    Electronics
-                  </option>
-
-                  <option value="Audio">Audio</option>
-
-                  <option value="Software">
-                    Software
-                  </option>
-                </select>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}
-              >
-                <button
-                  type="submit"
-                  style={{
-                    ...styles.primaryBtn,
-                    flex: 1,
-                  }}
-                >
-                  Update
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setIsEditProductOpen(false)
-                  }
-                  style={{
-                    ...styles.secondaryBtn,
-                    flex: 1,
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// STYLES
-const styles = {
-  appWrapper: {
-    fontFamily: "Segoe UI, sans-serif",
-    backgroundColor: "#f8fafc",
-    minHeight: "100vh",
-    color: "#0f172a",
-  },
-
-  authWrapper: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f1f5f9",
-    padding: "20px",
-  },
-
-  authCard: {
-    display: "flex",
-    backgroundColor: "#ffffff",
-    borderRadius: "16px",
-    overflow: "hidden",
-    maxWidth: "850px",
-    width: "100%",
-    border: "1px solid #e2e8f0",
-  },
-
-  authLeft: {
-    backgroundColor: "#4f46e5",
-    color: "#ffffff",
-    padding: "40px",
-    width: "45%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-
-  authRight: {
-    padding: "40px",
-    width: "55%",
-    display: "flex",
-    flexDirection: "column",
-    justify: "center",
-  },
-
-  logoBox: {
-    width: "28px",
-    height: "28px",
-    backgroundColor: "#4f46e5",
-    color: "#fff",
-    borderRadius: "6px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: "bold",
-  },
-
-  formStack: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-
-  label: {
-    fontSize: "12px",
-    fontWeight: "600",
-    color: "#475569",
-    marginBottom: "4px",
-    display: "block",
-  },
-
-  input: {
-    width: "100%",
-    padding: "10px 14px",
-    borderRadius: "8px",
-    border: "1px solid #cbd5e1",
-    fontSize: "13px",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-
-  primaryBtn: {
-    backgroundColor: "#4f46e5",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 16px",
-    borderRadius: "8px",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "13px",
-  },
-
-  primaryBtnWidth: {
-    backgroundColor: "#4f46e5",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 18px",
-    borderRadius: "8px",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "13px",
-  },
-
-  secondaryBtn: {
-    backgroundColor: "#f1f5f9",
-    color: "#334155",
-    border: "1px solid #cbd5e1",
-    padding: "6px 12px",
-    borderRadius: "6px",
-    fontSize: "12px",
-    fontWeight: "600",
-    cursor: "pointer",
-    textAlign: "center",
-  },
-
-  deleteIconBtn: {
-    backgroundColor: "#fee2e2",
-    color: "#dc2626",
-    border: "none",
-    padding: "6px 12px",
-    borderRadius: "6px",
-    fontSize: "12px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-
-  navbar: {
-    backgroundColor: "#ffffff",
-    borderBottom: "1px solid #e2e8f0",
-    padding: "12px 24px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  navTab: {
-    border: "none",
-    padding: "6px 12px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-
-  roleBadge: {
-    backgroundColor: "#e0e7ff",
-    color: "#3730a3",
-    padding: "4px 10px",
-    borderRadius: "12px",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-
-  logoutBtn: {
-    backgroundColor: "transparent",
-    border: "1px solid #cbd5e1",
-    padding: "4px 10px",
-    borderRadius: "6px",
-    fontSize: "12px",
-    cursor: "pointer",
-  },
-
-  mainContainer: {
-    maxWidth: "1100px",
-    margin: "24px auto",
-    padding: "0 20px",
-  },
-
-  heading: {
-    fontSize: "20px",
-    fontWeight: "700",
-    margin: "0 0 4px 0",
-  },
-
-  subHeading: {
-    fontSize: "12px",
-    color: "#64748b",
-  },
-
-  sectionHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px",
-  },
-
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "16px",
-    marginBottom: "24px",
-  },
-
-  statCard: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    padding: "16px",
-    borderRadius: "12px",
-  },
-
-  statLabel: {
-    fontSize: "12px",
-    color: "#94a3b8",
-    fontWeight: "600",
-  },
-
-  statVal: {
-    fontSize: "24px",
-    fontWeight: "700",
-    marginTop: "4px",
-  },
-
-  gridContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "16px",
-  },
-
-  productCard: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    padding: "16px",
-    borderRadius: "12px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-
-  cardBox: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    padding: "20px",
-    borderRadius: "12px",
-  },
-
-  tableCard: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "12px",
-    overflow: "hidden",
-  },
-
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    fontSize: "12px",
-  },
-
-  tableHeader: {
-    backgroundColor: "#f8fafc",
-    borderBottom: "1px solid #e2e8f0",
-  },
-
-  th: {
-    padding: "12px",
-    textAlign: "left",
-    color: "#64748b",
-    fontWeight: "600",
-  },
-
-  tableRow: {
-    borderBottom: "1px solid #f1f5f9",
-  },
-
-  td: {
-    padding: "12px",
-    color: "#334155",
-  },
-
-  activeTag: {
-    backgroundColor: "#dcfce7",
-    color: "#15803d",
-    fontSize: "10px",
-    fontWeight: "700",
-    padding: "2px 6px",
-    borderRadius: "4px",
-  },
-
-  critBadge: {
-    backgroundColor: "#fee2e2",
-    color: "#dc2626",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    fontSize: "10px",
-    fontWeight: "700",
-  },
-
-  highBadge: {
-    backgroundColor: "#fef3c7",
-    color: "#d97706",
-    padding: "2px 6px",
-    borderRadius: "4px",
-    fontSize: "10px",
-    fontWeight: "700",
-  },
-
-  toast: {
-    position: "fixed",
-    top: "20px",
-    right: "20px",
-    backgroundColor: "#0f172a",
-    color: "#ffffff",
-    padding: "10px 16px",
-    borderRadius: "8px",
-    fontSize: "13px",
-    zIndex: 1000,
-  },
-
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 100,
-  },
-
-  modalCard: {
-    backgroundColor: "#ffffff",
-    padding: "24px",
-    borderRadius: "12px",
-    width: "340px",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-  },
-};
+// import React, { useState } from "react";
+
+// export default function App() {
+//   // Navigation & Role States
+//   const [currentPage, setCurrentPage] = useState("dashboard");
+//   const [selectedRole] = useState("Brand Manager");
+//   const [activeTab, setActiveTab] = useState("Sentiment Insights");
+
+//   // Auth Form States
+//   const [email, setEmail] = useState("manager@gmail.com");
+//   const [password, setPassword] = useState("12345678");
+
+//   // Toast State
+//   const [toastMessage, setToastMessage] = useState("");
+
+//   // ADD Product Modal States
+//   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+//   const [newProdName, setNewProdName] = useState("");
+//   const [newProdCategory, setNewProdCategory] = useState("Electronics");
+
+//   // EDIT Product Modal States
+//   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+//   const [editingProductId, setEditingProductId] = useState(null);
+//   const [editProdName, setEditProdName] = useState("");
+//   const [editProdCategory, setEditProdCategory] = useState("Electronics");
+
+//   // Data States
+//   const [products, setProducts] = useState([
+//     {
+//       id: 1,
+//       name: "Acme Smart Watch",
+//       category: "Electronics",
+//       status: "Active",
+//       totalReviews: 324,
+//       positiveRate: "82%",
+//       rating: 4.3,
+//     },
+//     {
+//       id: 2,
+//       name: "Acme Wireless Earbuds",
+//       category: "Audio",
+//       status: "Active",
+//       totalReviews: 120,
+//       positiveRate: "78%",
+//       rating: 4.1,
+//     },
+//     {
+//       id: 3,
+//       name: "SaaS Platform Pro",
+//       category: "Software",
+//       status: "Active",
+//       totalReviews: 45,
+//       positiveRate: "90%",
+//       rating: 4.7,
+//     },
+//   ]);
+
+//   const [reviewsList] = useState([
+//     {
+//       id: 101,
+//       user: "Alex Mercer",
+//       product: "Acme Smart Watch",
+//       rating: "5/5",
+//       sentiment: "Positive",
+//       comment:
+//         "The battery life is amazing! Lasted almost 3 days on a single charge.",
+//     },
+//     {
+//       id: 102,
+//       user: "Samantha Paul",
+//       product: "Acme Wireless Earbuds",
+//       rating: "2/5",
+//       sentiment: "Negative",
+//       comment:
+//         "The Bluetooth connectivity keeps dropping during calls.",
+//     },
+//     {
+//       id: 103,
+//       user: "David Miller",
+//       product: "SaaS Platform Pro",
+//       rating: "4/5",
+//       sentiment: "Positive",
+//       comment:
+//         "Great UI interface, made our team workflow 2x faster.",
+//     },
+//     {
+//       id: 104,
+//       user: "Elena Rostova",
+//       product: "Acme Smart Watch",
+//       rating: "3/5",
+//       sentiment: "Neutral",
+//       comment:
+//         "Good design but step counter isn't very accurate.",
+//     },
+//   ]);
+
+//   // Toast Helper
+//   const showToast = (msg) => {
+//     setToastMessage(msg);
+//     setTimeout(() => setToastMessage(""), 3000);
+//   };
+
+//   // Handlers
+//   const handleLogin = (e) => {
+//     e.preventDefault();
+//     setCurrentPage("dashboard");
+//     setActiveTab("Tracked Products");
+//     showToast(`Logged in successfully!`);
+//   };
+
+//   const handleAddProduct = (e) => {
+//     e.preventDefault();
+
+//     if (!newProdName.trim()) return;
+
+//     const newProd = {
+//       id: Date.now(),
+//       name: newProdName,
+//       category: newProdCategory,
+//       status: "Active",
+//       totalReviews: 0,
+//       positiveRate: "100%",
+//       rating: 5.0,
+//     };
+
+//     setProducts([...products, newProd]);
+//     setNewProdName("");
+//     setNewProdCategory("Electronics");
+//     setIsAddProductOpen(false);
+
+//     showToast(`Product "${newProdName}" added successfully!`);
+//   };
+
+//   const handleOpenEditModal = (product) => {
+//     setEditingProductId(product.id);
+//     setEditProdName(product.name);
+//     setEditProdCategory(product.category);
+//     setIsEditProductOpen(true);
+//   };
+
+//   const handleSaveEditProduct = (e) => {
+//     e.preventDefault();
+
+//     setProducts(
+//       products.map((p) =>
+//         p.id === editingProductId
+//           ? {
+//               ...p,
+//               name: editProdName,
+//               category: editProdCategory,
+//             }
+//           : p
+//       )
+//     );
+
+//     setIsEditProductOpen(false);
+//     showToast("Product updated successfully!");
+//   };
+
+//   const handleDeleteProduct = (id) => {
+//     setProducts(products.filter((p) => p.id !== id));
+//     showToast("Product deleted!");
+//   };
+
+//   return (
+//     <div style={styles.appWrapper}>
+//       {/* Toast Alert */}
+//       {toastMessage && (
+//         <div style={styles.toast}>{toastMessage}</div>
+//       )}
+
+//       {/* LOGIN PAGE */}
+//       {currentPage === "login" && (
+//         <div style={styles.authWrapper}>
+//           <div style={styles.authCard}>
+//             <div style={styles.authLeft}>
+//               <div>
+//                 <div
+//                   style={{
+//                     display: "flex",
+//                     alignItems: "center",
+//                     gap: "10px",
+//                     marginBottom: "30px",
+//                   }}
+//                 >
+//                   <div style={styles.logoBox}>R</div>
+
+//                   <span
+//                     style={{
+//                       fontSize: "20px",
+//                       fontWeight: "700",
+//                     }}
+//                   >
+//                     ReviewRave
+//                   </span>
+//                 </div>
+
+//                 <h2
+//                   style={{
+//                     fontSize: "22px",
+//                     fontWeight: "700",
+//                     marginBottom: "20px",
+//                   }}
+//                 >
+//                   Turn customer feedback into action
+//                 </h2>
+//               </div>
+
+//               <span
+//                 style={{
+//                   fontSize: "11px",
+//                   color: "#a5b4fc",
+//                 }}
+//               >
+//                 © 2026 ReviewRave.
+//               </span>
+//             </div>
+
+//             <div style={styles.authRight}>
+//               <h3
+//                 style={{
+//                   fontSize: "20px",
+//                   fontWeight: "700",
+//                   margin: "0 0 4px 0",
+//                 }}
+//               >
+//                 Login to ReviewRave
+//               </h3>
+
+//               <form
+//                 onSubmit={handleLogin}
+//                 style={styles.formStack}
+//               >
+//                 <div>
+//                   <label style={styles.label}>
+//                     Email Address
+//                   </label>
+
+//                   <input
+//                     type="email"
+//                     value={email}
+//                     onChange={(e) =>
+//                       setEmail(e.target.value)
+//                     }
+//                     style={styles.input}
+//                     required
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <label style={styles.label}>
+//                     Password
+//                   </label>
+
+//                   <input
+//                     type="password"
+//                     value={password}
+//                     onChange={(e) =>
+//                       setPassword(e.target.value)
+//                     }
+//                     style={styles.input}
+//                     required
+//                   />
+//                 </div>
+
+//                 <button
+//                   type="submit"
+//                   style={styles.primaryBtn}
+//                 >
+//                   Login to Dashboard
+//                 </button>
+//               </form>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* DASHBOARD */}
+//       {currentPage === "dashboard" && (
+//         <div style={{ minHeight: "100vh" }}>
+//           {/* Header */}
+//           <header style={styles.navbar}>
+//             <div
+//               style={{
+//                 display: "flex",
+//                 alignItems: "center",
+//                 gap: "30px",
+//               }}
+//             >
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   alignItems: "center",
+//                   gap: "8px",
+//                 }}
+//               >
+//                 <div style={styles.logoBox}>R</div>
+
+//                 <span
+//                   style={{
+//                     fontWeight: "700",
+//                     fontSize: "16px",
+//                   }}
+//                 >
+//                   ReviewRave
+//                 </span>
+//               </div>
+
+//               {/* Navigation Tabs */}
+//               <nav
+//                 style={{
+//                   display: "flex",
+//                   gap: "4px",
+//                 }}
+//               >
+//                 {[
+//                   "Tracked Products",
+//                   "Sentiment Insights",
+//                   "Reviews",
+//                 ].map((tab) => (
+//                   <button
+//                     key={tab}
+//                     onClick={() => setActiveTab(tab)}
+//                     style={{
+//                       ...styles.navTab,
+//                       backgroundColor:
+//                         activeTab === tab
+//                           ? "#e0e7ff"
+//                           : "transparent",
+//                       color:
+//                         activeTab === tab
+//                           ? "#4338ca"
+//                           : "#475569",
+//                     }}
+//                   >
+//                     {tab}
+//                   </button>
+//                 ))}
+//               </nav>
+//             </div>
+
+//             <div
+//               style={{
+//                 display: "flex",
+//                 alignItems: "center",
+//                 gap: "10px",
+//               }}
+//             >
+//               <span style={styles.roleBadge}>
+//                 {selectedRole}
+//               </span>
+
+//               <button
+//                 onClick={() => setCurrentPage("login")}
+//                 style={styles.logoutBtn}
+//               >
+//                 Logout
+//               </button>
+//             </div>
+//           </header>
+
+//           {/* Main Body */}
+//           <main style={styles.mainContainer}>
+//             {/* TRACKED PRODUCTS TAB */}
+//             {activeTab === "Tracked Products" && (
+//               <div>
+//                 <div style={styles.sectionHeader}>
+//                   <div>
+//                     <h2 style={styles.heading}>
+//                       Tracked Products
+//                     </h2>
+
+//                     <span style={styles.subHeading}>
+//                       Monitor customer feedback and sentiment
+//                     </span>
+//                   </div>
+
+//                   <button
+//                     onClick={() =>
+//                       setIsAddProductOpen(true)
+//                     }
+//                     style={styles.primaryBtnWidth}
+//                   >
+//                     + Add Product
+//                   </button>
+//                 </div>
+
+//                 <div style={styles.statsGrid}>
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Tracked Products
+//                     </span>
+
+//                     <div style={styles.statVal}>
+//                       {products.length}
+//                     </div>
+//                   </div>
+
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Total Reviews
+//                     </span>
+
+//                     <div style={styles.statVal}>
+//                       1,240
+//                     </div>
+//                   </div>
+
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Positive Sentiment
+//                     </span>
+
+//                     <div
+//                       style={{
+//                         ...styles.statVal,
+//                         color: "#16a34a",
+//                       }}
+//                     >
+//                       78%
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div style={styles.gridContainer}>
+//                   {products.map((p) => (
+//                     <div
+//                       key={p.id}
+//                       style={styles.productCard}
+//                     >
+//                       <div>
+//                         <div
+//                           style={{
+//                             display: "flex",
+//                             justifyContent:
+//                               "space-between",
+//                             alignItems: "center",
+//                           }}
+//                         >
+//                           <h4
+//                             style={{
+//                               margin: 0,
+//                               fontWeight: "700",
+//                               fontSize: "15px",
+//                             }}
+//                           >
+//                             {p.name}
+//                           </h4>
+
+//                           <span style={styles.activeTag}>
+//                             {p.status}
+//                           </span>
+//                         </div>
+
+//                         <span
+//                           style={{
+//                             fontSize: "12px",
+//                             color: "#94a3b8",
+//                           }}
+//                         >
+//                           {p.category}
+//                         </span>
+//                       </div>
+
+//                       <div
+//                         style={{
+//                           display: "flex",
+//                           gap: "6px",
+//                           marginTop: "15px",
+//                         }}
+//                       >
+//                         <button
+//                           onClick={() =>
+//                             handleOpenEditModal(p)
+//                           }
+//                           style={styles.secondaryBtn}
+//                         >
+//                           Edit
+//                         </button>
+
+//                         <button
+//                           onClick={() =>
+//                             handleDeleteProduct(p.id)
+//                           }
+//                           style={styles.deleteIconBtn}
+//                         >
+//                           🗑️
+//                         </button>
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+
+//             {/* SENTIMENT INSIGHTS TAB */}
+//             {activeTab === "Sentiment Insights" && (
+//               <div>
+//                 <div style={styles.sectionHeader}>
+//                   <div>
+//                     <h2 style={styles.heading}>
+//                       Sentiment Insights
+//                     </h2>
+
+//                     <span style={styles.subHeading}>
+//                       AI-driven sentiment breakdown of feedback
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 <div style={styles.statsGrid}>
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Positive Feedback
+//                     </span>
+
+//                     <div
+//                       style={{
+//                         ...styles.statVal,
+//                         color: "#16a34a",
+//                       }}
+//                     >
+//                       78%
+//                     </div>
+//                   </div>
+
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Neutral Feedback
+//                     </span>
+
+//                     <div
+//                       style={{
+//                         ...styles.statVal,
+//                         color: "#d97706",
+//                       }}
+//                     >
+//                       14%
+//                     </div>
+//                   </div>
+
+//                   <div style={styles.statCard}>
+//                     <span style={styles.statLabel}>
+//                       Negative Feedback
+//                     </span>
+
+//                     <div
+//                       style={{
+//                         ...styles.statVal,
+//                         color: "#dc2626",
+//                       }}
+//                     >
+//                       8%
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div style={styles.cardBox}>
+//                   <h3
+//                     style={{
+//                       fontSize: "15px",
+//                       fontWeight: "700",
+//                       marginBottom: "15px",
+//                     }}
+//                   >
+//                     Sentiment Distribution
+//                   </h3>
+
+//                   <div
+//                     style={{
+//                       height: "12px",
+//                       backgroundColor: "#e2e8f0",
+//                       borderRadius: "6px",
+//                       display: "flex",
+//                       overflow: "hidden",
+//                     }}
+//                   >
+//                     <div
+//                       style={{
+//                         width: "78%",
+//                         backgroundColor: "#22c55e",
+//                       }}
+//                       title="78% Positive"
+//                     />
+
+//                     <div
+//                       style={{
+//                         width: "14%",
+//                         backgroundColor: "#f59e0b",
+//                       }}
+//                       title="14% Neutral"
+//                     />
+
+//                     <div
+//                       style={{
+//                         width: "8%",
+//                         backgroundColor: "#ef4444",
+//                       }}
+//                       title="8% Negative"
+//                     />
+//                   </div>
+//                 </div>
+
+//                 <div
+//                   style={{
+//                     display: "grid",
+//                     gridTemplateColumns: "1fr 1fr",
+//                     gap: "16px",
+//                     marginTop: "16px",
+//                   }}
+//                 >
+//                   <div style={styles.cardBox}>
+//                     <h3
+//                       style={{
+//                         fontSize: "14px",
+//                         fontWeight: "700",
+//                         color: "#16a34a",
+//                         marginBottom: "10px",
+//                       }}
+//                     >
+//                       💚 Top Positive Drivers
+//                     </h3>
+
+//                     <ul
+//                       style={{
+//                         margin: 0,
+//                         paddingLeft: "18px",
+//                         fontSize: "13px",
+//                         color: "#475569",
+//                         lineHeight: "1.8",
+//                       }}
+//                     >
+//                       <li>
+//                         Battery Performance & Fast Charging
+//                       </li>
+//                       <li>Smooth UI & Clean Design</li>
+//                       <li>Fast Support Response Time</li>
+//                     </ul>
+//                   </div>
+
+//                   <div style={styles.cardBox}>
+//                     <h3
+//                       style={{
+//                         fontSize: "14px",
+//                         fontWeight: "700",
+//                         color: "#dc2626",
+//                         marginBottom: "10px",
+//                       }}
+//                     >
+//                       💔 Top Customer Pain Points
+//                     </h3>
+
+//                     <ul
+//                       style={{
+//                         margin: 0,
+//                         paddingLeft: "18px",
+//                         fontSize: "13px",
+//                         color: "#475569",
+//                         lineHeight: "1.8",
+//                       }}
+//                     >
+//                       <li>Bluetooth Connection Drops</li>
+//                       <li>
+//                         Accurate Step Tracking Calibration
+//                       </li>
+//                       <li>
+//                         Shipping Delay in Rural Areas
+//                       </li>
+//                     </ul>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+
+//             {/* REVIEWS TAB */}
+//             {activeTab === "Reviews" && (
+//               <div>
+//                 <div style={styles.sectionHeader}>
+//                   <div>
+//                     <h2 style={styles.heading}>
+//                       Customer Reviews
+//                     </h2>
+
+//                     <span style={styles.subHeading}>
+//                       Recent review entries from connected
+//                       platforms
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 <div style={styles.tableCard}>
+//                   <table style={styles.table}>
+//                     <thead>
+//                       <tr style={styles.tableHeader}>
+//                         <th style={styles.th}>Customer</th>
+//                         <th style={styles.th}>Product</th>
+//                         <th style={styles.th}>Rating</th>
+//                         <th style={styles.th}>Sentiment</th>
+//                         <th style={styles.th}>
+//                           Feedback Comment
+//                         </th>
+//                       </tr>
+//                     </thead>
+
+//                     <tbody>
+//                       {reviewsList.map((r) => (
+//                         <tr
+//                           key={r.id}
+//                           style={styles.tableRow}
+//                         >
+//                           <td
+//                             style={{
+//                               ...styles.td,
+//                               fontWeight: "700",
+//                             }}
+//                           >
+//                             {r.user}
+//                           </td>
+
+//                           <td style={styles.td}>
+//                             {r.product}
+//                           </td>
+
+//                           <td style={styles.td}>
+//                             {r.rating}
+//                           </td>
+
+//                           <td style={styles.td}>
+//                             <span
+//                               style={
+//                                 r.sentiment === "Positive"
+//                                   ? styles.activeTag
+//                                   : r.sentiment ===
+//                                     "Negative"
+//                                   ? styles.critBadge
+//                                   : styles.highBadge
+//                               }
+//                             >
+//                               {r.sentiment}
+//                             </span>
+//                           </td>
+
+//                           <td style={styles.td}>
+//                             {r.comment}
+//                           </td>
+//                         </tr>
+//                       ))}
+//                     </tbody>
+//                   </table>
+//                 </div>
+//               </div>
+//             )}
+//           </main>
+//         </div>
+//       )}
+
+//       {/* ADD PRODUCT MODAL */}
+//       {isAddProductOpen && (
+//         <div style={styles.modalOverlay}>
+//           <div style={styles.modalCard}>
+//             <h3
+//               style={{
+//                 margin: "0 0 15px 0",
+//                 fontSize: "18px",
+//                 fontWeight: "700",
+//               }}
+//             >
+//               Add New Product
+//             </h3>
+
+//             <form
+//               onSubmit={handleAddProduct}
+//               style={styles.formStack}
+//             >
+//               <div>
+//                 <label style={styles.label}>
+//                   Product Name
+//                 </label>
+
+//                 <input
+//                   type="text"
+//                   placeholder="e.g. Acme Headphones"
+//                   value={newProdName}
+//                   onChange={(e) =>
+//                     setNewProdName(e.target.value)
+//                   }
+//                   style={styles.input}
+//                   required
+//                 />
+//               </div>
+
+//               <div>
+//                 <label style={styles.label}>
+//                   Category
+//                 </label>
+
+//                 <select
+//                   value={newProdCategory}
+//                   onChange={(e) =>
+//                     setNewProdCategory(e.target.value)
+//                   }
+//                   style={styles.input}
+//                 >
+//                   <option value="Electronics">
+//                     Electronics
+//                   </option>
+
+//                   <option value="Audio">Audio</option>
+
+//                   <option value="Software">
+//                     Software
+//                   </option>
+//                 </select>
+//               </div>
+
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   gap: "10px",
+//                   marginTop: "10px",
+//                 }}
+//               >
+//                 <button
+//                   type="submit"
+//                   style={{
+//                     ...styles.primaryBtn,
+//                     flex: 1,
+//                   }}
+//                 >
+//                   Save Product
+//                 </button>
+
+//                 <button
+//                   type="button"
+//                   onClick={() =>
+//                     setIsAddProductOpen(false)
+//                   }
+//                   style={{
+//                     ...styles.secondaryBtn,
+//                     flex: 1,
+//                   }}
+//                 >
+//                   Cancel
+//                 </button>
+//               </div>
+//             </form>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* EDIT PRODUCT MODAL */}
+//       {isEditProductOpen && (
+//         <div style={styles.modalOverlay}>
+//           <div style={styles.modalCard}>
+//             <h3
+//               style={{
+//                 margin: "0 0 15px 0",
+//                 fontSize: "18px",
+//                 fontWeight: "700",
+//               }}
+//             >
+//               Edit Product
+//             </h3>
+
+//             <form
+//               onSubmit={handleSaveEditProduct}
+//               style={styles.formStack}
+//             >
+//               <div>
+//                 <label style={styles.label}>
+//                   Product Name
+//                 </label>
+
+//                 <input
+//                   type="text"
+//                   value={editProdName}
+//                   onChange={(e) =>
+//                     setEditProdName(e.target.value)
+//                   }
+//                   style={styles.input}
+//                   required
+//                 />
+//               </div>
+
+//               <div>
+//                 <label style={styles.label}>
+//                   Category
+//                 </label>
+
+//                 <select
+//                   value={editProdCategory}
+//                   onChange={(e) =>
+//                     setEditProdCategory(e.target.value)
+//                   }
+//                   style={styles.input}
+//                 >
+//                   <option value="Electronics">
+//                     Electronics
+//                   </option>
+
+//                   <option value="Audio">Audio</option>
+
+//                   <option value="Software">
+//                     Software
+//                   </option>
+//                 </select>
+//               </div>
+
+//               <div
+//                 style={{
+//                   display: "flex",
+//                   gap: "10px",
+//                   marginTop: "10px",
+//                 }}
+//               >
+//                 <button
+//                   type="submit"
+//                   style={{
+//                     ...styles.primaryBtn,
+//                     flex: 1,
+//                   }}
+//                 >
+//                   Update
+//                 </button>
+
+//                 <button
+//                   type="button"
+//                   onClick={() =>
+//                     setIsEditProductOpen(false)
+//                   }
+//                   style={{
+//                     ...styles.secondaryBtn,
+//                     flex: 1,
+//                   }}
+//                 >
+//                   Cancel
+//                 </button>
+//               </div>
+//             </form>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// // STYLES
+// const styles = {
+//   appWrapper: {
+//     fontFamily: "Segoe UI, sans-serif",
+//     backgroundColor: "#f8fafc",
+//     minHeight: "100vh",
+//     color: "#0f172a",
+//   },
+
+//   authWrapper: {
+//     minHeight: "100vh",
+//     display: "flex",
+//     justifyContent: "center",
+//     alignItems: "center",
+//     backgroundColor: "#f1f5f9",
+//     padding: "20px",
+//   },
+
+//   authCard: {
+//     display: "flex",
+//     backgroundColor: "#ffffff",
+//     borderRadius: "16px",
+//     overflow: "hidden",
+//     maxWidth: "850px",
+//     width: "100%",
+//     border: "1px solid #e2e8f0",
+//   },
+
+//   authLeft: {
+//     backgroundColor: "#4f46e5",
+//     color: "#ffffff",
+//     padding: "40px",
+//     width: "45%",
+//     display: "flex",
+//     flexDirection: "column",
+//     justifyContent: "space-between",
+//   },
+
+//   authRight: {
+//     padding: "40px",
+//     width: "55%",
+//     display: "flex",
+//     flexDirection: "column",
+//     justify: "center",
+//   },
+
+//   logoBox: {
+//     width: "28px",
+//     height: "28px",
+//     backgroundColor: "#4f46e5",
+//     color: "#fff",
+//     borderRadius: "6px",
+//     display: "flex",
+//     alignItems: "center",
+//     justifyContent: "center",
+//     fontWeight: "bold",
+//   },
+
+//   formStack: {
+//     display: "flex",
+//     flexDirection: "column",
+//     gap: "14px",
+//   },
+
+//   label: {
+//     fontSize: "12px",
+//     fontWeight: "600",
+//     color: "#475569",
+//     marginBottom: "4px",
+//     display: "block",
+//   },
+
+//   input: {
+//     width: "100%",
+//     padding: "10px 14px",
+//     borderRadius: "8px",
+//     border: "1px solid #cbd5e1",
+//     fontSize: "13px",
+//     boxSizing: "border-box",
+//     outline: "none",
+//   },
+
+//   primaryBtn: {
+//     backgroundColor: "#4f46e5",
+//     color: "#ffffff",
+//     border: "none",
+//     padding: "10px 16px",
+//     borderRadius: "8px",
+//     fontWeight: "600",
+//     cursor: "pointer",
+//     fontSize: "13px",
+//   },
+
+//   primaryBtnWidth: {
+//     backgroundColor: "#4f46e5",
+//     color: "#ffffff",
+//     border: "none",
+//     padding: "10px 18px",
+//     borderRadius: "8px",
+//     fontWeight: "600",
+//     cursor: "pointer",
+//     fontSize: "13px",
+//   },
+
+//   secondaryBtn: {
+//     backgroundColor: "#f1f5f9",
+//     color: "#334155",
+//     border: "1px solid #cbd5e1",
+//     padding: "6px 12px",
+//     borderRadius: "6px",
+//     fontSize: "12px",
+//     fontWeight: "600",
+//     cursor: "pointer",
+//     textAlign: "center",
+//   },
+
+//   deleteIconBtn: {
+//     backgroundColor: "#fee2e2",
+//     color: "#dc2626",
+//     border: "none",
+//     padding: "6px 12px",
+//     borderRadius: "6px",
+//     fontSize: "12px",
+//     fontWeight: "600",
+//     cursor: "pointer",
+//   },
+
+//   navbar: {
+//     backgroundColor: "#ffffff",
+//     borderBottom: "1px solid #e2e8f0",
+//     padding: "12px 24px",
+//     display: "flex",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//   },
+
+//   navTab: {
+//     border: "none",
+//     padding: "6px 12px",
+//     borderRadius: "6px",
+//     fontSize: "13px",
+//     fontWeight: "600",
+//     cursor: "pointer",
+//   },
+
+//   roleBadge: {
+//     backgroundColor: "#e0e7ff",
+//     color: "#3730a3",
+//     padding: "4px 10px",
+//     borderRadius: "12px",
+//     fontSize: "12px",
+//     fontWeight: "700",
+//   },
+
+//   logoutBtn: {
+//     backgroundColor: "transparent",
+//     border: "1px solid #cbd5e1",
+//     padding: "4px 10px",
+//     borderRadius: "6px",
+//     fontSize: "12px",
+//     cursor: "pointer",
+//   },
+
+//   mainContainer: {
+//     maxWidth: "1100px",
+//     margin: "24px auto",
+//     padding: "0 20px",
+//   },
+
+//   heading: {
+//     fontSize: "20px",
+//     fontWeight: "700",
+//     margin: "0 0 4px 0",
+//   },
+
+//   subHeading: {
+//     fontSize: "12px",
+//     color: "#64748b",
+//   },
+
+//   sectionHeader: {
+//     display: "flex",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     marginBottom: "20px",
+//   },
+
+//   statsGrid: {
+//     display: "grid",
+//     gridTemplateColumns: "repeat(3, 1fr)",
+//     gap: "16px",
+//     marginBottom: "24px",
+//   },
+
+//   statCard: {
+//     backgroundColor: "#ffffff",
+//     border: "1px solid #e2e8f0",
+//     padding: "16px",
+//     borderRadius: "12px",
+//   },
+
+//   statLabel: {
+//     fontSize: "12px",
+//     color: "#94a3b8",
+//     fontWeight: "600",
+//   },
+
+//   statVal: {
+//     fontSize: "24px",
+//     fontWeight: "700",
+//     marginTop: "4px",
+//   },
+
+//   gridContainer: {
+//     display: "grid",
+//     gridTemplateColumns: "repeat(3, 1fr)",
+//     gap: "16px",
+//   },
+
+//   productCard: {
+//     backgroundColor: "#ffffff",
+//     border: "1px solid #e2e8f0",
+//     padding: "16px",
+//     borderRadius: "12px",
+//     display: "flex",
+//     flexDirection: "column",
+//     justifyContent: "space-between",
+//   },
+
+//   cardBox: {
+//     backgroundColor: "#ffffff",
+//     border: "1px solid #e2e8f0",
+//     padding: "20px",
+//     borderRadius: "12px",
+//   },
+
+//   tableCard: {
+//     backgroundColor: "#ffffff",
+//     border: "1px solid #e2e8f0",
+//     borderRadius: "12px",
+//     overflow: "hidden",
+//   },
+
+//   table: {
+//     width: "100%",
+//     borderCollapse: "collapse",
+//     fontSize: "12px",
+//   },
+
+//   tableHeader: {
+//     backgroundColor: "#f8fafc",
+//     borderBottom: "1px solid #e2e8f0",
+//   },
+
+//   th: {
+//     padding: "12px",
+//     textAlign: "left",
+//     color: "#64748b",
+//     fontWeight: "600",
+//   },
+
+//   tableRow: {
+//     borderBottom: "1px solid #f1f5f9",
+//   },
+
+//   td: {
+//     padding: "12px",
+//     color: "#334155",
+//   },
+
+//   activeTag: {
+//     backgroundColor: "#dcfce7",
+//     color: "#15803d",
+//     fontSize: "10px",
+//     fontWeight: "700",
+//     padding: "2px 6px",
+//     borderRadius: "4px",
+//   },
+
+//   critBadge: {
+//     backgroundColor: "#fee2e2",
+//     color: "#dc2626",
+//     padding: "2px 6px",
+//     borderRadius: "4px",
+//     fontSize: "10px",
+//     fontWeight: "700",
+//   },
+
+//   highBadge: {
+//     backgroundColor: "#fef3c7",
+//     color: "#d97706",
+//     padding: "2px 6px",
+//     borderRadius: "4px",
+//     fontSize: "10px",
+//     fontWeight: "700",
+//   },
+
+//   toast: {
+//     position: "fixed",
+//     top: "20px",
+//     right: "20px",
+//     backgroundColor: "#0f172a",
+//     color: "#ffffff",
+//     padding: "10px 16px",
+//     borderRadius: "8px",
+//     fontSize: "13px",
+//     zIndex: 1000,
+//   },
+
+//   modalOverlay: {
+//     position: "fixed",
+//     top: 0,
+//     left: 0,
+//     right: 0,
+//     bottom: 0,
+//     backgroundColor: "rgba(0,0,0,0.4)",
+//     display: "flex",
+//     justifyContent: "center",
+//     alignItems: "center",
+//     zIndex: 100,
+//   },
+
+//   modalCard: {
+//     backgroundColor: "#ffffff",
+//     padding: "24px",
+//     borderRadius: "12px",
+//     width: "340px",
+//     boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+//   },
+// };
