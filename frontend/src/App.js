@@ -2572,12 +2572,10 @@
 import React, { useState } from "react";
 
 export default function App() {
-  // Navigation State: 'login' | 'register' | 'dashboard'
   const [currentPage, setCurrentPage] = useState("login");
   const [activeMenu, setActiveMenu] = useState("Dashboard");
   const [reviewFilter, setReviewFilter] = useState("All");
 
-  // Auth States
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -2585,7 +2583,6 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
   const [selectedRole, setSelectedRole] = useState("Brand Manager");
 
-  // Toast State
   const [toastMessage, setToastMessage] = useState("");
 
   const showToast = (msg) => {
@@ -2593,7 +2590,6 @@ export default function App() {
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  // ---------------- DATA STATES ----------------
   const [products, setProducts] = useState([
     { id: 1, name: "Acme Smart Watch", category: "Electronics", status: "Active" },
     { id: 2, name: "Acme Wireless Earbuds", category: "Audio", status: "Active" },
@@ -2612,7 +2608,6 @@ export default function App() {
     { id: 202, title: "Step counter calibration error", product: "Acme Smart Watch", priority: "Medium", status: "In Progress", assignedTo: "Brand Manager" }
   ]);
 
-  // ---------------- MODAL STATES ----------------
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("Electronics");
@@ -2633,7 +2628,6 @@ export default function App() {
   const [ticProduct, setTicProduct] = useState("Acme Smart Watch");
   const [ticPriority, setTicPriority] = useState("Medium");
 
-  // ---------------- AUTH HANDLERS ----------------
   const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
@@ -2646,7 +2640,6 @@ export default function App() {
     showToast("Account created! Please login.");
   };
 
-  // ---------------- PRODUCT HANDLERS ----------------
   const handleAddProduct = (e) => {
     e.preventDefault();
     if (!newProdName.trim()) return;
@@ -2676,7 +2669,6 @@ export default function App() {
     showToast("Product deleted!");
   };
 
-  // ---------------- REVIEW HANDLERS ----------------
   const handleAddReview = (e) => {
     e.preventDefault();
     if (!revUser.trim() || !revComment.trim()) return;
@@ -2693,7 +2685,6 @@ export default function App() {
     showToast("Review submitted successfully!");
   };
 
-  // ---------------- TICKET HANDLERS ----------------
   const handleAddTicket = (e) => {
     e.preventDefault();
     if (!ticTitle.trim()) return;
@@ -2709,7 +2700,6 @@ export default function App() {
     showToast(`Ticket status changed to ${newStatus}`);
   };
 
-  // ---------------- CALCULATED STATS ----------------
   const posReviews = reviewsList.filter(r => r.sentiment === "Positive").length;
   const neuReviews = reviewsList.filter(r => r.sentiment === "Neutral").length;
   const negReviews = reviewsList.filter(r => r.sentiment === "Negative").length;
@@ -2725,7 +2715,7 @@ export default function App() {
     <div style={styles.appWrapper}>
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* ------------------- 1. REGISTER PAGE ------------------- */}
+      {/* 1. REGISTER PAGE */}
       {currentPage === "register" && (
         <div style={styles.centerAuthBg}>
           <div style={styles.cardBoxModal}>
@@ -2766,7 +2756,7 @@ export default function App() {
                 </select>
               </div>
 
-              <button type="submit" style={styles.blueBtn}>Create Account</button>
+              <button type="submit" style={styles.purpleBtn}>Create Account</button>
             </form>
 
             <div style={styles.authSubText}>
@@ -2777,7 +2767,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ------------------- 2. LOGIN PAGE ------------------- */}
+      {/* 2. LOGIN PAGE */}
       {currentPage === "login" && (
         <div style={styles.centerAuthBg}>
           <div style={styles.cardBoxModal}>
@@ -2793,7 +2783,7 @@ export default function App() {
                 <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
               </div>
 
-              <button type="submit" style={styles.blueBtn}>Login</button>
+              <button type="submit" style={styles.purpleBtn}>Login</button>
             </form>
 
             <div style={styles.authSubText}>
@@ -2804,10 +2794,9 @@ export default function App() {
         </div>
       )}
 
-      {/* ------------------- 3. FULLY WORKING DASHBOARD ------------------- */}
+      {/* 3. DASHBOARD */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardLayout}>
-          {/* Sidebar */}
           <aside style={styles.sidebar}>
             <div>
               <div style={styles.sidebarHeader}>
@@ -2832,9 +2821,9 @@ export default function App() {
                     onClick={() => setActiveMenu(item.name)}
                     style={{
                       ...styles.sideNavItem,
-                      backgroundColor: activeMenu === item.name ? "#2e3757" : "transparent",
+                      backgroundColor: activeMenu === item.name ? "rgba(147, 51, 234, 0.25)" : "transparent",
                       color: activeMenu === item.name ? "#ffffff" : "#94a3b8",
-                      borderLeft: activeMenu === item.name ? "3px solid #6366f1" : "3px solid transparent",
+                      borderLeft: activeMenu === item.name ? "3px solid #a855f7" : "3px solid transparent",
                     }}
                   >
                     <span>{item.icon}</span>
@@ -2846,7 +2835,7 @@ export default function App() {
 
             <div>
               <div style={styles.navSectionLabel}>SYSTEM</div>
-              <button onClick={() => setActiveMenu("Settings")} style={{ ...styles.sideNavItem, backgroundColor: activeMenu === "Settings" ? "#2e3757" : "transparent" }}>
+              <button onClick={() => setActiveMenu("Settings")} style={{ ...styles.sideNavItem, backgroundColor: activeMenu === "Settings" ? "rgba(147, 51, 234, 0.25)" : "transparent" }}>
                 <span>⚙️</span>
                 <span>Settings</span>
               </button>
@@ -2857,7 +2846,6 @@ export default function App() {
             </div>
           </aside>
 
-          {/* Main Workspace */}
           <div style={styles.mainContent}>
             <header style={styles.topbar}>
               <div style={{ fontSize: "13px", color: "#64748b" }}>
@@ -2873,11 +2861,10 @@ export default function App() {
             </header>
 
             <main style={{ padding: "30px" }}>
-              {/* --- DASHBOARD VIEW --- */}
               {activeMenu === "Dashboard" && (
                 <div>
                   <div style={{ marginBottom: "20px" }}>
-                    <span style={{ fontSize: "11px", fontWeight: "700", color: "#4f46e5" }}>OVERVIEW</span>
+                    <span style={{ fontSize: "11px", fontWeight: "700", color: "#9333ea" }}>OVERVIEW</span>
                     <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "4px 0" }}>Good day, {selectedRole}</h2>
                     <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>Workspace operations and stats overview.</p>
                   </div>
@@ -2903,7 +2890,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* --- PRODUCTS VIEW --- */}
               {activeMenu === "Products" && (
                 <div>
                   <div style={styles.sectionHeader}>
@@ -2934,7 +2920,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* --- REVIEWS VIEW --- */}
               {activeMenu === "Reviews" && (
                 <div>
                   <div style={styles.sectionHeader}>
@@ -2945,7 +2930,6 @@ export default function App() {
                     <button onClick={() => setIsAddReviewOpen(true)} style={styles.primaryBtnWidth}>+ Add Review</button>
                   </div>
 
-                  {/* Filter Sub-menu */}
                   <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
                     {["All", "Positive", "Neutral", "Negative"].map((f) => (
                       <button
@@ -2953,7 +2937,7 @@ export default function App() {
                         onClick={() => setReviewFilter(f)}
                         style={{
                           ...styles.secondaryBtn,
-                          backgroundColor: reviewFilter === f ? "#4f46e5" : "#f1f5f9",
+                          backgroundColor: reviewFilter === f ? "#9333ea" : "#f1f5f9",
                           color: reviewFilter === f ? "#ffffff" : "#334155",
                         }}
                       >
@@ -2993,7 +2977,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* --- SENTIMENT INSIGHTS VIEW --- */}
               {activeMenu === "Sentiment Insights" && (
                 <div>
                   <h2 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 16px 0" }}>Sentiment Insights</h2>
@@ -3023,7 +3006,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* --- RESOLUTION TICKETS VIEW --- */}
               {activeMenu === "Resolution Tickets" && (
                 <div>
                   <div style={styles.sectionHeader}>
@@ -3075,7 +3057,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* --- SETTINGS VIEW --- */}
               {activeMenu === "Settings" && (
                 <div style={{ maxWidth: "500px" }}>
                   <h2 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "16px" }}>Workspace Settings</h2>
@@ -3089,7 +3070,7 @@ export default function App() {
                         <label style={styles.label}>Role</label>
                         <input type="text" value={selectedRole} disabled style={{ ...styles.input, backgroundColor: "#f1f5f9" }} />
                       </div>
-                      <button type="submit" style={styles.blueBtn}>Save Settings</button>
+                      <button type="submit" style={styles.purpleBtn}>Save Settings</button>
                     </form>
                   </div>
                 </div>
@@ -3099,7 +3080,7 @@ export default function App() {
         </div>
       )}
 
-      {/* --- ADD PRODUCT MODAL --- */}
+      {/* MODALS */}
       {isAddProductOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -3112,7 +3093,7 @@ export default function App() {
                 <option value="Software">Software</option>
               </select>
               <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Save</button>
+                <button type="submit" style={{ ...styles.purpleBtn, flex: 1 }}>Save</button>
                 <button type="button" onClick={() => setIsAddProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
               </div>
             </form>
@@ -3120,7 +3101,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- EDIT PRODUCT MODAL --- */}
       {isEditProductOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -3133,7 +3113,7 @@ export default function App() {
                 <option value="Software">Software</option>
               </select>
               <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Update</button>
+                <button type="submit" style={{ ...styles.purpleBtn, flex: 1 }}>Update</button>
                 <button type="button" onClick={() => setIsEditProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
               </div>
             </form>
@@ -3141,7 +3121,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- ADD REVIEW MODAL --- */}
       {isAddReviewOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -3160,7 +3139,7 @@ export default function App() {
               </select>
               <textarea placeholder="Write review..." value={revComment} onChange={(e) => setRevComment(e.target.value)} style={{ ...styles.input, height: "60px" }} required />
               <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Submit</button>
+                <button type="submit" style={{ ...styles.purpleBtn, flex: 1 }}>Submit</button>
                 <button type="button" onClick={() => setIsAddReviewOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
               </div>
             </form>
@@ -3168,7 +3147,6 @@ export default function App() {
         </div>
       )}
 
-      {/* --- ADD TICKET MODAL --- */}
       {isAddTicketOpen && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -3184,7 +3162,7 @@ export default function App() {
                 <option value="High">High Priority</option>
               </select>
               <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Create</button>
+                <button type="submit" style={{ ...styles.purpleBtn, flex: 1 }}>Create</button>
                 <button type="button" onClick={() => setIsAddTicketOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
               </div>
             </form>
@@ -3195,68 +3173,80 @@ export default function App() {
   );
 }
 
-// STYLES
+// ATTRACTIVE VIBRANT PURPLE STYLES
 const styles = {
-  appWrapper: { fontFamily: "Segoe UI, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
+  appWrapper: { fontFamily: "'Segoe UI', Roboto, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
   
-  // ENHANCED ATTRACTIVE GRADIENT BACKGROUND
   centerAuthBg: { 
     minHeight: "100vh", 
-    background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%)", 
+    background: "linear-gradient(135deg, #1e0b36 0%, #3b0764 45%, #581c87 80%, #6b21a8 100%)", 
     display: "flex", 
     justifyContent: "center", 
     alignItems: "center", 
     padding: "20px" 
   },
   
-  // WHITE CARD WITH Modern SHADOW
   cardBoxModal: { 
     backgroundColor: "#ffffff", 
-    padding: "32px 30px", 
-    borderRadius: "14px", 
+    padding: "36px 32px", 
+    borderRadius: "16px", 
     width: "100%", 
     maxWidth: "400px", 
-    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.35)",
+    boxShadow: "0 25px 50px -12px rgba(88, 28, 135, 0.45)",
     boxSizing: "border-box" 
   },
   
-  cardTitle: { fontSize: "20px", fontWeight: "700", textAlign: "center", color: "#1e293b", margin: "0 0 20px 0" },
+  cardTitle: { fontSize: "22px", fontWeight: "700", textAlign: "center", color: "#2e1065", margin: "0 0 22px 0" },
   formStack: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
-  input: { width: "100%", padding: "9px 12px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "13px", boxSizing: "border-box", outline: "none", backgroundColor: "#ffffff" },
-  blueBtn: { backgroundColor: "#4f87cb", color: "#ffffff", border: "none", padding: "10px", borderRadius: "6px", fontWeight: "600", fontSize: "13px", cursor: "pointer", width: "100%" },
+  input: { width: "100%", padding: "10px 12px", borderRadius: "8px", border: "1px solid #d8b4fe", fontSize: "13px", boxSizing: "border-box", outline: "none", backgroundColor: "#ffffff" },
+  
+  purpleBtn: { 
+    background: "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)", 
+    color: "#ffffff", 
+    border: "none", 
+    padding: "11px", 
+    borderRadius: "8px", 
+    fontWeight: "600", 
+    fontSize: "13px", 
+    cursor: "pointer", 
+    width: "100%",
+    boxShadow: "0 4px 12px rgba(147, 51, 234, 0.3)"
+  },
+  
   authSubText: { fontSize: "12px", color: "#64748b", textAlign: "center", marginTop: "18px" },
-  linkBtn: { background: "none", border: "none", color: "#4f87cb", fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12px" },
+  linkBtn: { background: "none", border: "none", color: "#9333ea", fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12px" },
   
   toast: {
     position: "fixed",
     bottom: "20px",
     right: "20px",
-    backgroundColor: "#1e293b",
+    backgroundColor: "#3b0764",
     color: "#ffffff",
     padding: "10px 16px",
-    borderRadius: "6px",
+    borderRadius: "8px",
     fontSize: "13px",
+    boxShadow: "0 10px 20px rgba(0,0,0,0.2)",
     zIndex: 1000
   },
   dashboardLayout: { display: "flex", minHeight: "100vh" },
-  sidebar: { width: "240px", backgroundColor: "#1e293b", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  sidebar: { width: "240px", backgroundColor: "#1e1b4b", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
   sidebarHeader: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" },
-  sidebarLogoBox: { width: "32px", height: "32px", backgroundColor: "#6366f1", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "6px", fontWeight: "bold" },
+  sidebarLogoBox: { width: "32px", height: "32px", backgroundColor: "#a855f7", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", fontWeight: "bold" },
   sidebarBrandName: { color: "#fff", fontWeight: "bold", fontSize: "14px" },
-  sidebarBrandSub: { color: "#64748b", fontSize: "11px" },
-  navSectionLabel: { color: "#475569", fontSize: "10px", fontWeight: "700", marginBottom: "8px" },
+  sidebarBrandSub: { color: "#c084fc", fontSize: "11px" },
+  navSectionLabel: { color: "#6b21a8", fontSize: "10px", fontWeight: "700", marginBottom: "8px" },
   sideNav: { display: "flex", flexDirection: "column", gap: "4px" },
-  sideNavItem: { display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "8px 12px", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "13px", textAlign: "left" },
+  sideNavItem: { display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "8px 12px", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "13px", textAlign: "left" },
   mainContent: { flex: 1, backgroundColor: "#f8fafc" },
   topbar: { backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 30px", display: "flex", justifyContent: "space-between", alignItems: "center" },
-  userAvatar: { width: "32px", height: "32px", backgroundColor: "#e2e8f0", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "bold" },
+  userAvatar: { width: "32px", height: "32px", backgroundColor: "#f3e8ff", color: "#7e22ce", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: "bold" },
   statsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", marginBottom: "20px" },
   statCard: { backgroundColor: "#ffffff", padding: "16px", borderRadius: "8px", border: "1px solid #e2e8f0" },
   statLabel: { fontSize: "10px", fontWeight: "700", color: "#64748b" },
   statVal: { fontSize: "22px", fontWeight: "700", marginTop: "4px" },
   sectionHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" },
-  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "8px 16px", borderRadius: "6px", fontWeight: "600", fontSize: "12px", cursor: "pointer" },
+  primaryBtnWidth: { backgroundColor: "#9333ea", color: "#ffffff", border: "none", padding: "8px 16px", borderRadius: "6px", fontWeight: "600", fontSize: "12px", cursor: "pointer" },
   secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" },
   deleteIconBtn: { backgroundColor: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" },
   gridContainer: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" },
@@ -3271,6 +3261,6 @@ const styles = {
   tableRow: { borderBottom: "1px solid #f1f5f9" },
   td: { padding: "12px 16px", color: "#334155" },
   cardBox: { backgroundColor: "#ffffff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0", marginTop: "16px" },
-  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15, 23, 42, 0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 999 },
-  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "8px", width: "100%", maxWidth: "400px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15, 23, 42, 0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 999 },
+  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "100%", maxWidth: "400px", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)" }
 };
