@@ -2568,6 +2568,7 @@
 //     boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
 //   },
 // };
+
 import React, { useState } from "react";
 
 const initialProducts = [
