@@ -2572,11 +2572,12 @@
 import React, { useState } from "react";
 
 export default function App() {
-  // Screen States: 'login' | 'register' | 'dashboard'
+  // Navigation State: 'login' | 'register' | 'dashboard'
   const [currentPage, setCurrentPage] = useState("login");
   const [activeMenu, setActiveMenu] = useState("Dashboard");
+  const [reviewFilter, setReviewFilter] = useState("All");
 
-  // Form States
+  // Auth States
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -2584,7 +2585,7 @@ export default function App() {
   const [password, setPassword] = useState("12345678");
   const [selectedRole, setSelectedRole] = useState("Brand Manager");
 
-  // Toast Notification
+  // Toast State
   const [toastMessage, setToastMessage] = useState("");
 
   const showToast = (msg) => {
@@ -2592,7 +2593,47 @@ export default function App() {
     setTimeout(() => setToastMessage(""), 3000);
   };
 
-  // Auth Handlers
+  // ---------------- DATA STATES ----------------
+  const [products, setProducts] = useState([
+    { id: 1, name: "Acme Smart Watch", category: "Electronics", status: "Active" },
+    { id: 2, name: "Acme Wireless Earbuds", category: "Audio", status: "Active" },
+    { id: 3, name: "SaaS Platform Pro", category: "Software", status: "Active" },
+  ]);
+
+  const [reviewsList, setReviewsList] = useState([
+    { id: 101, user: "Alex Mercer", product: "Acme Smart Watch", rating: 5, sentiment: "Positive", comment: "The battery life is amazing! Lasted almost 3 days." },
+    { id: 102, user: "Samantha Paul", product: "Acme Wireless Earbuds", rating: 2, sentiment: "Negative", comment: "Bluetooth drops frequently during calls." },
+    { id: 103, user: "David Miller", product: "SaaS Platform Pro", rating: 4, sentiment: "Positive", comment: "Great UI interface, made our workflow 2x faster." },
+    { id: 104, user: "Elena Rostova", product: "Acme Smart Watch", rating: 3, sentiment: "Neutral", comment: "Good design but step counter isn't accurate." }
+  ]);
+
+  const [ticketsList, setTicketsList] = useState([
+    { id: 201, title: "Connectivity drop issue", product: "Acme Wireless Earbuds", priority: "High", status: "Pending", assignedTo: "Resolution Agent" },
+    { id: 202, title: "Step counter calibration error", product: "Acme Smart Watch", priority: "Medium", status: "In Progress", assignedTo: "Brand Manager" }
+  ]);
+
+  // ---------------- MODAL STATES ----------------
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newProdName, setNewProdName] = useState("");
+  const [newProdCategory, setNewProdCategory] = useState("Electronics");
+
+  const [isEditProductOpen, setIsEditProductOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editProdName, setEditProdName] = useState("");
+  const [editProdCategory, setEditProdCategory] = useState("Electronics");
+
+  const [isAddReviewOpen, setIsAddReviewOpen] = useState(false);
+  const [revUser, setRevUser] = useState("");
+  const [revProduct, setRevProduct] = useState("Acme Smart Watch");
+  const [revRating, setRevRating] = useState(5);
+  const [revComment, setRevComment] = useState("");
+
+  const [isAddTicketOpen, setIsAddTicketOpen] = useState(false);
+  const [ticTitle, setTicTitle] = useState("");
+  const [ticProduct, setTicProduct] = useState("Acme Smart Watch");
+  const [ticPriority, setTicPriority] = useState("Medium");
+
+  // ---------------- AUTH HANDLERS ----------------
   const handleLogin = (e) => {
     e.preventDefault();
     setCurrentPage("dashboard");
@@ -2604,6 +2645,81 @@ export default function App() {
     setCurrentPage("login");
     showToast("Account created! Please login.");
   };
+
+  // ---------------- PRODUCT HANDLERS ----------------
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!newProdName.trim()) return;
+    const newProd = { id: Date.now(), name: newProdName, category: newProdCategory, status: "Active" };
+    setProducts([...products, newProd]);
+    setNewProdName("");
+    setIsAddProductOpen(false);
+    showToast(`Product "${newProdName}" added!`);
+  };
+
+  const handleOpenEditProduct = (prod) => {
+    setEditingProductId(prod.id);
+    setEditProdName(prod.name);
+    setEditProdCategory(prod.category);
+    setIsEditProductOpen(true);
+  };
+
+  const handleSaveEditProduct = (e) => {
+    e.preventDefault();
+    setProducts(products.map(p => p.id === editingProductId ? { ...p, name: editProdName, category: editProdCategory } : p));
+    setIsEditProductOpen(false);
+    showToast("Product updated!");
+  };
+
+  const handleDeleteProduct = (id) => {
+    setProducts(products.filter(p => p.id !== id));
+    showToast("Product deleted!");
+  };
+
+  // ---------------- REVIEW HANDLERS ----------------
+  const handleAddReview = (e) => {
+    e.preventDefault();
+    if (!revUser.trim() || !revComment.trim()) return;
+
+    let sentiment = "Neutral";
+    if (revRating >= 4) sentiment = "Positive";
+    else if (revRating <= 2) sentiment = "Negative";
+
+    const newRev = { id: Date.now(), user: revUser, product: revProduct, rating: Number(revRating), sentiment, comment: revComment };
+    setReviewsList([newRev, ...reviewsList]);
+    setRevUser("");
+    setRevComment("");
+    setIsAddReviewOpen(false);
+    showToast("Review submitted successfully!");
+  };
+
+  // ---------------- TICKET HANDLERS ----------------
+  const handleAddTicket = (e) => {
+    e.preventDefault();
+    if (!ticTitle.trim()) return;
+    const newTic = { id: Date.now(), title: ticTitle, product: ticProduct, priority: ticPriority, status: "Pending", assignedTo: selectedRole };
+    setTicketsList([newTic, ...ticketsList]);
+    setTicTitle("");
+    setIsAddTicketOpen(false);
+    showToast("Resolution ticket created!");
+  };
+
+  const handleUpdateTicketStatus = (id, newStatus) => {
+    setTicketsList(ticketsList.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    showToast(`Ticket status changed to ${newStatus}`);
+  };
+
+  // ---------------- CALCULATED STATS ----------------
+  const posReviews = reviewsList.filter(r => r.sentiment === "Positive").length;
+  const neuReviews = reviewsList.filter(r => r.sentiment === "Neutral").length;
+  const negReviews = reviewsList.filter(r => r.sentiment === "Negative").length;
+  const totalReviews = reviewsList.length || 1;
+
+  const posPct = Math.round((posReviews / totalReviews) * 100);
+  const neuPct = Math.round((neuReviews / totalReviews) * 100);
+  const negPct = Math.round((negReviews / totalReviews) * 100);
+
+  const filteredReviews = reviewsList.filter(r => reviewFilter === "All" ? true : r.sentiment === reviewFilter);
 
   return (
     <div style={styles.appWrapper}>
@@ -2618,86 +2734,44 @@ export default function App() {
               <div style={{ display: "flex", gap: "10px" }}>
                 <div style={{ flex: 1 }}>
                   <label style={styles.label}>First Name</label>
-                  <input
-                    type="text"
-                    placeholder="Jane"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    style={styles.input}
-                    required
-                  />
+                  <input type="text" placeholder="Jane" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} required />
                 </div>
                 <div style={{ flex: 1 }}>
                   <label style={styles.label}>Last Name</label>
-                  <input
-                    type="text"
-                    placeholder="Doe"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    style={styles.input}
-                    required
-                  />
+                  <input type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} required />
                 </div>
               </div>
 
               <div>
                 <label style={styles.label}>Company Name</label>
-                <input
-                  type="text"
-                  placeholder="Acme Corp (Optional)"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  style={styles.input}
-                />
+                <input type="text" placeholder="Acme Corp (Optional)" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={styles.input} />
               </div>
 
               <div>
                 <label style={styles.label}>Email Address</label>
-                <input
-                  type="email"
-                  placeholder="manager@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={styles.input}
-                  required
-                />
+                <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
               </div>
 
               <div>
                 <label style={styles.label}>Password (min 8 chars)</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={styles.input}
-                  required
-                />
+                <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
               </div>
 
               <div>
                 <label style={styles.label}>Select Role</label>
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  style={styles.input}
-                >
+                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.input}>
                   <option value="Brand Manager">Brand Manager</option>
                   <option value="Resolution Agent">Resolution Agent</option>
                   <option value="Platform Admin">Platform Admin</option>
                 </select>
               </div>
 
-              <button type="submit" style={styles.blueBtn}>
-                Create Account
-              </button>
+              <button type="submit" style={styles.blueBtn}>Create Account</button>
             </form>
 
             <div style={styles.authSubText}>
               Already have an account?{" "}
-              <button onClick={() => setCurrentPage("login")} style={styles.linkBtn}>
-                Login here
-              </button>
+              <button onClick={() => setCurrentPage("login")} style={styles.linkBtn}>Login here</button>
             </div>
           </div>
         </div>
@@ -2711,46 +2785,29 @@ export default function App() {
             <form onSubmit={handleLogin} style={styles.formStack}>
               <div>
                 <label style={styles.label}>Email Address</label>
-                <input
-                  type="email"
-                  placeholder="manager@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={styles.input}
-                  required
-                />
+                <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
               </div>
 
               <div>
                 <label style={styles.label}>Password</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={styles.input}
-                  required
-                />
+                <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
               </div>
 
-              <button type="submit" style={styles.blueBtn}>
-                Login
-              </button>
+              <button type="submit" style={styles.blueBtn}>Login</button>
             </form>
 
             <div style={styles.authSubText}>
               Don't have an account?{" "}
-              <button onClick={() => setCurrentPage("register")} style={styles.linkBtn}>
-                Register here
-              </button>
+              <button onClick={() => setCurrentPage("register")} style={styles.linkBtn}>Register here</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ------------------- 3. UNCHANGED DASHBOARD ------------------- */}
+      {/* ------------------- 3. FULLY WORKING DASHBOARD ------------------- */}
       {currentPage === "dashboard" && (
         <div style={styles.dashboardLayout}>
+          {/* Sidebar */}
           <aside style={styles.sidebar}>
             <div>
               <div style={styles.sidebarHeader}>
@@ -2789,27 +2846,25 @@ export default function App() {
 
             <div>
               <div style={styles.navSectionLabel}>SYSTEM</div>
-              <button style={styles.sideNavItem}>
+              <button onClick={() => setActiveMenu("Settings")} style={{ ...styles.sideNavItem, backgroundColor: activeMenu === "Settings" ? "#2e3757" : "transparent" }}>
                 <span>⚙️</span>
                 <span>Settings</span>
               </button>
-              <button
-                onClick={() => setCurrentPage("login")}
-                style={{ ...styles.sideNavItem, color: "#f87171" }}
-              >
+              <button onClick={() => setCurrentPage("login")} style={{ ...styles.sideNavItem, color: "#f87171" }}>
                 <span>🚪</span>
                 <span>Logout</span>
               </button>
             </div>
           </aside>
 
+          {/* Main Workspace */}
           <div style={styles.mainContent}>
             <header style={styles.topbar}>
               <div style={{ fontSize: "13px", color: "#64748b" }}>
                 Workspace / <strong style={{ color: "#0f172a" }}>{activeMenu}</strong>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={styles.userAvatar}>BM</div>
+                <div style={styles.userAvatar}>{firstName ? firstName[0] : "B"}M</div>
                 <div>
                   <div style={{ fontSize: "12px", fontWeight: "700" }}>{selectedRole}</div>
                   <div style={{ fontSize: "11px", color: "#64748b" }}>{email}</div>
@@ -2818,41 +2873,321 @@ export default function App() {
             </header>
 
             <main style={{ padding: "30px" }}>
-              <div style={{ marginBottom: "20px" }}>
-                <span style={{ fontSize: "11px", fontWeight: "700", color: "#4f46e5", letterSpacing: "0.5px" }}>
-                  OVERVIEW
-                </span>
-                <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "4px 0" }}>
-                  Good evening, {selectedRole}
-                </h2>
-                <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-                  Here's what's happening across your ReviewRave workspace.
-                </p>
-              </div>
+              {/* --- DASHBOARD VIEW --- */}
+              {activeMenu === "Dashboard" && (
+                <div>
+                  <div style={{ marginBottom: "20px" }}>
+                    <span style={{ fontSize: "11px", fontWeight: "700", color: "#4f46e5" }}>OVERVIEW</span>
+                    <h2 style={{ fontSize: "22px", fontWeight: "700", margin: "4px 0" }}>Good day, {selectedRole}</h2>
+                    <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>Workspace operations and stats overview.</p>
+                  </div>
 
-              <div style={styles.statsGrid}>
-                <div style={styles.statCard}>
-                  <span style={styles.statLabel}>TOTAL USERS</span>
-                  <div style={styles.statVal}>8</div>
-                  <span style={styles.statGrowth}>↗+12.5% this month</span>
+                  <div style={styles.statsGrid}>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>PRODUCTS TRACKED</span>
+                      <div style={styles.statVal}>{products.length}</div>
+                    </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>TOTAL REVIEWS</span>
+                      <div style={styles.statVal}>{reviewsList.length}</div>
+                    </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>POSITIVE SENTIMENT</span>
+                      <div style={{ ...styles.statVal, color: "#16a34a" }}>{posPct}%</div>
+                    </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>OPEN TICKETS</span>
+                      <div style={styles.statVal}>{ticketsList.filter(t => t.status !== "Resolved").length}</div>
+                    </div>
+                  </div>
                 </div>
-                <div style={styles.statCard}>
-                  <span style={styles.statLabel}>PRODUCTS</span>
-                  <div style={styles.statVal}>12</div>
-                  <span style={styles.statGrowth}>↗+8.3% this month</span>
+              )}
+
+              {/* --- PRODUCTS VIEW --- */}
+              {activeMenu === "Products" && (
+                <div>
+                  <div style={styles.sectionHeader}>
+                    <div>
+                      <h2 style={{ fontSize: "20px", fontWeight: "700", margin: 0 }}>Product Catalog</h2>
+                      <span style={{ fontSize: "12px", color: "#64748b" }}>Manage tracked brand items</span>
+                    </div>
+                    <button onClick={() => setIsAddProductOpen(true)} style={styles.primaryBtnWidth}>+ Add Product</button>
+                  </div>
+
+                  <div style={styles.gridContainer}>
+                    {products.map((p) => (
+                      <div key={p.id} style={styles.productCard}>
+                        <div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <h4 style={{ margin: 0, fontWeight: "700", fontSize: "15px" }}>{p.name}</h4>
+                            <span style={styles.activeTag}>{p.status}</span>
+                          </div>
+                          <span style={{ fontSize: "12px", color: "#94a3b8" }}>{p.category}</span>
+                        </div>
+                        <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+                          <button onClick={() => handleOpenEditProduct(p)} style={styles.secondaryBtn}>Edit</button>
+                          <button onClick={() => handleDeleteProduct(p.id)} style={styles.deleteIconBtn}>🗑️ Delete</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div style={styles.statCard}>
-                  <span style={styles.statLabel}>REVIEWS</span>
-                  <div style={styles.statVal}>1,240</div>
-                  <span style={styles.statGrowth}>↗+18.4% this month</span>
+              )}
+
+              {/* --- REVIEWS VIEW --- */}
+              {activeMenu === "Reviews" && (
+                <div>
+                  <div style={styles.sectionHeader}>
+                    <div>
+                      <h2 style={{ fontSize: "20px", fontWeight: "700", margin: 0 }}>Customer Reviews</h2>
+                      <span style={{ fontSize: "12px", color: "#64748b" }}>Live feeds and sentiments</span>
+                    </div>
+                    <button onClick={() => setIsAddReviewOpen(true)} style={styles.primaryBtnWidth}>+ Add Review</button>
+                  </div>
+
+                  {/* Filter Sub-menu */}
+                  <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+                    {["All", "Positive", "Neutral", "Negative"].map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setReviewFilter(f)}
+                        style={{
+                          ...styles.secondaryBtn,
+                          backgroundColor: reviewFilter === f ? "#4f46e5" : "#f1f5f9",
+                          color: reviewFilter === f ? "#ffffff" : "#334155",
+                        }}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={styles.tableCard}>
+                    <table style={styles.table}>
+                      <thead>
+                        <tr style={styles.tableHeader}>
+                          <th style={styles.th}>Customer</th>
+                          <th style={styles.th}>Product</th>
+                          <th style={styles.th}>Rating</th>
+                          <th style={styles.th}>Sentiment</th>
+                          <th style={styles.th}>Comment</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredReviews.map((r) => (
+                          <tr key={r.id} style={styles.tableRow}>
+                            <td style={{ ...styles.td, fontWeight: "700" }}>{r.user}</td>
+                            <td style={styles.td}>{r.product}</td>
+                            <td style={styles.td}>{"⭐".repeat(r.rating)}</td>
+                            <td style={styles.td}>
+                              <span style={r.sentiment === "Positive" ? styles.activeTag : r.sentiment === "Negative" ? styles.critBadge : styles.neuBadge}>
+                                {r.sentiment}
+                              </span>
+                            </td>
+                            <td style={styles.td}>{r.comment}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <div style={styles.statCard}>
-                  <span style={styles.statLabel}>ACTIVE TICKETS</span>
-                  <div style={styles.statVal}>3</div>
-                  <span style={{ fontSize: "11px", color: "#ef4444", fontWeight: "600" }}>↗2 critical</span>
+              )}
+
+              {/* --- SENTIMENT INSIGHTS VIEW --- */}
+              {activeMenu === "Sentiment Insights" && (
+                <div>
+                  <h2 style={{ fontSize: "20px", fontWeight: "700", margin: "0 0 16px 0" }}>Sentiment Insights</h2>
+                  <div style={styles.statsGrid}>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>POSITIVE FEEDBACK</span>
+                      <div style={{ ...styles.statVal, color: "#16a34a" }}>{posPct}% ({posReviews})</div>
+                    </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>NEUTRAL FEEDBACK</span>
+                      <div style={{ ...styles.statVal, color: "#d97706" }}>{neuPct}% ({neuReviews})</div>
+                    </div>
+                    <div style={styles.statCard}>
+                      <span style={styles.statLabel}>NEGATIVE FEEDBACK</span>
+                      <div style={{ ...styles.statVal, color: "#dc2626" }}>{negPct}% ({negReviews})</div>
+                    </div>
+                  </div>
+
+                  <div style={styles.cardBox}>
+                    <h3 style={{ fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>Sentiment Ratio</h3>
+                    <div style={{ height: "16px", backgroundColor: "#e2e8f0", borderRadius: "8px", display: "flex", overflow: "hidden" }}>
+                      <div style={{ width: `${posPct}%`, backgroundColor: "#22c55e" }} />
+                      <div style={{ width: `${neuPct}%`, backgroundColor: "#f59e0b" }} />
+                      <div style={{ width: `${negPct}%`, backgroundColor: "#ef4444" }} />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* --- RESOLUTION TICKETS VIEW --- */}
+              {activeMenu === "Resolution Tickets" && (
+                <div>
+                  <div style={styles.sectionHeader}>
+                    <div>
+                      <h2 style={{ fontSize: "20px", fontWeight: "700", margin: 0 }}>Resolution Tickets</h2>
+                      <span style={{ fontSize: "12px", color: "#64748b" }}>Resolve customer issues</span>
+                    </div>
+                    <button onClick={() => setIsAddTicketOpen(true)} style={styles.primaryBtnWidth}>+ Create Ticket</button>
+                  </div>
+
+                  <div style={styles.tableCard}>
+                    <table style={styles.table}>
+                      <thead>
+                        <tr style={styles.tableHeader}>
+                          <th style={styles.th}>Issue Title</th>
+                          <th style={styles.th}>Product</th>
+                          <th style={styles.th}>Priority</th>
+                          <th style={styles.th}>Status</th>
+                          <th style={styles.th}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ticketsList.map((t) => (
+                          <tr key={t.id} style={styles.tableRow}>
+                            <td style={{ ...styles.td, fontWeight: "700" }}>{t.title}</td>
+                            <td style={styles.td}>{t.product}</td>
+                            <td style={styles.td}>
+                              <span style={t.priority === "High" ? styles.critBadge : styles.neuBadge}>{t.priority}</span>
+                            </td>
+                            <td style={styles.td}>
+                              <strong>{t.status}</strong>
+                            </td>
+                            <td style={styles.td}>
+                              <select
+                                value={t.status}
+                                onChange={(e) => handleUpdateTicketStatus(t.id, e.target.value)}
+                                style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "12px" }}
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* --- SETTINGS VIEW --- */}
+              {activeMenu === "Settings" && (
+                <div style={{ maxWidth: "500px" }}>
+                  <h2 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "16px" }}>Workspace Settings</h2>
+                  <div style={styles.cardBox}>
+                    <form onSubmit={(e) => { e.preventDefault(); showToast("Settings updated!"); }} style={styles.formStack}>
+                      <div>
+                        <label style={styles.label}>Email Address</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} />
+                      </div>
+                      <div>
+                        <label style={styles.label}>Role</label>
+                        <input type="text" value={selectedRole} disabled style={{ ...styles.input, backgroundColor: "#f1f5f9" }} />
+                      </div>
+                      <button type="submit" style={styles.blueBtn}>Save Settings</button>
+                    </form>
+                  </div>
+                </div>
+              )}
             </main>
+          </div>
+        </div>
+      )}
+
+      {/* --- ADD PRODUCT MODAL --- */}
+      {isAddProductOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Add New Product</h3>
+            <form onSubmit={handleAddProduct} style={styles.formStack}>
+              <input type="text" placeholder="Product Name" value={newProdName} onChange={(e) => setNewProdName(e.target.value)} style={styles.input} required />
+              <select value={newProdCategory} onChange={(e) => setNewProdCategory(e.target.value)} style={styles.input}>
+                <option value="Electronics">Electronics</option>
+                <option value="Audio">Audio</option>
+                <option value="Software">Software</option>
+              </select>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Save</button>
+                <button type="button" onClick={() => setIsAddProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- EDIT PRODUCT MODAL --- */}
+      {isEditProductOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Edit Product</h3>
+            <form onSubmit={handleSaveEditProduct} style={styles.formStack}>
+              <input type="text" value={editProdName} onChange={(e) => setEditProdName(e.target.value)} style={styles.input} required />
+              <select value={editProdCategory} onChange={(e) => setEditProdCategory(e.target.value)} style={styles.input}>
+                <option value="Electronics">Electronics</option>
+                <option value="Audio">Audio</option>
+                <option value="Software">Software</option>
+              </select>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Update</button>
+                <button type="button" onClick={() => setIsEditProductOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- ADD REVIEW MODAL --- */}
+      {isAddReviewOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Add Review</h3>
+            <form onSubmit={handleAddReview} style={styles.formStack}>
+              <input type="text" placeholder="Customer Name" value={revUser} onChange={(e) => setRevUser(e.target.value)} style={styles.input} required />
+              <select value={revProduct} onChange={(e) => setRevProduct(e.target.value)} style={styles.input}>
+                {products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+              </select>
+              <select value={revRating} onChange={(e) => setRevRating(e.target.value)} style={styles.input}>
+                <option value={5}>⭐⭐⭐⭐⭐ (5 Stars)</option>
+                <option value={4}>⭐⭐⭐⭐ (4 Stars)</option>
+                <option value={3}>⭐⭐⭐ (3 Stars)</option>
+                <option value={2}>⭐⭐ (2 Stars)</option>
+                <option value={1}>⭐ (1 Star)</option>
+              </select>
+              <textarea placeholder="Write review..." value={revComment} onChange={(e) => setRevComment(e.target.value)} style={{ ...styles.input, height: "60px" }} required />
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Submit</button>
+                <button type="button" onClick={() => setIsAddReviewOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- ADD TICKET MODAL --- */}
+      {isAddTicketOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3 style={{ margin: "0 0 15px 0" }}>Create Ticket</h3>
+            <form onSubmit={handleAddTicket} style={styles.formStack}>
+              <input type="text" placeholder="Issue Title" value={ticTitle} onChange={(e) => setTicTitle(e.target.value)} style={styles.input} required />
+              <select value={ticProduct} onChange={(e) => setTicProduct(e.target.value)} style={styles.input}>
+                {products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+              </select>
+              <select value={ticPriority} onChange={(e) => setTicPriority(e.target.value)} style={styles.input}>
+                <option value="Low">Low Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="High">High Priority</option>
+              </select>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" style={{ ...styles.blueBtn, flex: 1 }}>Create</button>
+                <button type="button" onClick={() => setIsAddTicketOpen(false)} style={{ ...styles.secondaryBtn, flex: 1 }}>Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -2860,216 +3195,51 @@ export default function App() {
   );
 }
 
-// STYLES OBJECT
+// STYLES
 const styles = {
-  appWrapper: {
-    fontFamily: "Segoe UI, -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
-    backgroundColor: "#f8fafc",
-    minHeight: "100vh",
-    color: "#0f172a",
-  },
-  // Auth Layout
-  centerAuthBg: {
-    minHeight: "100vh",
-    backgroundColor: "#e2e8f0",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-  },
-  cardBoxModal: {
-    backgroundColor: "#ffffff",
-    padding: "30px 32px",
-    borderRadius: "12px",
-    width: "100%",
-    maxWidth: "380px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-  },
-  cardTitle: {
-    fontSize: "20px",
-    fontWeight: "700",
-    textAlign: "center",
-    color: "#334155",
-    margin: "0 0 20px 0",
-  },
-  formStack: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-  label: {
-    fontSize: "12px",
-    fontWeight: "600",
-    color: "#475569",
-    marginBottom: "4px",
-    display: "block",
-  },
-  input: {
-    width: "100%",
-    padding: "9px 12px",
-    borderRadius: "6px",
-    border: "1px solid #cbd5e1",
-    fontSize: "13px",
-    boxSizing: "border-box",
-    outline: "none",
-    backgroundColor: "#ffffff",
-  },
-  blueBtn: {
-    backgroundColor: "#4f87cb",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px",
-    borderRadius: "6px",
-    fontWeight: "600",
-    fontSize: "13px",
-    cursor: "pointer",
-    width: "100%",
-    marginTop: "6px",
-  },
-  authSubText: {
-    fontSize: "12px",
-    color: "#64748b",
-    textAlign: "center",
-    marginTop: "18px",
-  },
-  linkBtn: {
-    background: "none",
-    border: "none",
-    color: "#4f87cb",
-    fontWeight: "600",
-    cursor: "pointer",
-    padding: 0,
-    fontSize: "12px",
-  },
-  // Dashboard Styles
-  dashboardLayout: {
-    display: "flex",
-    minHeight: "100vh",
-  },
-  sidebar: {
-    width: "240px",
-    backgroundColor: "#1e293b",
-    color: "#f8fafc",
-    padding: "20px 14px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  sidebarHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginBottom: "28px",
-    paddingLeft: "6px",
-  },
-  sidebarLogoBox: {
-    width: "30px",
-    height: "30px",
-    backgroundColor: "#6366f1",
-    color: "#ffffff",
-    borderRadius: "6px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: "700",
-  },
-  sidebarBrandName: {
-    fontSize: "15px",
-    fontWeight: "700",
-    lineHeight: "1.1",
-  },
-  sidebarBrandSub: {
-    fontSize: "10px",
-    color: "#64748b",
-  },
-  navSectionLabel: {
-    fontSize: "10px",
-    fontWeight: "700",
-    color: "#64748b",
-    letterSpacing: "0.8px",
-    marginBottom: "8px",
-    paddingLeft: "8px",
-  },
-  sideNav: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-    marginBottom: "20px",
-  },
-  sideNavItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    width: "100%",
-    padding: "10px 12px",
-    borderRadius: "6px",
-    border: "none",
-    fontSize: "13px",
-    fontWeight: "500",
-    cursor: "pointer",
-    textAlign: "left",
-  },
-  mainContent: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  topbar: {
-    height: "60px",
-    backgroundColor: "#ffffff",
-    borderBottom: "1px solid #e2e8f0",
-    padding: "0 30px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  userAvatar: {
-    width: "32px",
-    height: "32px",
-    borderRadius: "50%",
-    backgroundColor: "#e0e7ff",
-    color: "#4338ca",
-    fontWeight: "700",
-    fontSize: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "16px",
-  },
-  statCard: {
-    backgroundColor: "#ffffff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "12px",
-    padding: "20px",
-  },
-  statLabel: {
-    fontSize: "11px",
-    fontWeight: "700",
-    color: "#64748b",
-  },
-  statVal: {
-    fontSize: "26px",
-    fontWeight: "700",
-    margin: "6px 0 4px 0",
-  },
-  statGrowth: {
-    fontSize: "11px",
-    color: "#16a34a",
-    fontWeight: "600",
-  },
-  toast: {
-    position: "fixed",
-    top: "20px",
-    right: "20px",
-    backgroundColor: "#0f172a",
-    color: "#ffffff",
-    padding: "10px 18px",
-    borderRadius: "8px",
-    fontSize: "13px",
-    zIndex: 1000,
-    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-  },
+  appWrapper: { fontFamily: "Segoe UI, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
+  centerAuthBg: { minHeight: "100vh", backgroundColor: "#e2e8f0", display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" },
+  cardBoxModal: { backgroundColor: "#ffffff", padding: "30px 32px", borderRadius: "12px", width: "100%", maxWidth: "380px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)" },
+  cardTitle: { fontSize: "20px", fontWeight: "700", textAlign: "center", color: "#334155", margin: "0 0 20px 0" },
+  formStack: { display: "flex", flexDirection: "column", gap: "14px" },
+  label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
+  input: { width: "100%", padding: "9px 12px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "13px", boxSizing: "border-box", outline: "none", backgroundColor: "#ffffff" },
+  blueBtn: { backgroundColor: "#4f87cb", color: "#ffffff", border: "none", padding: "10px", borderRadius: "6px", fontWeight: "600", fontSize: "13px", cursor: "pointer", width: "100%" },
+  authSubText: { fontSize: "12px", color: "#64748b", textAlign: "center", marginTop: "18px" },
+  linkBtn: { background: "none", border: "none", color: "#4f87cb", fontWeight: "600", cursor: "pointer", padding: 0, fontSize: "12px" },
+  dashboardLayout: { display: "flex", minHeight: "100vh" },
+  sidebar: { width: "240px", backgroundColor: "#1e293b", color: "#f8fafc", padding: "20px 14px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  sidebarHeader: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "28px", paddingLeft: "6px" },
+  sidebarLogoBox: { width: "30px", height: "30px", backgroundColor: "#6366f1", color: "#ffffff", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "700" },
+  sidebarBrandName: { fontSize: "15px", fontWeight: "700" },
+  sidebarBrandSub: { fontSize: "10px", color: "#64748b" },
+  navSectionLabel: { fontSize: "10px", fontWeight: "700", color: "#64748b", marginBottom: "8px", paddingLeft: "8px" },
+  sideNav: { display: "flex", flexDirection: "column", gap: "4px", marginBottom: "20px" },
+  sideNavItem: { display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "10px 12px", borderRadius: "6px", border: "none", fontSize: "13px", fontWeight: "500", cursor: "pointer", textAlign: "left" },
+  mainContent: { flex: 1, backgroundColor: "#f8fafc" },
+  topbar: { height: "60px", backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "0 30px", display: "flex", alignItems: "center", justifyContent: "space-between" },
+  userAvatar: { width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#e0e7ff", color: "#4338ca", fontWeight: "700", fontSize: "12px", display: "flex", alignItems: "center", justifyContent: "center" },
+  statsGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" },
+  statCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "20px" },
+  statLabel: { fontSize: "11px", fontWeight: "700", color: "#64748b" },
+  statVal: { fontSize: "24px", fontWeight: "700", margin: "6px 0 0 0" },
+  sectionHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" },
+  primaryBtnWidth: { backgroundColor: "#4f46e5", color: "#ffffff", border: "none", padding: "9px 16px", borderRadius: "8px", fontWeight: "600", cursor: "pointer", fontSize: "13px" },
+  secondaryBtn: { backgroundColor: "#f1f5f9", color: "#334155", border: "1px solid #cbd5e1", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  deleteIconBtn: { backgroundColor: "#fee2e2", color: "#dc2626", border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", cursor: "pointer" },
+  gridContainer: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" },
+  productCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "12px", display: "flex", flexDirection: "column", justifyContent: "space-between" },
+  activeTag: { backgroundColor: "#dcfce7", color: "#15803d", fontSize: "10px", fontWeight: "700", padding: "2px 6px", borderRadius: "4px" },
+  critBadge: { backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
+  neuBadge: { backgroundColor: "#fef3c7", color: "#d97706", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" },
+  cardBox: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", padding: "20px", borderRadius: "12px" },
+  tableCard: { backgroundColor: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" },
+  table: { width: "100%", borderCollapse: "collapse", fontSize: "12px" },
+  tableHeader: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" },
+  th: { padding: "12px", textAlign: "left", color: "#64748b", fontWeight: "600" },
+  tableRow: { borderBottom: "1px solid #f1f5f9" },
+  td: { padding: "12px", color: "#334155" },
+  toast: { position: "fixed", top: "20px", right: "20px", backgroundColor: "#0f172a", color: "#ffffff", padding: "10px 18px", borderRadius: "8px", fontSize: "13px", zIndex: 1000 },
+  modalOverlay: { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 100 },
+  modalCard: { backgroundColor: "#ffffff", padding: "24px", borderRadius: "12px", width: "320px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" },
 };
