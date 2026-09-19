@@ -2715,80 +2715,102 @@ export default function App() {
     <div style={styles.appWrapper}>
       {toastMessage && <div style={styles.toast}>{toastMessage}</div>}
 
-      {/* 1. REGISTER PAGE */}
+      {/* 1. REGISTER PAGE WITH SPLIT IMAGE LAYOUT */}
       {currentPage === "register" && (
         <div style={styles.centerAuthBg}>
-          <div style={styles.cardBoxModal}>
-            <h2 style={styles.cardTitle}>Register Account</h2>
-            <form onSubmit={handleRegister} style={styles.formStack}>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>First Name</label>
-                  <input type="text" placeholder="Jane" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} required />
+          <div style={styles.authContainer}>
+            {/* Left Image Banner */}
+            <div style={styles.imageBanner}>
+              <div style={styles.imageOverlay}>
+                <h3 style={{ fontSize: "24px", fontWeight: "700", margin: "0 0 8px 0" }}>ReviewRave</h3>
+                <p style={{ fontSize: "14px", opacity: 0.9, margin: 0 }}>Empower your brand with real-time feedback & sentiment analysis.</p>
+              </div>
+            </div>
+
+            {/* Right Form */}
+            <div style={styles.formContainer}>
+              <h2 style={styles.cardTitle}>Register Account</h2>
+              <form onSubmit={handleRegister} style={styles.formStack}>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={styles.label}>First Name</label>
+                    <input type="text" placeholder="Jane" value={firstName} onChange={(e) => setFirstName(e.target.value)} style={styles.input} required />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={styles.label}>Last Name</label>
+                    <input type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} required />
+                  </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={styles.label}>Last Name</label>
-                  <input type="text" placeholder="Doe" value={lastName} onChange={(e) => setLastName(e.target.value)} style={styles.input} required />
+
+                <div>
+                  <label style={styles.label}>Company Name</label>
+                  <input type="text" placeholder="Acme Corp (Optional)" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={styles.input} />
                 </div>
+
+                <div>
+                  <label style={styles.label}>Email Address</label>
+                  <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Password (min 8 chars)</label>
+                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Select Role</label>
+                  <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.input}>
+                    <option value="Brand Manager">Brand Manager</option>
+                    <option value="Resolution Agent">Resolution Agent</option>
+                    <option value="Platform Admin">Platform Admin</option>
+                  </select>
+                </div>
+
+                <button type="submit" style={styles.purpleBtn}>Create Account</button>
+              </form>
+
+              <div style={styles.authSubText}>
+                Already have an account?{" "}
+                <button onClick={() => setCurrentPage("login")} style={styles.linkBtn}>Login here</button>
               </div>
-
-              <div>
-                <label style={styles.label}>Company Name</label>
-                <input type="text" placeholder="Acme Corp (Optional)" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={styles.input} />
-              </div>
-
-              <div>
-                <label style={styles.label}>Email Address</label>
-                <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
-              </div>
-
-              <div>
-                <label style={styles.label}>Password (min 8 chars)</label>
-                <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
-              </div>
-
-              <div>
-                <label style={styles.label}>Select Role</label>
-                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={styles.input}>
-                  <option value="Brand Manager">Brand Manager</option>
-                  <option value="Resolution Agent">Resolution Agent</option>
-                  <option value="Platform Admin">Platform Admin</option>
-                </select>
-              </div>
-
-              <button type="submit" style={styles.purpleBtn}>Create Account</button>
-            </form>
-
-            <div style={styles.authSubText}>
-              Already have an account?{" "}
-              <button onClick={() => setCurrentPage("login")} style={styles.linkBtn}>Login here</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. LOGIN PAGE */}
+      {/* 2. LOGIN PAGE WITH SPLIT IMAGE LAYOUT */}
       {currentPage === "login" && (
         <div style={styles.centerAuthBg}>
-          <div style={styles.cardBoxModal}>
-            <h2 style={styles.cardTitle}>Login to ReviewRave</h2>
-            <form onSubmit={handleLogin} style={styles.formStack}>
-              <div>
-                <label style={styles.label}>Email Address</label>
-                <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+          <div style={styles.authContainer}>
+            {/* Left Image Banner */}
+            <div style={styles.imageBanner}>
+              <div style={styles.imageOverlay}>
+                <h3 style={{ fontSize: "24px", fontWeight: "700", margin: "0 0 8px 0" }}>Welcome Back</h3>
+                <p style={{ fontSize: "14px", opacity: 0.9, margin: 0 }}>Monitor customer intelligence and resolve issues faster.</p>
               </div>
+            </div>
 
-              <div>
-                <label style={styles.label}>Password</label>
-                <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
+            {/* Right Form */}
+            <div style={styles.formContainer}>
+              <h2 style={styles.cardTitle}>Login to ReviewRave</h2>
+              <form onSubmit={handleLogin} style={styles.formStack}>
+                <div>
+                  <label style={styles.label}>Email Address</label>
+                  <input type="email" placeholder="manager@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+                </div>
+
+                <div>
+                  <label style={styles.label}>Password</label>
+                  <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} style={styles.input} required />
+                </div>
+
+                <button type="submit" style={styles.purpleBtn}>Login</button>
+              </form>
+
+              <div style={styles.authSubText}>
+                Don't have an account?{" "}
+                <button onClick={() => setCurrentPage("register")} style={styles.linkBtn}>Register here</button>
               </div>
-
-              <button type="submit" style={styles.purpleBtn}>Login</button>
-            </form>
-
-            <div style={styles.authSubText}>
-              Don't have an account?{" "}
-              <button onClick={() => setCurrentPage("register")} style={styles.linkBtn}>Register here</button>
             </div>
           </div>
         </div>
@@ -2821,9 +2843,9 @@ export default function App() {
                     onClick={() => setActiveMenu(item.name)}
                     style={{
                       ...styles.sideNavItem,
-                      backgroundColor: activeMenu === item.name ? "rgba(147, 51, 234, 0.25)" : "transparent",
+                      backgroundColor: activeMenu === item.name ? "rgba(168, 85, 247, 0.25)" : "transparent",
                       color: activeMenu === item.name ? "#ffffff" : "#94a3b8",
-                      borderLeft: activeMenu === item.name ? "3px solid #a855f7" : "3px solid transparent",
+                      borderLeft: activeMenu === item.name ? "3px solid #c084fc" : "3px solid transparent",
                     }}
                   >
                     <span>{item.icon}</span>
@@ -2835,7 +2857,7 @@ export default function App() {
 
             <div>
               <div style={styles.navSectionLabel}>SYSTEM</div>
-              <button onClick={() => setActiveMenu("Settings")} style={{ ...styles.sideNavItem, backgroundColor: activeMenu === "Settings" ? "rgba(147, 51, 234, 0.25)" : "transparent" }}>
+              <button onClick={() => setActiveMenu("Settings")} style={{ ...styles.sideNavItem, backgroundColor: activeMenu === "Settings" ? "rgba(168, 85, 247, 0.25)" : "transparent" }}>
                 <span>⚙️</span>
                 <span>Settings</span>
               </button>
@@ -3173,36 +3195,66 @@ export default function App() {
   );
 }
 
-// ATTRACTIVE VIBRANT PURPLE STYLES
+// MODERN PURPLE STYLES WITH IMAGE & GLASS EFFECT
 const styles = {
   appWrapper: { fontFamily: "'Segoe UI', Roboto, sans-serif", backgroundColor: "#f8fafc", minHeight: "100vh", color: "#0f172a" },
   
   centerAuthBg: { 
     minHeight: "100vh", 
-    background: "linear-gradient(135deg, #1e0b36 0%, #3b0764 45%, #581c87 80%, #6b21a8 100%)", 
+    background: "linear-gradient(135deg, #0f0728 0%, #2a085c 50%, #4c1d95 100%)", 
     display: "flex", 
     justifyContent: "center", 
     alignItems: "center", 
     padding: "20px" 
   },
   
-  cardBoxModal: { 
-    backgroundColor: "#ffffff", 
-    padding: "36px 32px", 
-    borderRadius: "16px", 
-    width: "100%", 
-    maxWidth: "400px", 
-    boxShadow: "0 25px 50px -12px rgba(88, 28, 135, 0.45)",
-    boxSizing: "border-box" 
+  authContainer: {
+    display: "flex",
+    width: "100%",
+    maxWidth: "850px",
+    borderRadius: "20px",
+    overflow: "hidden",
+    boxShadow: "0 25px 60px rgba(0, 0, 0, 0.5)",
+    backgroundColor: "#ffffff"
+  },
+
+  imageBanner: {
+    flex: 1,
+    backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    display: "flex",
+    alignItems: "flex-end",
+    padding: "30px",
+    position: "relative"
+  },
+
+  imageOverlay: {
+    color: "#ffffff",
+    zIndex: 2,
+    background: "rgba(15, 7, 40, 0.65)",
+    backdropFilter: "blur(8px)",
+    padding: "20px",
+    borderRadius: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.15)"
+  },
+
+  formContainer: {
+    flex: 1,
+    padding: "40px 32px",
+    backgroundColor: "#ffffff",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center"
   },
   
-  cardTitle: { fontSize: "22px", fontWeight: "700", textAlign: "center", color: "#2e1065", margin: "0 0 22px 0" },
+  cardTitle: { fontSize: "22px", fontWeight: "700", textAlign: "left", color: "#2e1065", margin: "0 0 20px 0" },
   formStack: { display: "flex", flexDirection: "column", gap: "14px" },
   label: { fontSize: "12px", fontWeight: "600", color: "#475569", marginBottom: "4px", display: "block" },
-  input: { width: "100%", padding: "10px 12px", borderRadius: "8px", border: "1px solid #d8b4fe", fontSize: "13px", boxSizing: "border-box", outline: "none", backgroundColor: "#ffffff" },
+  input: { width: "100%", padding: "10px 12px", borderRadius: "8px", border: "1px solid #d8b4fe", fontSize: "13px", boxSizing: "border-box", outline: "none", backgroundColor: "#fcfaff" },
   
   purpleBtn: { 
-    background: "linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)", 
+    background: "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)", 
     color: "#ffffff", 
     border: "none", 
     padding: "11px", 
@@ -3211,7 +3263,7 @@ const styles = {
     fontSize: "13px", 
     cursor: "pointer", 
     width: "100%",
-    boxShadow: "0 4px 12px rgba(147, 51, 234, 0.3)"
+    boxShadow: "0 4px 14px rgba(168, 85, 247, 0.4)"
   },
   
   authSubText: { fontSize: "12px", color: "#64748b", textAlign: "center", marginTop: "18px" },
@@ -3235,7 +3287,7 @@ const styles = {
   sidebarLogoBox: { width: "32px", height: "32px", backgroundColor: "#a855f7", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "8px", fontWeight: "bold" },
   sidebarBrandName: { color: "#fff", fontWeight: "bold", fontSize: "14px" },
   sidebarBrandSub: { color: "#c084fc", fontSize: "11px" },
-  navSectionLabel: { color: "#6b21a8", fontSize: "10px", fontWeight: "700", marginBottom: "8px" },
+  navSectionLabel: { color: "#7e22ce", fontSize: "10px", fontWeight: "700", marginBottom: "8px" },
   sideNav: { display: "flex", flexDirection: "column", gap: "4px" },
   sideNavItem: { display: "flex", alignItems: "center", gap: "10px", width: "100%", padding: "8px 12px", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "13px", textAlign: "left" },
   mainContent: { flex: 1, backgroundColor: "#f8fafc" },
